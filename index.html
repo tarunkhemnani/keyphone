@@ -1,49 +1,147 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Keypad — Clean</title>
-
-  <!-- iOS standalone friendly -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>iPhone Dialer</title>
+    <meta name="description" content="iPhone-style dialer web app">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dialer">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main id="app" class="phone" role="application" aria-label="Phone keypad">
-    <!-- top area intentionally empty and black (safe-area padding applied in CSS) -->
-    <header class="screen" role="region" aria-label="Dial display">
-      <div id="phoneNumber" class="phone-number" aria-live="polite" aria-atomic="true" tabindex="0"></div>
-      <div class="subhint" aria-hidden="true">Double-tap to delete • Long-press to clear</div>
-    </header>
+    <div class="dialer-app">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span class="time" id="time">9:41</span>
+            </div>
+            <div class="status-right">
+                <svg class="status-icon" viewBox="0 0 24 12" fill="currentColor">
+                    <path d="M2 4h4v1H2V4zm5 2h4v1H7V6zm5 2h4v1h-4V8zm5-6h4v1h-4V2z"/>
+                </svg>
+                <svg class="status-icon" viewBox="0 0 24 12" fill="currentColor">
+                    <path d="M1 4h4v4H1V4zm6 1h4v2H7V5zm6 1h4v1h-4V6z"/>
+                </svg>
+                <svg class="status-icon" viewBox="0 0 24 12" fill="currentColor">
+                    <path d="M3 2h18v8H3V2zm2 2v4h14V4H5z"/>
+                </svg>
+            </div>
+        </div>
 
-    <section id="keypad" class="keypad" aria-label="Dial pad">
-      <button class="key" data-value="1" aria-label="1"><span class="digit">1</span></button>
-      <button class="key" data-value="2" data-extra="ABC" aria-label="2, ABC"><span class="digit">2</span><span class="letters">ABC</span></button>
-      <button class="key" data-value="3" data-extra="DEF" aria-label="3, DEF"><span class="digit">3</span><span class="letters">DEF</span></button>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Display -->
+            <div class="display" id="display">
+                <div class="phone-number" id="phoneNumber" aria-live="polite"></div>
+            </div>
 
-      <button class="key" data-value="4" data-extra="GHI" aria-label="4, GHI"><span class="digit">4</span><span class="letters">GHI</span></button>
-      <button class="key" data-value="5" data-extra="JKL" aria-label="5, JKL"><span class="digit">5</span><span class="letters">JKL</span></button>
-      <button class="key" data-value="6" data-extra="MNO" aria-label="6, MNO"><span class="digit">6</span><span class="letters">MNO</span></button>
+            <!-- Keypad -->
+            <div class="keypad" id="keypad">
+                <button class="key" data-digit="1" aria-label="1">
+                    <span class="digit">1</span>
+                </button>
+                <button class="key" data-digit="2" aria-label="2, ABC">
+                    <span class="digit">2</span>
+                    <span class="letters">ABC</span>
+                </button>
+                <button class="key" data-digit="3" aria-label="3, DEF">
+                    <span class="digit">3</span>
+                    <span class="letters">DEF</span>
+                </button>
+                <button class="key" data-digit="4" aria-label="4, GHI">
+                    <span class="digit">4</span>
+                    <span class="letters">GHI</span>
+                </button>
+                <button class="key" data-digit="5" aria-label="5, JKL">
+                    <span class="digit">5</span>
+                    <span class="letters">JKL</span>
+                </button>
+                <button class="key" data-digit="6" aria-label="6, MNO">
+                    <span class="digit">6</span>
+                    <span class="letters">MNO</span>
+                </button>
+                <button class="key" data-digit="7" aria-label="7, PQRS">
+                    <span class="digit">7</span>
+                    <span class="letters">PQRS</span>
+                </button>
+                <button class="key" data-digit="8" aria-label="8, TUV">
+                    <span class="digit">8</span>
+                    <span class="letters">TUV</span>
+                </button>
+                <button class="key" data-digit="9" aria-label="9, WXYZ">
+                    <span class="digit">9</span>
+                    <span class="letters">WXYZ</span>
+                </button>
+                <button class="key" data-digit="*" aria-label="Star">
+                    <span class="digit">*</span>
+                </button>
+                <button class="key" data-digit="0" aria-label="0, Plus">
+                    <span class="digit">0</span>
+                    <span class="letters">+</span>
+                </button>
+                <button class="key" data-digit="#" aria-label="Hash">
+                    <span class="digit">#</span>
+                </button>
+            </div>
 
-      <button class="key" data-value="7" data-extra="PQRS" aria-label="7, PQRS"><span class="digit">7</span><span class="letters">PQRS</span></button>
-      <button class="key" data-value="8" data-extra="TUV" aria-label="8, TUV"><span class="digit">8</span><span class="letters">TUV</span></button>
-      <button class="key" data-value="9" data-extra="WXYZ" aria-label="9, WXYZ"><span class="digit">9</span><span class="letters">WXYZ</span></button>
+            <!-- Call Button -->
+            <div class="call-section">
+                <button class="call-button" id="callButton" aria-label="Call">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27 11.18 11.18 0 003.48.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.18 11.18 0 00.56 3.48 1 1 0 01-.27 1.11l-2.17 2.2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
-      <button class="key" data-value="*" aria-label="Star"><span class="digit">*</span></button>
-      <button class="key" id="zeroKey" data-value="0" data-extra="+" aria-label="0, plus"><span class="digit">0</span><span class="letters">+</span></button>
-      <button class="key" data-value="#" aria-label="Hash"><span class="digit">#</span></button>
-    </section>
-
-    <div class="call-area">
-      <a id="callBtn" class="call-btn disabled" href="#" role="button" aria-disabled="true" aria-label="Call">
-        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M6.6 10.2c1.2 2.6 3 4.5 5.7 5.7l1.2-1.2c.3-.3.8-.4 1.1-.1 1.2.9 2.5 1.5 3.9 1.9.7.2 1.1.8 1 1.5v2.3c0 .6-.5 1.1-1.1 1.1C11.6 21.9 2.1 12.4 2.1 3.4 2 2.8 2.6 2.3 3.2 2.6c.8.3 1.6.7 2.3 1.3 1.2.9 1.9 2.1 2.3 3.3.1.4 0 .9-.3 1.2L6.6 10.2z"/></svg>
-      </a>
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span class="nav-label">Favorites</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 3a9 9 0 009 9 9.75 9.75 0 01-6.74-2.74L13 7l-4.26 2.26A9.75 9.75 0 012 12a9 9 0 009-9z"/>
+                </svg>
+                <span class="nav-label">Recents</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zM4 18v-1c0-1.1.9-2 2-2h3c1.1 0 2 .9 2 2v1H4zM7.5 12C5.57 12 4 10.43 4 8.5S5.57 5 7.5 5 11 6.57 11 8.5 9.43 12 7.5 12z"/>
+                </svg>
+                <span class="nav-label">Contacts</span>
+            </div>
+            <div class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <span class="nav-label">Keypad</span>
+                <div class="active-indicator"></div>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>
+                </svg>
+                <span class="nav-label">Voicemail</span>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <script src="app.js" defer></script>
+    <script src="app.js"></script>
 </body>
 </html>
