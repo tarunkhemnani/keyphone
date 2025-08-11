@@ -3,88 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Phone — Keypad</title>
+  <title>Keypad — Clean</title>
 
-  <!-- PWA / iOS web app meta -->
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- iOS standalone friendly -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <!-- Apple icon (used when Add to Home Screen on iOS) -->
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <!-- iOS splash screens require many sizes; generate for production. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main id="app" class="phone" role="application" aria-label="Phone keypad">
-    <!-- top fake status area to visually match screenshot while preserving system bar -->
-    <div class="sysbar">
-      <div class="sys-left" aria-hidden="true">7:33</div>
-      <div class="sys-right" aria-hidden="true">🔋 80%</div>
-    </div>
-
+    <!-- top area intentionally empty and black (safe-area padding applied in CSS) -->
     <header class="screen" role="region" aria-label="Dial display">
-      <div class="number-row">
-        <div id="phoneNumber" class="phone-number" aria-live="polite" aria-atomic="true"></div>
-        <button id="backspace" class="icon-btn" title="Delete" aria-label="Delete last digit">
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path fill="currentColor" d="M20 7H9.8L7.8 5H4v14h3.8l2 2H20zM12 17l-1.4-1.4L13.2 13 10.6 10.4 12 9 15 12z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="hint">Enter number or use keypad</div>
+      <div id="phoneNumber" class="phone-number" aria-live="polite" aria-atomic="true" tabindex="0"></div>
+      <div class="subhint" aria-hidden="true">Double-tap to delete • Long-press to clear</div>
     </header>
 
     <section id="keypad" class="keypad" aria-label="Dial pad">
-      <!-- Row 1 -->
       <button class="key" data-value="1" aria-label="1"><span class="digit">1</span></button>
       <button class="key" data-value="2" data-extra="ABC" aria-label="2, ABC"><span class="digit">2</span><span class="letters">ABC</span></button>
       <button class="key" data-value="3" data-extra="DEF" aria-label="3, DEF"><span class="digit">3</span><span class="letters">DEF</span></button>
 
-      <!-- Row 2 -->
       <button class="key" data-value="4" data-extra="GHI" aria-label="4, GHI"><span class="digit">4</span><span class="letters">GHI</span></button>
       <button class="key" data-value="5" data-extra="JKL" aria-label="5, JKL"><span class="digit">5</span><span class="letters">JKL</span></button>
       <button class="key" data-value="6" data-extra="MNO" aria-label="6, MNO"><span class="digit">6</span><span class="letters">MNO</span></button>
 
-      <!-- Row 3 -->
       <button class="key" data-value="7" data-extra="PQRS" aria-label="7, PQRS"><span class="digit">7</span><span class="letters">PQRS</span></button>
       <button class="key" data-value="8" data-extra="TUV" aria-label="8, TUV"><span class="digit">8</span><span class="letters">TUV</span></button>
       <button class="key" data-value="9" data-extra="WXYZ" aria-label="9, WXYZ"><span class="digit">9</span><span class="letters">WXYZ</span></button>
 
-      <!-- Row 4 -->
       <button class="key" data-value="*" aria-label="Star"><span class="digit">*</span></button>
       <button class="key" id="zeroKey" data-value="0" data-extra="+" aria-label="0, plus"><span class="digit">0</span><span class="letters">+</span></button>
       <button class="key" data-value="#" aria-label="Hash"><span class="digit">#</span></button>
     </section>
 
     <div class="call-area">
-      <!-- call button is an anchor with tel: href (updated dynamically) -->
       <a id="callBtn" class="call-btn disabled" href="#" role="button" aria-disabled="true" aria-label="Call">
         <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M6.6 10.2c1.2 2.6 3 4.5 5.7 5.7l1.2-1.2c.3-.3.8-.4 1.1-.1 1.2.9 2.5 1.5 3.9 1.9.7.2 1.1.8 1 1.5v2.3c0 .6-.5 1.1-1.1 1.1C11.6 21.9 2.1 12.4 2.1 3.4 2 2.8 2.6 2.3 3.2 2.6c.8.3 1.6.7 2.3 1.3 1.2.9 1.9 2.1 2.3 3.3.1.4 0 .9-.3 1.2L6.6 10.2z"/></svg>
       </a>
     </div>
-
-    <nav class="bottom-nav" aria-label="Navigation">
-      <button class="nav-btn" aria-label="Favorites"><span class="nav-icon">★</span><span class="nav-label">Favorites</span></button>
-      <button class="nav-btn" aria-label="Recents"><span class="nav-icon">🕘</span><span class="nav-label">Recents</span></button>
-      <button class="nav-btn" aria-label="Contacts"><span class="nav-icon">👤</span><span class="nav-label">Contacts</span></button>
-      <button class="nav-btn active" aria-current="page" aria-label="Keypad"><span class="nav-icon">◼︎</span><span class="nav-label">Keypad</span></button>
-      <button class="nav-btn" aria-label="Voicemail"><span class="nav-icon">📪</span><span class="nav-label">Voicemail</span></button>
-    </nav>
   </main>
-
-  <!-- small dialog fallback (shown when tel: not allowed in standalone) -->
-  <div id="telFallback" class="tel-fallback hidden" role="dialog" aria-modal="true" aria-label="Call fallback">
-    <div class="tel-content">
-      <div id="fallbackNumber" class="fallback-number"></div>
-      <div class="fallback-actions">
-        <button id="copyNumber">Copy</button>
-        <button id="closeFallback">Close</button>
-      </div>
-    </div>
-  </div>
 
   <script src="app.js" defer></script>
 </body>
