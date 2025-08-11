@@ -1,5 +1,5 @@
 // app.js
-// Functional keypad behavior: clicks, long-press 0 -> +, keyboard input, call button
+// Improved keypad: standalone detection, safe-area handling, tel fallback, PWA basics
 
 const phoneNumberEl = document.getElementById('phoneNumber');
 const keys = document.querySelectorAll('.key');
@@ -7,13 +7,17 @@ const callBtn = document.getElementById('callBtn');
 const backspaceBtn = document.getElementById('backspace');
 const zeroKey = document.getElementById('zeroKey');
 
+const telFallback = document.getElementById('telFallback');
+const fallbackNumber = document.getElementById('fallbackNumber');
+const copyNumberBtn = document.getElementById('copyNumber');
+const closeFallbackBtn = document.getElementById('closeFallback');
+
 let value = '';
-const LONGPRESS_MS = 600; // hold 0 to get '+'
+const LONGPRESS_MS = 600;
 let longPressTimer = null;
 
-// sanitize for tel: (allow digits, +, *, #)
 function sanitizeForTel(s){
-  // keep digits, +, star, and pound/hash
+  // keep digits, +, star, and hash
   return s.replace(/[^\d+#*+]/g, '');
 }
 function updateDisplay(){
@@ -30,41 +34,44 @@ function updateDisplay(){
   }
 }
 
-// add digit/char
+// append char
 function appendChar(ch){
   value += ch;
   updateDisplay();
-  // slight visual feedback
+  // quick subtle animation
   phoneNumberEl.animate([{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:120,fill:'forwards'});
 }
 
-// remove last char
+// backspace
 backspaceBtn.addEventListener('click', () => {
-  if (!value) return;
-  value = value.slice(0, -1);
+  if(!value) return;
+  value = value.slice(0,-1);
   updateDisplay();
 });
 
-// handle keypad buttons
+// button clicks
 keys.forEach(btn=>{
   const val = btn.dataset.value;
-  // click/tap
   btn.addEventListener('click', (e) => {
-    // ignore longpress aftermath if any
+    // If zero key used longpress handled flag exists, skip the synthetic click.
+    if(btn.id === 'zeroKey' && btn.dataset.handled === 'true'){
+      delete btn.dataset.handled;
+      return;
+    }
     appendChar(val);
   });
 
-  // support keyboard "Enter" / space when focused
+  // accessible keyboard activation
   btn.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
-      appendChar(val);
+      appendChar(btn.dataset.value);
     }
   });
 });
 
-// long-press on 0 for '+'
-zeroKey.addEventListener('touchstart', startLongPress);
+// long press on 0 => '+'
+zeroKey.addEventListener('touchstart', startLongPress, {passive:true});
 zeroKey.addEventListener('mousedown', startLongPress);
 
 zeroKey.addEventListener('touchend', cancelLongPress);
@@ -73,61 +80,105 @@ zeroKey.addEventListener('mouseleave', cancelLongPress);
 zeroKey.addEventListener('touchcancel', cancelLongPress);
 
 function startLongPress(e){
-  // if triggered by click, let normal click append '0' after we decide not longpress
   clearTimeout(longPressTimer);
   longPressTimer = setTimeout(() => {
     appendChar('+');
-    // prevent synthetic click causing '0' after a long press on some devices:
     zeroKey.dataset.handled = 'true';
   }, LONGPRESS_MS);
 }
 
 function cancelLongPress(e){
-  if(longPressTimer) {
+  if(longPressTimer){
     clearTimeout(longPressTimer);
     longPressTimer = null;
   }
-  // If we set handled by longpress, prevent the immediate click from also appending 0.
-  const handled = zeroKey.dataset.handled === 'true';
-  if(handled){
-    // small delay then clear the flag
-    setTimeout(()=>{ delete zeroKey.dataset.handled; }, 50);
-    // stop propagation of the click event that may follow
-    e.preventDefault();
-    e.stopImmediatePropagation();
+  // Let click handler decide whether to consume based on dataset.handled
+}
+
+// keyboard support
+document.addEventListener('keydown', (e)=>{
+  if(e.key >= '0' && e.key <= '9'){ appendChar(e.key); }
+  else if(e.key === '*' || e.key === '#'){ appendChar(e.key); }
+  else if(e.key === '+'){ appendChar('+'); }
+  else if(e.key === 'Backspace'){ value = value.slice(0,-1); updateDisplay(); }
+  else if(e.key === 'Enter'){
+    tryCall();
+  }
+});
+
+// call fallback handler
+function tryCall(){
+  const sanitized = sanitizeForTel(value);
+  if(!sanitized) return;
+  // Normal behavior: use tel: link; in standalone iOS sometimes restricted — provide fallback
+  const telHref = 'tel:' + sanitized;
+
+  // Attempt to navigate — most browsers handle tel: fine.
+  // If running in iOS standalone and tel fails, provide fallback dialog
+  const isIosStandalone = ('standalone' in navigator) && navigator.standalone;
+  // If not iOS standalone, allow link default so anchor works.
+  if(isIosStandalone){
+    // Some iOS versions block tel: in standalone — try to open then show fallback
+    window.location.href = telHref;
+    // If after a short delay app didn't leave the page, show fallback
+    setTimeout(()=>{
+      // If still in page, show fallback so user can copy the number
+      showTelFallback(sanitized);
+    }, 600);
+  } else {
+    // not standalone: use location change to tel:
+    window.location.href = telHref;
   }
 }
 
-// keyboard support: digits, *, #, + via Shift+ = or plus key
-document.addEventListener('keydown', (e)=>{
-  // allow numbers & some symbols
-  if(e.key >= '0' && e.key <= '9'){
-    appendChar(e.key);
-  } else if(e.key === '*' || e.key === '#'){
-    appendChar(e.key);
-  } else if(e.key === '+' ){
-    appendChar('+');
-  } else if(e.key === 'Backspace'){
-    value = value.slice(0,-1);
-    updateDisplay();
-  } else if(e.key === 'Enter'){
-    // if number exists, follow tel: link
-    const sanitized = sanitizeForTel(value);
-    if(sanitized.length){
-      window.location.href = 'tel:' + sanitized;
-    }
-  }
-});
-
-// small UX: click callBtn also tries to call but only when not disabled
+// call button click that uses tryCall with fallback
 callBtn.addEventListener('click', (e)=>{
   const sanitized = sanitizeForTel(value);
-  if(!sanitized.length){
+  if(!sanitized){
     e.preventDefault();
-  } else {
-    // let link proceed (tel:), nothing else needed
+    return;
   }
+  // Prevent default to run our fallback logic
+  e.preventDefault();
+  tryCall();
 });
 
-// initialize empty
+// fallback dialog utilities
+function showTelFallback(number){
+  fallbackNumber.textContent = number;
+  telFallback.classList.remove('hidden');
+}
+copyNumberBtn.addEventListener('click', async ()=>{
+  try {
+    await navigator.clipboard.writeText(fallbackNumber.textContent);
+    copyNumberBtn.textContent = 'Copied';
+    setTimeout(()=> copyNumberBtn.textContent = 'Copy', 1200);
+  } catch(err){
+    copyNumberBtn.textContent = 'Failed';
+  }
+});
+closeFallbackBtn.addEventListener('click', ()=> {
+  telFallback.classList.add('hidden');
+});
+
+// register service worker (makes the app installable / work offline)
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/service-worker.js').catch(err=>{
+      console.warn('SW register failed', err);
+    });
+  });
+}
+
+// small helper: prevent overscroll bounce on iOS when in standalone
+document.addEventListener('touchmove', function(e){
+  // allow scroll only inside tel fallback content if open
+  if(telFallback && !telFallback.classList.contains('hidden')){
+    // allow
+  } else {
+    e.preventDefault();
+  }
+}, {passive:false});
+
+// init
 updateDisplay();
