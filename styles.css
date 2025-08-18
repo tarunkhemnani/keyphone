@@ -1,126 +1,220 @@
-/* styles.css */
-:root {
-  --bg-color: #000000;
-  --key-bg: #2C2C2E;
-  --key-highlight: rgba(255,255,255,0.1);
+/* styles.css
+   Pixel-focused static replica for 390x844 CSS-px viewport (iPhone 15 Pro).
+   Use variables below to tweak spacing/size if needed.
+*/
+
+/* ========== VARIABLES (tweak these to change the entire layout) ========== */
+:root{
+  --device-w: 390px;
+  --device-h: 844px;
+
+  --bg: #000000;               /* full black screen at top/bottom */
+  --circle-size: 80px;         /* keypad circle diameter (seen in screenshot) */
+  --gap-x: 28px;               /* horizontal gap between circles */
+  --gap-y: 18px;               /* vertical gap between rows */
+  --digit-size: 46px;          /* main number size */
+  --letters-size: 12px;        /* small letters under digit */
+  --letters-color: #d9d9d9;    /* lighter gray for letters */
+  --key-bg: #3b3b3b;           /* key dark gray - matches screenshot */
   --key-shadow: rgba(0,0,0,0.6);
-  --text-color: #FFFFFF;
-  --call-bg: #34C759; /* iOS green */
-  --call-size: 80px; /* diameter */
-  --icon-active: #0A84FF;
-  --icon-inactive: #8E8E93;
+  --key-inner-highlight: rgba(255,255,255,0.03);
+
+  --call-size: 72px;           /* call button diameter (visually larger than keys) */
+  --call-color: #34C759;       /* iOS green close to screenshot */
+
+  --nav-height: 78px;          /* bottom nav total height incl safe area */
+  --nav-inactive: #8E8E93;     /* inactive icon/text */
+  --nav-active: #0A84FF;       /* active blue for Keypad */
+  --home-ind-width: 110px;
+  --home-ind-height: 6px;
+  --home-ind-color: rgba(255,255,255,0.95);
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg-color);
-  width: 100%;
-  height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "San Francisco",
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+/* ========== BASE LAYOUT ========== */
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.app {
-  position: relative;
-  width: 390px;
-  height: 844px;
-  margin: 0 auto;
-  background: var(--bg-color);
-  overflow: hidden;
+/* Device wrapper centered on page for desktop preview */
+.device{
+  width:var(--device-w);
+  height:var(--device-h);
+  margin:0 auto;
+  position:relative;
+  background:var(--bg);
+  overflow:visible;
 }
 
-.keypad {
-  position: absolute;
-  top: 50px;
-  width: 100%;
-}
-.row {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
+/* Screen is flush-black to the top (no system bar) */
+.screen{
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  position:relative;
+  overflow:hidden;
 }
 
-.key {
-  width: 76px;
-  height: 76px;
+/* ========== KEYPAD GRID ========== */
+/* We compute the grid width exactly: 3 * circle + 2 * gap-x */
+.keys-grid{
+  --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
+  width:var(--grid-w);
+  margin: 140px auto 0; /* top offset chosen from screenshot study */
+  display:grid;
+  grid-template-columns: repeat(3, var(--circle-size));
+  grid-template-rows: repeat(4, var(--circle-size));
+  column-gap: var(--gap-x);
+  row-gap: var(--gap-y);
+  justify-items:center;
+  align-items:center;
+  pointer-events:none; /* static visual only (user asked static) */
+}
+
+/* Individual key (visual only) */
+.key{
+  width:var(--circle-size);
+  height:var(--circle-size);
   background: var(--key-bg);
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 2px 0 var(--key-highlight), 0 2px 5px var(--key-shadow);
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 8px 14px var(--key-shadow),
+    inset 0 -6px 10px var(--key-inner-highlight);
+  border: 0 solid transparent;
+  pointer-events:auto; /* allow click if needed later */
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  border: none;
 }
 
-.digit {
-  font-size: 32px;
-  font-weight: 600;
-  color: var(--text-color);
+/* Digit and letters styling follow screenshot proportions */
+.digit{
+  font-size: var(--digit-size);
   line-height: 1;
+  color: #ffffff;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  margin-top: -2px; /* tiny vertical nudge to match screenshot */
 }
 
-.letters {
-  font-size: 12px;
-  color: var(--text-color);
-  margin-top: 2px;
+.letters{
+  font-size: var(--letters-size);
+  color: var(--letters-color);
+  margin-top: 6px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
-.call-btn {
+/* For keys where letters are absent (1,*,#) keep same spacing */
+.key .letters:empty{ height: 14px; /* keeps vertical rhythm */ }
+
+/* ========== CALL BUTTON ========== */
+.call-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin-top: 26px; /* distance from bottom row => visually equal to screenshot */
+}
+
+.call-button{
+  width:var(--call-size);
+  height:var(--call-size);
+  background:var(--call-color);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+  border: none;
+}
+
+/* inline svg phone sizing to match screenshot */
+.call-button svg{
+  width:36px;
+  height:36px;
+  fill:#fff;
+  transform: translateY(1px); /* slight nudge to visually center */
+}
+
+/* ========== BOTTOM NAV ========== */
+.bottom-nav{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom: 12px; /* safe area included visually; iOS home indicator sits above */
+  height: var(--nav-height);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-around;
+  padding-bottom: 8px;
+  background: transparent;
+  pointer-events:none; /* static visuals */
+}
+
+/* nav item */
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  color:var(--nav-inactive);
+  background:transparent;
+  border:none;
+  pointer-events:auto;
+}
+
+/* active keypad */
+.nav-item.active{
+  color:var(--nav-active);
+}
+
+/* nav icons */
+.nav-item svg{
+  width:22px;
+  height:22px;
+  display:block;
+  fill: currentColor;
+}
+
+/* nav labels */
+.nav-item span{
+  font-size:11px;
+  line-height:1;
+  color:inherit;
+  letter-spacing:0.2px;
+}
+
+/* ========== HOME INDICATOR (thin white pill) ========== */
+.home-indicator{
   position: absolute;
-  top: 380px;
   left: 50%;
   transform: translateX(-50%);
-  width: var(--call-size);
-  height: var(--call-size);
-  background: var(--call-bg);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.call-btn svg {
-  width: 40px;
-  height: 40px;
+  bottom: 6px; /* visually sits just above gesture area */
+  width: var(--home-ind-width);
+  height: var(--home-ind-height);
+  border-radius: 999px;
+  background: var(--home-ind-color);
+  opacity: 0.98;
 }
 
-.nav-bar {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0 10px;
-}
-.nav-item {
-  text-align: center;
-  color: var(--icon-inactive);
-}
-.nav-item.active {
-  color: var(--icon-active);
-}
-.nav-item svg {
-  width: 24px;
-  height: 24px;
-  display: block;
-  margin: 0 auto;
-}
-.nav-item span {
-  display: block;
-  font-size: 11px;
-  margin-top: 2px;
-  color: inherit;
-}
-
-.home-indicator {
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 134px;
-  height: 5px;
-  background: #FFFFFF;
-  border-radius: 2.5px;
+/* ========== RESPONSIVE / small screens fallback ========== */
+@media (max-width: 360px){
+  :root{
+    --circle-size: 72px;
+    --digit-size: 40px;
+    --call-size: 64px;
+    --home-ind-width: 90px;
+  }
+  .device{ transform: scale(0.95); margin-top:20px; }
 }
