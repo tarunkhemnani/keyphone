@@ -36,15 +36,10 @@
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
 
-  /* nav offsets:
-     --nav-offset-normal : position in regular browser,
-     --nav-offset-standalone : position when added to home (standalone),
-     we'll use transforms on .nav-item to nudge icons visually.
-  */
+  /* nav offsets */
   --nav-offset-normal: 14px;
   --nav-offset-standalone: 62px;
 
-  /* nav container bottom adjust (will be larger in standalone) */
   --nav-bottom-normal: 0px;
   --nav-bottom-standalone: -14px;
 }
@@ -61,7 +56,6 @@ html,body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* app container: paint safe-areas black */
 .app{
   width:100%;
   min-height:100svh;
@@ -72,10 +66,7 @@ html,body{
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* when JS detects standalone mode we add .standalone to .app */
-.app.standalone {
-  /* nothing global yet; specific rules below override nav */
-}
+.app.standalone {}
 
 /* ensure top area is black */
 .top-safe{
@@ -86,11 +77,11 @@ html,body{
   z-index: 10;
 }
 
-/* display for typed digits (hidden when empty) */
+/* display for typed digits */
 .display{
   width:100%;
   height:48px;
-  margin-top: 86px; /* keeps keypad lower per previous requests */
+  margin-top: 86px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -119,7 +110,6 @@ html,body{
   touch-action: manipulation;
 }
 
-/* key visuals */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -140,7 +130,6 @@ html,body{
   user-select: none;
 }
 
-/* pressed state (brighten slightly) */
 .key.pressed{
   transform: scale(0.98);
   background: var(--key-bg-pressed);
@@ -188,7 +177,6 @@ html,body{
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
 /* -------- BOTTOM NAV -------- */
-/* Default (regular browser) */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -201,7 +189,6 @@ html,body{
   pointer-events:auto;
 }
 
-/* nav items default position (normal browser) */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -216,20 +203,53 @@ html,body{
 .nav-item span{ font-size:11px; color:inherit; }
 .nav-item.active{ color:var(--nav-active); }
 
-/* subtle: ensure faint svg background circles appear */
+/* -------- ICON FIXES TO MATCH iPHONE -------- */
+/* Contacts: circle person */
+.nav-item.contacts svg circle {
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Recents: shaded star */
+.nav-item.recents svg path {
+  fill: currentColor;
+  opacity: 0.8;
+}
+
+/* Voicemail: two circles on TOP connected by a line */
+.nav-item.voicemail svg {
+  display: block;
+}
+.nav-item.voicemail svg circle:first-of-type {
+  cx: 7px;
+  cy: 6px;
+  r: 4px;
+}
+.nav-item.voicemail svg circle:last-of-type {
+  cx: 17px;
+  cy: 6px;
+  r: 4px;
+}
+.nav-item.voicemail svg line {
+  x1: 11px;
+  y1: 6px;
+  x2: 13px;
+  y2: 6px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* subtle faint background circles */
 .nav-item svg circle[fill="currentColor"] { opacity: 0.07; }
 
 /* -------- STANDALONE MODE OVERRIDES -------- */
-/* When the app runs as a standalone/home-screen webapp, the .standalone class
-   is added to .app by app.js. These rules push the nav + icons further down. */
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
 .app.standalone .nav-item{
   transform: translateY(var(--nav-offset-standalone));
 }
-
-/* also slightly enlarge the nav hit area in standalone to match feel */
 .app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 4px); }
 
 /* -------- accessibility / reduced motion -------- */
@@ -249,8 +269,4 @@ html,body{
     --nav-offset-standalone: 22px;
   }
 }
-
-
-
-
 
