@@ -1,6 +1,10 @@
 /* styles.css
-   Updated: top safe area explicitly black to remove white bar.
-   Designed for iPhone full-screen / A2HS (390×844 CSS px).
+   Adjusted:
+   - smaller keypad circles
+   - keypad moved slightly upward
+   - bottom nav icons slightly downwards
+   - removed white bottom line/home indicator
+   - top safe area explicitly black
 */
 
 /* ---- Variables ---- */
@@ -11,11 +15,12 @@
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  --circle-size: 88px;
-  --gap-x: 36px;
-  --gap-y: 28px;
+  /* *** Smaller buttons per request *** */
+  --circle-size: 80px;           /* reduced from 88px */
+  --gap-x: 34px;
+  --gap-y: 24px;
 
-  --digit-size: 48px;
+  --digit-size: 44px;            /* slightly reduced */
   --digit-weight: 500;
 
   --letters-size: 12px;
@@ -29,12 +34,9 @@
   --nav-height: 78px;
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
-
-  --home-ind-width: 110px;
-  --home-ind-height: 6px;
 }
 
-/* ---- Reset + base backgrounds (ensure total black) ---- */
+/* ---- Reset + base backgrounds ---- */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -46,19 +48,18 @@ html,body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* ---- App container: paint safe-area at top with black so notch/status never shows white ---- */
+/* ---- App container: fill safe areas with black ---- */
 .app{
   width:100%;
   min-height:100svh;
   background:var(--bg);
   color:#fff;
   position:relative;
-  /* fill top safe-area with black so browsers that render under the notch stay black */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Top safe spacer: explicitly use black background and height = safe-area */
+/* Top safe area explicit black */
 .top-safe{
   height: env(safe-area-inset-top);
   background: var(--bg);
@@ -67,11 +68,11 @@ html,body{
   z-index: 10;
 }
 
-/* ---- Display (dialed digits) ---- */
+/* ---- Display (dialed digits) moved up slightly ---- */
 .display{
   width:100%;
   height:48px;
-  margin-top: 56px;
+  margin-top: 36px;              /* moved up from 56px */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -84,12 +85,12 @@ html,body{
   pointer-events:none;
 }
 
-/* ---- Keypad grid ---- */
+/* ---- Keypad grid moved up slightly ---- */
 .keys-grid{
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 20px;
+  margin-top: 6px; /* moved upward from 20px */
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -100,7 +101,7 @@ html,body{
   touch-action: manipulation;
 }
 
-/* ---- Key visuals ---- */
+/* ---- Key visuals (smaller) ---- */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -149,8 +150,8 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* ---- Call button ---- */
-.call-row{ width:100%; display:flex; justify-content:center; margin-top:26px; pointer-events:none; }
+/* ---- Call button slightly lower relative to keypad (keeps overlap visual) ---- */
+.call-row{ width:100%; display:flex; justify-content:center; margin-top: 20px; pointer-events:none; }
 .call-button{
   width:var(--call-size); height:var(--call-size);
   border-radius:999px; background:var(--call-color);
@@ -162,28 +163,36 @@ html,body{
 .call-button:active{ transform: scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* ---- Bottom nav visuals ---- */
+/* ---- Bottom nav moved slightly downward (closer to bottom edge) ---- */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
-  bottom: calc(6px + env(safe-area-inset-bottom));
+  /* smaller bottom value -> moves nav lower/downwards */
+  bottom: calc(2px + env(safe-area-inset-bottom));
   height: var(--nav-height);
-  display:flex; justify-content: space-around; align-items:flex-end;
+  display:flex;
+  justify-content: space-around;
+  align-items:flex-end;
   padding-bottom: env(safe-area-inset-bottom, 12px);
-  pointer-events:none;
+  pointer-events:auto;
 }
-.nav-item{ display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11px; color:var(--nav-inactive); pointer-events:auto; }
+
+/* nudge nav items visually a bit downward */
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  color:var(--nav-inactive);
+  transform: translateY(6px); /* pushes icons/labels slightly further down */
+  pointer-events:auto;
+}
 .nav-item svg{ width:22px; height:22px; fill:currentColor; }
 .nav-item span{ font-size:11px; color:inherit; }
 .nav-item.active{ color:var(--nav-active); }
 
-/* ---- Home indicator ---- */
-.home-indicator{
-  position: fixed; left:50%; transform: translateX(-50%);
-  bottom: env(safe-area-inset-bottom, 6px);
-  width: var(--home-ind-width); height: var(--home-ind-height);
-  background: rgba(255,255,255,0.95); border-radius:999px; pointer-events:none;
-}
+/* ---- Removed white home indicator (user requested removal) ---- */
 
 /* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce){
@@ -193,6 +202,6 @@ html,body{
 /* ---- small screen fallback ---- */
 @media (max-width:360px){
   :root{
-    --circle-size:76px; --digit-size:42px; --call-size:72px; --gap-x:28px; --gap-y:22px; --home-ind-width:90px;
+    --circle-size:74px; --digit-size:40px; --call-size:72px; --gap-x:28px; --gap-y:20px;
   }
 }
