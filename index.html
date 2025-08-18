@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,16 +12,16 @@
 </head>
 <body>
   <div class="app" id="app">
-    <!-- Top safe area explicitly black -->
+    <!-- top safe area painted black -->
     <header class="top-safe" aria-hidden="true"></header>
 
-    <!-- Small digit display (appears when typing) -->
+    <!-- small display that appears when typing -->
     <div class="display" id="display" aria-live="polite" aria-atomic="true" aria-label="Dialed digits"></div>
 
-    <!-- Keypad grid -->
+    <!-- keypad -->
     <main class="keypad-wrap" role="application" aria-label="Dial pad">
       <div class="keys-grid" id="keysGrid">
-        <!-- Row 1 -->
+        <!-- row 1 -->
         <button class="key" data-value="1" aria-label="1">
           <span class="digit">1</span>
           <span class="letters"></span>
@@ -36,7 +37,7 @@
           <span class="letters">DEF</span>
         </button>
 
-        <!-- Row 2 -->
+        <!-- row 2 -->
         <button class="key" data-value="4" aria-label="4">
           <span class="digit">4</span>
           <span class="letters">GHI</span>
@@ -52,7 +53,7 @@
           <span class="letters">MNO</span>
         </button>
 
-        <!-- Row 3 -->
+        <!-- row 3 -->
         <button class="key" data-value="7" aria-label="7">
           <span class="digit">7</span>
           <span class="letters">PQRS</span>
@@ -68,7 +69,7 @@
           <span class="letters">WXYZ</span>
         </button>
 
-        <!-- Row 4 -->
+        <!-- row 4 -->
         <button class="key" data-value="*" aria-label="star">
           <span class="digit">*</span>
           <span class="letters"></span>
@@ -85,7 +86,7 @@
         </button>
       </div>
 
-      <!-- Call button -->
+      <!-- call button -->
       <div class="call-row">
         <button id="callBtn" class="call-button" aria-label="Call" title="Call">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -97,44 +98,59 @@
       </div>
     </main>
 
-    <!-- Bottom nav (visual only) -->
+    <!-- bottom nav (visual only) -->
     <nav class="bottom-nav" aria-hidden="true">
       <div class="nav-item">
-        <!-- star (Favorites) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.3L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <!-- Favorites (star) -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 17.3L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
         <span>Favorites</span>
       </div>
 
       <div class="nav-item">
-        <!-- Recents: clock showing 9 o'clock (hour hand left, minute at top) -->
+        <!-- Recents: faint circular shading + clock (hour near 9, minute at 12) -->
         <svg viewBox="0 0 24 24" aria-hidden="true">
+          <!-- subtle background circle -->
+          <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.07"/>
+          <!-- clock outline -->
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
           <!-- minute hand at 12 -->
-          <line x1="12" y1="12" x2="12" y2="5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <!-- hour hand at 9 -->
-          <line x1="12" y1="12" x2="6" y2="12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="12" y1="12" x2="12" y2="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <!-- hour hand at 9-ish -->
+          <line x1="12" y1="12" x2="7.2" y2="12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
         <span>Recents</span>
       </div>
 
       <div class="nav-item">
-        <!-- Contacts (person) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a3 3 0 100-6 3 3 0 000 6zm0 2c-4 0-7 2.2-7 4v1h14v-1c0-1.8-3-4-7-4z"/></svg>
+        <!-- Contacts: faint circular shading + person glyph -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <!-- subtle background circle -->
+          <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.07"/>
+          <!-- person silhouette -->
+          <path d="M12 12a3 3 0 100-6 3 3 0 000 6zm0 2c-3.5 0-6.5 1.7-6.5 3.8V20h13v-2.2c0-2.1-3-3.8-6.5-3.8z" fill="currentColor"/>
+        </svg>
         <span>Contacts</span>
       </div>
 
       <div class="nav-item active">
         <!-- Keypad (blue dots grid) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"/>
+        </svg>
         <span>Keypad</span>
       </div>
 
       <div class="nav-item">
-        <!-- Voicemail: two circles with a connecting line on top -->
+        <!-- Voicemail: two circles at top with connecting line above them -->
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="7.2" cy="12.3" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <circle cx="16.8" cy="12.3" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <line x1="5.4" y1="9.2" x2="18.6" y2="9.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <!-- connecting line above the circles -->
+          <line x1="5.2" y1="6.2" x2="18.8" y2="6.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <!-- left circle (top) -->
+          <circle cx="7.2" cy="9.0" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <!-- right circle (top) -->
+          <circle cx="16.8" cy="9.0" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
         </svg>
         <span>Voicemail</span>
       </div>
