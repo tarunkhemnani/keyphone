@@ -4,17 +4,14 @@
   <meta charset="utf-8" />
   <title>Phone Keypad</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <!-- Make status bar area black for standalone / A2HS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- 'black-translucent' lets the page extend under the notch but we paint the safe area black -->
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <!-- Theme color for Android / some browsers -->
   <meta name="theme-color" content="#000000">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app" id="app">
-    <!-- Top safe area: now explicitly black to prevent any white top bar -->
+    <!-- Top safe area explicitly black -->
     <header class="top-safe" aria-hidden="true"></header>
 
     <!-- Small digit display (appears when typing) -->
@@ -130,8 +127,6 @@
       </div>
     </nav>
 
-    <!-- Home indicator -->
-    <div class="home-indicator" aria-hidden="true"></div>
   </div>
 
   <script src="app.js"></script>
