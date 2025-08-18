@@ -1,9 +1,9 @@
 /* app.js
-   Behavior unchanged:
-   - pointer-friendly press (key brightens)
-   - vibration on press if available
-   - long-press 0 => '+'
-   - call button opens tel: when digits present
+   Behavior changes:
+   - removed inactivity auto-clear (digits persist until user clears)
+   - removed automatic clear after call
+   - long-press on 0 still inserts '+'
+   - vibration & pressed visual remain
 */
 
 (() => {
@@ -26,7 +26,7 @@
   }
 
   function appendChar(ch) {
-    if (digits.length >= 24) return;
+    if (digits.length >= 50) return;
     digits += ch;
     updateDisplay();
   }
@@ -42,6 +42,7 @@
     }
   }
 
+  // Pointer handlers for each key
   keysGrid.querySelectorAll('.key').forEach(key => {
     const value = key.dataset.value;
 
@@ -77,6 +78,7 @@
       longPressActive = false;
     });
 
+    // keyboard support
     key.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.add('pressed'); }
     });
@@ -85,17 +87,20 @@
     });
   });
 
+  // Call button: navigates to tel: only when digits are present
   callBtn.addEventListener('click', (ev) => {
     ev.preventDefault();
     if (!digits || digits.length === 0) {
+      // brief feedback when no digits
       callBtn.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220 });
       return;
     }
     const sanitized = digits.replace(/[^\d+#*]/g, '');
+    // leave digits as-is (do not auto-clear); user asked to remove automatic clearing
     window.location.href = 'tel:' + sanitized;
-    setTimeout(clearDigits, 500);
   });
 
+  // Keyboard input & backspace: allow deleting digits manually
   window.addEventListener('keydown', (ev) => {
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+') appendChar('+');
@@ -103,17 +108,13 @@
     else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); }
   });
 
-  let inactivityTimer = null;
-  function resetInactivity() {
-    if (inactivityTimer) clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => { clearDigits(); }, 10000);
-  }
-  ['pointerdown','keydown','click'].forEach(evt => window.addEventListener(evt, resetInactivity));
+  // expose manual clear for debugging (optional)
+  window.__phoneKeypad = {
+    append: (ch) => { appendChar(ch); },
+    clear: clearDigits,
+    getDigits: () => digits
+  };
 
-  const originalAppend = appendChar;
-  appendChar = (ch) => { digits += ch; updateDisplay(); resetInactivity(); };
-
+  // initial render
   updateDisplay();
-
-  window.__phoneKeypad = { append: (ch) => { appendChar(ch); }, clear: clearDigits, getDigits: () => digits };
 })();
