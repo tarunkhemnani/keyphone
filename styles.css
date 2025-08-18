@@ -1,21 +1,25 @@
 /* styles.css
-   Adjusted per request:
-   - keypad moved lower (buttons lower)
-   - bottom nav moved lower
-   - removed automatic clearing of digits (behavior handled in JS)
-   - Recents and Voicemail icons updated to match iPhone look
-   - top safe area painted black
+   Full stylesheet. Matches the user's screenshots and preserves keypad behavior.
+   Key changes:
+     - top safe area explicitly black
+     - keypad slightly lower on the screen
+     - buttons slightly smaller
+     - bottom nav icons moved lower
+     - Recents/Contacts/Voicemail icons updated (shading/positions)
+     - no automatic clearing of digits
 */
 
-/* ---- Variables ---- */
+/* -------- VARIABLES -------- */
 :root{
   --bg: #000000;
+
+  /* keys */
   --key-bg: #3a3a3a;
   --key-bg-pressed: #4a4a4a;
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  /* button sizes (a bit smaller than first attempt) */
+  /* sizes (small buttons, per user's last requests) */
   --circle-size: 76px;
   --gap-x: 34px;
   --gap-y: 22px;
@@ -28,29 +32,32 @@
   --letters-weight: 600;
   --letters-spacing: 1.6px;
 
+  /* call button */
   --call-size: 84px;
   --call-color: #2fd55b;
 
+  /* nav */
   --nav-height: 78px;
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
 
-  --nav-lower-offset: -4px; /* push nav lower by decreasing bottom calc (negative tiny nudge) */
+  /* move nav lower so icons sit close to bottom like screenshot */
+  --nav-lower-offset: -10px;
 }
 
-/* ---- Reset + base backgrounds ---- */
+/* -------- BASE RESET -------- */
 *{box-sizing:border-box}
 html,body{
   height:100%;
   margin:0;
   background:var(--bg) !important;
   font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  -webkit-text-size-adjust: 100%;
+  -webkit-text-size-adjust:100%;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* ---- App container: fill safe areas with black ---- */
+/* app container: paint safe-areas black */
 .app{
   width:100%;
   min-height:100svh;
@@ -61,7 +68,7 @@ html,body{
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Top safe area explicit black */
+/* ensure top area is black */
 .top-safe{
   height: env(safe-area-inset-top);
   background: var(--bg);
@@ -70,29 +77,29 @@ html,body{
   z-index: 10;
 }
 
-/* ---- Display (dialed digits) moved down slightly (so keypad is lower) ---- */
+/* display for typed digits (hidden when empty) */
 .display{
   width:100%;
   height:48px;
-  margin-top: 86px;              /* moved much lower so keypad sits lower on screen */
+  margin-top: 86px; /* moves keypad lower overall as requested previously */
   display:flex;
   align-items:center;
   justify-content:center;
-  color: #fff;
+  color:#fff;
   font-size:22px;
-  letter-spacing: 2px;
+  letter-spacing:2px;
   font-weight:500;
   opacity:0;
   transition: opacity 160ms ease;
   pointer-events:none;
 }
 
-/* ---- Keypad grid moved lower ---- */
+/* -------- KEYPAD GRID -------- */
 .keys-grid{
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 18px; /* small spacing under display; overall keypad sits low thanks to display margin-top */
+  margin-top: 18px;
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -103,7 +110,7 @@ html,body{
   touch-action: manipulation;
 }
 
-/* ---- Key visuals ---- */
+/* key visuals */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -124,7 +131,7 @@ html,body{
   user-select: none;
 }
 
-/* pressed state */
+/* pressed state (brighten slightly) */
 .key.pressed{
   transform: scale(0.98);
   background: var(--key-bg-pressed);
@@ -136,10 +143,10 @@ html,body{
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color: #fff;
+  color:#fff;
   line-height:1;
-  margin-top: -2px;
-  letter-spacing: 0.2px;
+  margin-top:-2px;
+  letter-spacing:0.2px;
 }
 
 .letters{
@@ -152,20 +159,26 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* ---- Call button positioned a bit lower so it overlaps nav like iPhone app ---- */
+/* -------- CALL BUTTON -------- */
 .call-row{ width:100%; display:flex; justify-content:center; margin-top: 12px; pointer-events:none; }
 .call-button{
-  width:var(--call-size); height:var(--call-size);
-  border-radius:999px; background:var(--call-color);
-  display:flex; align-items:center; justify-content:center;
+  width:var(--call-size);
+  height:var(--call-size);
+  border-radius:999px;
+  background:var(--call-color);
+  display:flex;
+  align-items:center;
+  justify-content:center;
   box-shadow: 0 12px 28px rgba(0,0,0,0.45);
-  border:none; cursor:pointer; transition: transform 120ms ease;
+  border:none;
+  cursor:pointer;
+  transition: transform 120ms ease;
   pointer-events:auto;
 }
 .call-button:active{ transform: scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* ---- Bottom nav moved lower (closer to the actual bottom) ---- */
+/* -------- BOTTOM NAV (lowered) -------- */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -178,7 +191,7 @@ html,body{
   pointer-events:auto;
 }
 
-/* nudge nav items downward slightly so they sit lower */
+/* nav items pushed further down */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -186,21 +199,28 @@ html,body{
   gap:6px;
   font-size:11px;
   color:var(--nav-inactive);
-  transform: translateY(8px); /* pushes icons/labels further down */
+  transform: translateY(14px); /* lowered to match screenshot */
   pointer-events:auto;
 }
 .nav-item svg{ width:22px; height:22px; fill:currentColor; }
 .nav-item span{ font-size:11px; color:inherit; }
 .nav-item.active{ color:var(--nav-active); }
 
-/* ---- Reduced motion ---- */
+/* ensure subtle SVG background circles (Recents/Contacts) appear faint */
+.nav-item svg circle[fill="currentColor"] { opacity: 0.07; }
+
+/* -------- accessibility / reduced motion -------- */
 @media (prefers-reduced-motion: reduce){
   .key, .call-button{ transition:none; transform:none; }
 }
 
-/* ---- small screen fallback ---- */
+/* small-screen fallback */
 @media (max-width:360px){
   :root{
-    --circle-size:70px; --digit-size:38px; --call-size:72px; --gap-x:24px; --gap-y:18px;
+    --circle-size:70px;
+    --digit-size:38px;
+    --call-size:72px;
+    --gap-x:24px;
+    --gap-y:18px;
   }
 }
