@@ -3,127 +3,131 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>iPhone Keypad (pixel replica)</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>Phone Keypad</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Root device frame sized to iPhone 15 Pro CSS px (390x844) -->
-  <div class="device" role="application" aria-label="Keypad replica">
-    <div class="screen">
-      <!-- Keypad area -->
-      <main class="main-area" aria-hidden="false">
-        <div class="keys-grid" aria-hidden="true">
-          <!-- Row 1 -->
-          <button class="key" data-value="1" aria-label="1">
-            <span class="digit">1</span>
-            <span class="letters"></span>
-          </button>
-          <button class="key" data-value="2" aria-label="2">
-            <span class="digit">2</span>
-            <span class="letters">ABC</span>
-          </button>
-          <button class="key" data-value="3" aria-label="3">
-            <span class="digit">3</span>
-            <span class="letters">DEF</span>
-          </button>
+  <div class="app" id="app">
+    <!-- Top: invisible status area (we keep top fully black) -->
+    <header class="top-safe" aria-hidden="true"></header>
 
-          <!-- Row 2 -->
-          <button class="key" data-value="4" aria-label="4">
-            <span class="digit">4</span>
-            <span class="letters">GHI</span>
-          </button>
-          <button class="key" data-value="5" aria-label="5">
-            <span class="digit">5</span>
-            <span class="letters">JKL</span>
-          </button>
-          <button class="key" data-value="6" aria-label="6">
-            <span class="digit">6</span>
-            <span class="letters">MNO</span>
-          </button>
+    <!-- Small digit display (appears when typing) -->
+    <div class="display" id="display" aria-live="polite" aria-atomic="true" aria-label="Dialed digits"></div>
 
-          <!-- Row 3 -->
-          <button class="key" data-value="7" aria-label="7">
-            <span class="digit">7</span>
-            <span class="letters">PQRS</span>
-          </button>
-          <button class="key" data-value="8" aria-label="8">
-            <span class="digit">8</span>
-            <span class="letters">TUV</span>
-          </button>
-          <button class="key" data-value="9" aria-label="9">
-            <span class="digit">9</span>
-            <span class="letters">WXYZ</span>
-          </button>
-
-          <!-- Row 4 -->
-          <button class="key" data-value="*" aria-label="star">
-            <span class="digit">*</span>
-            <span class="letters"></span>
-          </button>
-          <button class="key" data-value="0" aria-label="0">
-            <span class="digit">0</span>
-            <span class="letters">+</span>
-          </button>
-          <button class="key" data-value="#" aria-label="hash">
-            <span class="digit">#</span>
-            <span class="letters"></span>
-          </button>
-        </div>
-
-        <!-- Call button (visual only) -->
-        <div class="call-wrap" aria-hidden="true">
-          <div class="call-button" role="button" aria-label="Call">
-            <!-- inline phone SVG scaled to match screenshot visual -->
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M6.62 10.79a15.054 15.054 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 
-                       1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 
-                       3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/>
-            </svg>
-          </div>
-        </div>
-      </main>
-
-      <!-- Bottom nav -->
-      <nav class="bottom-nav" role="navigation" aria-label="Main">
-        <button class="nav-item">
-          <!-- star -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 
-          9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-          <span>Favorites</span>
+    <!-- Keypad grid -->
+    <main class="keypad-wrap" role="application" aria-label="Dial pad">
+      <div class="keys-grid" id="keysGrid">
+        <!-- Row 1 -->
+        <button class="key" data-value="1" aria-label="1">
+          <span class="digit">1</span>
+          <span class="letters"></span>
         </button>
 
-        <button class="nav-item">
-          <!-- clock -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20a8 8 0 100-16 8 8 0 000 16zm.5-13h-1v6l5 
-          3 .5-.86L12.5 13V7z"/></svg>
-          <span>Recents</span>
+        <button class="key" data-value="2" aria-label="2">
+          <span class="digit">2</span>
+          <span class="letters">ABC</span>
         </button>
 
-        <button class="nav-item">
-          <!-- person -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.67 0 8 1.34 8 4v2H4v-2c0-2.66 
-            5.33-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z"/></svg>
-          <span>Contacts</span>
+        <button class="key" data-value="3" aria-label="3">
+          <span class="digit">3</span>
+          <span class="letters">DEF</span>
         </button>
 
-        <button class="nav-item active">
-          <!-- keypad grid (active) -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h4v4H3zM10 3h4v4h-4zM17 3h4v4h-4zM3 
-            10h4v4H3zM10 10h4v4h-4zM17 10h4v4h-4zM3 17h4v4H3zM10 17h4v4h-4zM17 17h4v4h-4z"/></svg>
-          <span>Keypad</span>
+        <!-- Row 2 -->
+        <button class="key" data-value="4" aria-label="4">
+          <span class="digit">4</span>
+          <span class="letters">GHI</span>
         </button>
 
-        <button class="nav-item">
-          <!-- voicemail -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a3 3 0 00-3 3 3 3 0 006 0A3 3 0 0018 
-            8zm-12 0a3 3 0 00-3 3 3 3 0 006 0A3 3 0 006 8zM4 18h16v2H4z"/></svg>
-          <span>Voicemail</span>
+        <button class="key" data-value="5" aria-label="5">
+          <span class="digit">5</span>
+          <span class="letters">JKL</span>
         </button>
-      </nav>
 
-      <!-- home indicator -->
-      <div class="home-indicator" aria-hidden="true"></div>
-    </div>
+        <button class="key" data-value="6" aria-label="6">
+          <span class="digit">6</span>
+          <span class="letters">MNO</span>
+        </button>
+
+        <!-- Row 3 -->
+        <button class="key" data-value="7" aria-label="7">
+          <span class="digit">7</span>
+          <span class="letters">PQRS</span>
+        </button>
+
+        <button class="key" data-value="8" aria-label="8">
+          <span class="digit">8</span>
+          <span class="letters">TUV</span>
+        </button>
+
+        <button class="key" data-value="9" aria-label="9">
+          <span class="digit">9</span>
+          <span class="letters">WXYZ</span>
+        </button>
+
+        <!-- Row 4 -->
+        <button class="key" data-value="*" aria-label="star">
+          <span class="digit">*</span>
+          <span class="letters"></span>
+        </button>
+
+        <button class="key" data-value="0" aria-label="0">
+          <span class="digit">0</span>
+          <span class="letters">+</span>
+        </button>
+
+        <button class="key" data-value="#" aria-label="hash">
+          <span class="digit">#</span>
+          <span class="letters"></span>
+        </button>
+      </div>
+
+      <!-- Call button -->
+      <div class="call-row">
+        <button id="callBtn" class="call-button" aria-label="Call" title="Call">
+          <!-- inline simple phone svg -->
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 
+                     1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 
+                     3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/>
+          </svg>
+        </button>
+      </div>
+    </main>
+
+    <!-- Bottom nav (visual only) -->
+    <nav class="bottom-nav" aria-hidden="true">
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 
+        2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <span>Favorites</span>
+      </div>
+
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <span>Recents</span>
+      </div>
+
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a3 3 0 100-6 3 3 0 000 6z"/></svg>
+        <span>Contacts</span>
+      </div>
+
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h4v4H3zM10 3h4v4h-4zM17 3h4v4h-4zM3 10h4v4H3zM10 10h4v4h-4zM17 10h4v4h-4zM3 17h4v4H3zM10 17h4v4h-4zM17 17h4v4h-4z"/></svg>
+        <span>Keypad</span>
+      </div>
+
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a3 3 0 00-3 3 3 3 0 006 0A3 3 0 0018 8z"/></svg>
+        <span>Voicemail</span>
+      </div>
+    </nav>
+
+    <!-- Home indicator -->
+    <div class="home-indicator" aria-hidden="true"></div>
   </div>
 
   <script src="app.js"></script>
