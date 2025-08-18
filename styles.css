@@ -1,36 +1,44 @@
 /* styles.css
-   Pixel-focused static replica for 390x844 CSS-px viewport (iPhone 15 Pro).
-   Use variables below to tweak spacing/size if needed.
+   Pixel-faithful keypad skin based on user's screenshot.
+   Designed for 390×844 CSS px viewport (iPhone 15 Pro).
+   Includes safe-area handling for full-screen home-screen web app.
 */
 
-/* ========== VARIABLES (tweak these to change the entire layout) ========== */
+/* ---- Variables (tweak if you want tiny adjustments) ---- */
 :root{
   --device-w: 390px;
   --device-h: 844px;
 
-  --bg: #000000;               /* full black screen at top/bottom */
-  --circle-size: 80px;         /* keypad circle diameter (seen in screenshot) */
-  --gap-x: 28px;               /* horizontal gap between circles */
-  --gap-y: 18px;               /* vertical gap between rows */
-  --digit-size: 46px;          /* main number size */
-  --letters-size: 12px;        /* small letters under digit */
-  --letters-color: #d9d9d9;    /* lighter gray for letters */
-  --key-bg: #3b3b3b;           /* key dark gray - matches screenshot */
+  --bg: #000000;                 /* full black top & background */
+  --key-bg: #3a3a3a;             /* dark circular keys */
+  --key-bg-pressed: #4a4a4a;     /* brighter when pressed */
   --key-shadow: rgba(0,0,0,0.6);
-  --key-inner-highlight: rgba(255,255,255,0.03);
+  --key-inner: rgba(255,255,255,0.03);
 
-  --call-size: 72px;           /* call button diameter (visually larger than keys) */
-  --call-color: #34C759;       /* iOS green close to screenshot */
+  --circle-size: 88px;           /* diameter of keypad circles (matches screenshot) */
+  --gap-x: 36px;                 /* horizontal gap between circles */
+  --gap-y: 28px;                 /* vertical gap between rows */
 
-  --nav-height: 78px;          /* bottom nav total height incl safe area */
-  --nav-inactive: #8E8E93;     /* inactive icon/text */
-  --nav-active: #0A84FF;       /* active blue for Keypad */
+  --digit-size: 48px;            /* main digit size */
+  --digit-weight: 500;
+
+  --letters-size: 12px;
+  --letters-color: #e1e1e1;
+  --letters-weight: 600;
+  --letters-spacing: 1.6px;
+
+  --call-size: 84px;             /* green call circle */
+  --call-color: #2fd55b;         /* vivid green close to screenshot */
+
+  --nav-height: 78px;
+  --nav-inactive: #8e8e93;
+  --nav-active: #0a84ff;
+
   --home-ind-width: 110px;
   --home-ind-height: 6px;
-  --home-ind-color: rgba(255,255,255,0.95);
 }
 
-/* ========== BASE LAYOUT ========== */
+/* ---- Base reset ---- */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -39,182 +47,199 @@ html,body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Device wrapper centered on page for desktop preview */
-.device{
-  width:var(--device-w);
-  height:var(--device-h);
-  margin:0 auto;
-  position:relative;
-  background:var(--bg);
-  overflow:visible;
-}
-
-/* Screen is flush-black to the top (no system bar) */
-.screen{
+/* ---- App container sized for preview and home-screen full-screen ---- */
+.app{
   width:100%;
-  height:100%;
+  min-height:100svh; /* support for full-screen on modern browsers */
   background:var(--bg);
+  color:#fff;
   position:relative;
-  overflow:hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ========== KEYPAD GRID ========== */
-/* We compute the grid width exactly: 3 * circle + 2 * gap-x */
+/* Top safe spacer (keeps top flush black) */
+.top-safe{
+  height: 10px;
+  background: transparent;
+}
+
+/* ---- Display (shows dialed digits) ---- */
+.display{
+  width:100%;
+  height: 48px;
+  margin-top: 56px;              /* vertical offset from top (adjustable) */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: 2px;
+  font-weight: 500;
+  opacity: 0;                    /* hidden when empty; shown when digits present by JS */
+  transition: opacity 160ms ease;
+  pointer-events: none;
+}
+
+/* ---- Keypad grid centered horizontally ---- */
 .keys-grid{
+  /* compute grid width: 3 * size + 2 * gap */
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
-  width:var(--grid-w);
-  margin: 140px auto 0; /* top offset chosen from screenshot study */
-  display:grid;
+  width: var(--grid-w);
+  margin: 0 auto;
+  margin-top: 20px; /* small gap between display and grid */
+  display: grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
   column-gap: var(--gap-x);
   row-gap: var(--gap-y);
-  justify-items:center;
-  align-items:center;
-  pointer-events:none; /* static visual only (user asked static) */
+  justify-items: center;
+  align-items: center;
+  touch-action: manipulation;
 }
 
-/* Individual key (visual only) */
+/* ---- Individual key visuals ---- */
 .key{
-  width:var(--circle-size);
-  height:var(--circle-size);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  border-radius: 999px;
   background: var(--key-bg);
-  border-radius:50%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   box-shadow:
-    0 8px 14px var(--key-shadow),
-    inset 0 -6px 10px var(--key-inner-highlight);
-  border: 0 solid transparent;
-  pointer-events:auto; /* allow click if needed later */
-  -webkit-tap-highlight-color: transparent;
-  outline: none;
+    0 10px 20px var(--key-shadow),
+    inset 0 -6px 14px var(--key-inner);
   border: none;
+  outline: none;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 100ms ease, background-color 100ms linear, box-shadow 100ms linear;
+  will-change: transform, background-color;
+  touch-action: none;
+  padding: 0;
 }
 
-/* Digit and letters styling follow screenshot proportions */
+/* pressed / brightened state */
+.key.pressed{
+  transform: scale(0.98);
+  background: var(--key-bg-pressed);
+  box-shadow:
+    0 6px 12px rgba(0,0,0,0.55),
+    inset 0 6px 12px rgba(255,255,255,0.02);
+}
+
+/* Digit and letters typography */
 .digit{
   font-size: var(--digit-size);
-  line-height: 1;
+  font-weight: var(--digit-weight);
   color: #ffffff;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  margin-top: -2px; /* tiny vertical nudge to match screenshot */
+  line-height: 1;
+  margin-top: -2px; /* micro-adjust */
+  letter-spacing: 0.2px;
 }
 
 .letters{
   font-size: var(--letters-size);
   color: var(--letters-color);
+  letter-spacing: var(--letters-spacing);
   margin-top: 6px;
-  letter-spacing: 1.4px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: var(--letters-weight);
 }
 
-/* For keys where letters are absent (1,*,#) keep same spacing */
-.key .letters:empty{ height: 14px; /* keeps vertical rhythm */ }
+/* If letters empty, keep equal vertical rhythm */
+.key .letters:empty{ height: 14px; }
 
-/* ========== CALL BUTTON ========== */
-.call-wrap{
+/* ---- Call button row ---- */
+.call-row{
   width:100%;
   display:flex;
   justify-content:center;
-  margin-top: 26px; /* distance from bottom row => visually equal to screenshot */
+  margin-top: 26px;
+  pointer-events: none; /* by default visual-only; JS will enable events */
 }
 
 .call-button{
-  width:var(--call-size);
-  height:var(--call-size);
-  background:var(--call-color);
-  border-radius:50%;
+  width: var(--call-size);
+  height: var(--call-size);
+  border-radius: 999px;
+  background: var(--call-color);
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
   border: none;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  pointer-events: auto; /* enable click */
 }
+.call-button:active{ transform: scale(0.98); }
 
-/* inline svg phone sizing to match screenshot */
-.call-button svg{
-  width:36px;
-  height:36px;
-  fill:#fff;
-  transform: translateY(1px); /* slight nudge to visually center */
-}
+/* phone svg size */
+.call-button svg{ width: 40px; height: 40px; fill: #fff; transform: translateY(1px); }
 
-/* ========== BOTTOM NAV ========== */
+/* ---- Bottom nav visuals (static) ---- */
 .bottom-nav{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom: 12px; /* safe area included visually; iOS home indicator sits above */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(6px + env(safe-area-inset-bottom));
   height: var(--nav-height);
   display:flex;
-  align-items:flex-end;
-  justify-content:space-around;
-  padding-bottom: 8px;
-  background: transparent;
-  pointer-events:none; /* static visuals */
+  justify-content: space-around;
+  align-items: flex-end;
+  padding-bottom: env(safe-area-inset-bottom, 12px);
+  pointer-events: none; /* visual only */
 }
 
-/* nav item */
 .nav-item{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:4px;
-  font-size:11px;
-  color:var(--nav-inactive);
-  background:transparent;
-  border:none;
-  pointer-events:auto;
+  gap:6px;
+  font-size: 11px;
+  color: var(--nav-inactive);
+  pointer-events: auto;
 }
+.nav-item svg{ width:22px; height:22px; fill: currentColor; }
+.nav-item span{ font-size: 11px; color: inherit; }
 
-/* active keypad */
-.nav-item.active{
-  color:var(--nav-active);
-}
+/* active keypad icon */
+.nav-item.active{ color: var(--nav-active); }
 
-/* nav icons */
-.nav-item svg{
-  width:22px;
-  height:22px;
-  display:block;
-  fill: currentColor;
-}
-
-/* nav labels */
-.nav-item span{
-  font-size:11px;
-  line-height:1;
-  color:inherit;
-  letter-spacing:0.2px;
-}
-
-/* ========== HOME INDICATOR (thin white pill) ========== */
+/* ---- Home indicator ---- */
 .home-indicator{
-  position: absolute;
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 6px; /* visually sits just above gesture area */
+  bottom: env(safe-area-inset-bottom, 6px);
   width: var(--home-ind-width);
   height: var(--home-ind-height);
+  background: rgba(255,255,255,0.95);
   border-radius: 999px;
-  background: var(--home-ind-color);
-  opacity: 0.98;
+  pointer-events: none;
 }
 
-/* ========== RESPONSIVE / small screens fallback ========== */
-@media (max-width: 360px){
+/* ---- Accessibility / reduced motion ---- */
+@media (prefers-reduced-motion: reduce){
+  .key, .call-button { transition: none; transform: none; }
+}
+
+/* ---- Small screens fallback ---- */
+@media (max-width: 360px) {
   :root{
-    --circle-size: 72px;
-    --digit-size: 40px;
-    --call-size: 64px;
+    --circle-size: 76px;
+    --digit-size: 42px;
+    --call-size: 72px;
+    --gap-x: 28px;
+    --gap-y: 22px;
     --home-ind-width: 90px;
   }
-  .device{ transform: scale(0.95); margin-top:20px; }
 }
