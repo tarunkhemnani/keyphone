@@ -1,12 +1,7 @@
 /* styles.css
-   Full stylesheet. Matches the user's screenshots and preserves keypad behavior.
-   Key changes:
-     - top safe area explicitly black
-     - keypad slightly lower on the screen
-     - buttons slightly smaller
-     - bottom nav icons moved lower
-     - Recents/Contacts/Voicemail icons updated (shading/positions)
-     - no automatic clearing of digits
+   Full stylesheet. Includes special styling when running as standalone (A2HS).
+   Standalone mode will add .standalone to .app automatically via JS,
+   and CSS will then move the bottom nav/icons further down to match iPhone Home Screen display.
 */
 
 /* -------- VARIABLES -------- */
@@ -19,7 +14,7 @@
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  /* sizes (small buttons, per user's last requests) */
+  /* sizes */
   --circle-size: 76px;
   --gap-x: 34px;
   --gap-y: 22px;
@@ -36,13 +31,22 @@
   --call-size: 84px;
   --call-color: #2fd55b;
 
-  /* nav */
+  /* nav default */
   --nav-height: 78px;
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
 
-  /* move nav lower so icons sit close to bottom like screenshot */
-  --nav-lower-offset: -10px;
+  /* nav offsets:
+     --nav-offset-normal : position in regular browser,
+     --nav-offset-standalone : position when added to home (standalone),
+     we'll use transforms on .nav-item to nudge icons visually.
+  */
+  --nav-offset-normal: 14px;
+  --nav-offset-standalone: 28px;
+
+  /* nav container bottom adjust (will be larger in standalone) */
+  --nav-bottom-normal: 0px;
+  --nav-bottom-standalone: -14px;
 }
 
 /* -------- BASE RESET -------- */
@@ -68,6 +72,11 @@ html,body{
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* when JS detects standalone mode we add .standalone to .app */
+.app.standalone {
+  /* nothing global yet; specific rules below override nav */
+}
+
 /* ensure top area is black */
 .top-safe{
   height: env(safe-area-inset-top);
@@ -81,7 +90,7 @@ html,body{
 .display{
   width:100%;
   height:48px;
-  margin-top: 86px; /* moves keypad lower overall as requested previously */
+  margin-top: 86px; /* keeps keypad lower per previous requests */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -178,11 +187,12 @@ html,body{
 .call-button:active{ transform: scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* -------- BOTTOM NAV (lowered) -------- */
+/* -------- BOTTOM NAV -------- */
+/* Default (regular browser) */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
-  bottom: calc(var(--nav-lower-offset) + env(safe-area-inset-bottom));
+  bottom: calc(var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   height: var(--nav-height);
   display:flex;
   justify-content: space-around;
@@ -191,7 +201,7 @@ html,body{
   pointer-events:auto;
 }
 
-/* nav items pushed further down */
+/* nav items default position (normal browser) */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -199,15 +209,28 @@ html,body{
   gap:6px;
   font-size:11px;
   color:var(--nav-inactive);
-  transform: translateY(14px); /* lowered to match screenshot */
+  transform: translateY(var(--nav-offset-normal));
   pointer-events:auto;
 }
 .nav-item svg{ width:22px; height:22px; fill:currentColor; }
 .nav-item span{ font-size:11px; color:inherit; }
 .nav-item.active{ color:var(--nav-active); }
 
-/* ensure subtle SVG background circles (Recents/Contacts) appear faint */
+/* subtle: ensure faint svg background circles appear */
 .nav-item svg circle[fill="currentColor"] { opacity: 0.07; }
+
+/* -------- STANDALONE MODE OVERRIDES -------- */
+/* When the app runs as a standalone/home-screen webapp, the .standalone class
+   is added to .app by app.js. These rules push the nav + icons further down. */
+.app.standalone .bottom-nav{
+  bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
+}
+.app.standalone .nav-item{
+  transform: translateY(var(--nav-offset-standalone));
+}
+
+/* also slightly enlarge the nav hit area in standalone to match feel */
+.app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 4px); }
 
 /* -------- accessibility / reduced motion -------- */
 @media (prefers-reduced-motion: reduce){
@@ -222,5 +245,7 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
+    --nav-offset-normal: 10px;
+    --nav-offset-standalone: 22px;
   }
 }
