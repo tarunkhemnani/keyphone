@@ -1,10 +1,10 @@
 /* styles.css
-   Adjusted:
-   - smaller keypad circles
-   - keypad moved slightly upward
-   - bottom nav icons slightly downwards
-   - removed white bottom line/home indicator
-   - top safe area explicitly black
+   Adjusted per request:
+   - keypad moved lower (buttons lower)
+   - bottom nav moved lower
+   - removed automatic clearing of digits (behavior handled in JS)
+   - Recents and Voicemail icons updated to match iPhone look
+   - top safe area painted black
 */
 
 /* ---- Variables ---- */
@@ -15,12 +15,12 @@
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  /* *** Smaller buttons per request *** */
-  --circle-size: 80px;           /* reduced from 88px */
+  /* button sizes (a bit smaller than first attempt) */
+  --circle-size: 76px;
   --gap-x: 34px;
-  --gap-y: 24px;
+  --gap-y: 22px;
 
-  --digit-size: 44px;            /* slightly reduced */
+  --digit-size: 42px;
   --digit-weight: 500;
 
   --letters-size: 12px;
@@ -34,6 +34,8 @@
   --nav-height: 78px;
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
+
+  --nav-lower-offset: -4px; /* push nav lower by decreasing bottom calc (negative tiny nudge) */
 }
 
 /* ---- Reset + base backgrounds ---- */
@@ -68,11 +70,11 @@ html,body{
   z-index: 10;
 }
 
-/* ---- Display (dialed digits) moved up slightly ---- */
+/* ---- Display (dialed digits) moved down slightly (so keypad is lower) ---- */
 .display{
   width:100%;
   height:48px;
-  margin-top: 36px;              /* moved up from 56px */
+  margin-top: 86px;              /* moved much lower so keypad sits lower on screen */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -85,12 +87,12 @@ html,body{
   pointer-events:none;
 }
 
-/* ---- Keypad grid moved up slightly ---- */
+/* ---- Keypad grid moved lower ---- */
 .keys-grid{
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 6px; /* moved upward from 20px */
+  margin-top: 18px; /* small spacing under display; overall keypad sits low thanks to display margin-top */
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -101,7 +103,7 @@ html,body{
   touch-action: manipulation;
 }
 
-/* ---- Key visuals (smaller) ---- */
+/* ---- Key visuals ---- */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -112,8 +114,8 @@ html,body{
   align-items:center;
   justify-content:center;
   box-shadow:
-    0 10px 20px var(--key-shadow),
-    inset 0 -6px 14px var(--key-inner);
+    0 10px 18px var(--key-shadow),
+    inset 0 -6px 12px var(--key-inner);
   border:none;
   outline:none;
   cursor:pointer;
@@ -122,7 +124,7 @@ html,body{
   user-select: none;
 }
 
-/* pressed / bright state */
+/* pressed state */
 .key.pressed{
   transform: scale(0.98);
   background: var(--key-bg-pressed);
@@ -150,8 +152,8 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* ---- Call button slightly lower relative to keypad (keeps overlap visual) ---- */
-.call-row{ width:100%; display:flex; justify-content:center; margin-top: 20px; pointer-events:none; }
+/* ---- Call button positioned a bit lower so it overlaps nav like iPhone app ---- */
+.call-row{ width:100%; display:flex; justify-content:center; margin-top: 12px; pointer-events:none; }
 .call-button{
   width:var(--call-size); height:var(--call-size);
   border-radius:999px; background:var(--call-color);
@@ -163,12 +165,11 @@ html,body{
 .call-button:active{ transform: scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* ---- Bottom nav moved slightly downward (closer to bottom edge) ---- */
+/* ---- Bottom nav moved lower (closer to the actual bottom) ---- */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
-  /* smaller bottom value -> moves nav lower/downwards */
-  bottom: calc(2px + env(safe-area-inset-bottom));
+  bottom: calc(var(--nav-lower-offset) + env(safe-area-inset-bottom));
   height: var(--nav-height);
   display:flex;
   justify-content: space-around;
@@ -177,7 +178,7 @@ html,body{
   pointer-events:auto;
 }
 
-/* nudge nav items visually a bit downward */
+/* nudge nav items downward slightly so they sit lower */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -185,14 +186,12 @@ html,body{
   gap:6px;
   font-size:11px;
   color:var(--nav-inactive);
-  transform: translateY(6px); /* pushes icons/labels slightly further down */
+  transform: translateY(8px); /* pushes icons/labels further down */
   pointer-events:auto;
 }
 .nav-item svg{ width:22px; height:22px; fill:currentColor; }
 .nav-item span{ font-size:11px; color:inherit; }
 .nav-item.active{ color:var(--nav-active); }
-
-/* ---- Removed white home indicator (user requested removal) ---- */
 
 /* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce){
@@ -202,6 +201,6 @@ html,body{
 /* ---- small screen fallback ---- */
 @media (max-width:360px){
   :root{
-    --circle-size:74px; --digit-size:40px; --call-size:72px; --gap-x:28px; --gap-y:20px;
+    --circle-size:70px; --digit-size:38px; --call-size:72px; --gap-x:24px; --gap-y:18px;
   }
 }
