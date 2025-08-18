@@ -1,4 +1,11 @@
-/* app.js remains unchanged – dynamic behavior for touches is intact. */
+/* app.js
+   Behavior unchanged:
+   - pointer-friendly press (key brightens)
+   - vibration on press if available
+   - long-press 0 => '+'
+   - call button opens tel: when digits present
+*/
+
 (() => {
   const displayEl = document.getElementById('display');
   const keysGrid = document.getElementById('keysGrid');
