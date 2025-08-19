@@ -55,61 +55,55 @@
 
     <!-- bottom nav (visual only) -->
     <nav class="bottom-nav" aria-hidden="true">
-      <!-- Favorites (star filled) -->
+      <!-- Favorites -->
       <div class="nav-item favorites" role="button" aria-label="Favorites">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
           <path fill="currentColor" d="M12 17.3L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
         </svg>
         <span>Favorites</span>
       </div>
 
-      <!-- Recents: filled icon now -->
+      <!-- Recents (clock) -->
       <div class="nav-item recents" role="button" aria-label="Recents">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <!-- subtle background circle behind the filled icon (keeps the look) -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.07"/>
-          <!-- filled star (now filled) -->
-          <path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.54 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <line x1="12" y1="12" x2="12" y2="6.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="12" y1="12" x2="7.4" y2="12.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
         <span>Recents</span>
       </div>
 
-      <!-- Contacts: circle drawn outside (stroke circle) + filled silhouette -->
+      <!-- Contacts (outer ring + silhouette) -->
       <div class="nav-item contacts" role="button" aria-label="Contacts">
-        <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-          <!-- outer ring circle (stroke, faint) - sits outside silhouette -->
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <!-- outer ring outside the silhouette -->
           <circle cx="14" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.07"/>
-          <!-- smaller filled silhouette centered inside the ring -->
+          <!-- filled silhouette -->
           <path fill="currentColor" d="M14 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm0 2.2c-4 0-6.5 2-6.5 4.1V22h13v-4.7c0-2.1-2.5-4.1-6.5-4.1z"/>
         </svg>
-        <!-- small purple notification dot under the icon (optional) -->
         <span class="notif-dot" aria-hidden="true"></span>
         <span>Contacts</span>
       </div>
 
       <!-- Keypad (active) -->
       <div class="nav-item active keypad" role="button" aria-label="Keypad">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"/>
         </svg>
         <span>Keypad</span>
       </div>
 
-      <!-- Voicemail: two circles on the TOP with connecting line above them -->
+      <!-- Voicemail (two circles at top with line above) -->
       <div class="nav-item voicemail" role="button" aria-label="Voicemail">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <!-- top connecting line -->
-          <line x1="5.2" y1="6.2" x2="18.8" y2="6.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <!-- left circle (top) -->
-          <circle cx="7.2" cy="9.0" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <!-- right circle (top) -->
-          <circle cx="16.8" cy="9.0" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="5.2" y1="6.4" x2="18.8" y2="6.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="7.2" cy="9.2" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="16.8" cy="9.2" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
         </svg>
         <span>Voicemail</span>
       </div>
     </nav>
-
-    <!-- NOTE: home indicator (white rounded bar) REMOVED per request -->
   </div>
 
   <script src="app.js"></script>
