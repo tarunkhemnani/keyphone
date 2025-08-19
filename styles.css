@@ -1,5 +1,4 @@
-/* styles.css - updated to remove white home indicator, fill Recents,
-   draw contact outer ring, and ensure voicemail circles are on top. */
+/* styles.css - final tuned for your screenshot (recents clock restored, contacts ring outside, voicemail top circles) */
 
 :root{
   --bg: #000000;
@@ -32,8 +31,8 @@
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
 
-  --nav-offset-normal: 14px;      /* normal vertical nudge */
-  --nav-offset-standalone: 62px;  /* when added to home (standalone) */
+  --nav-offset-normal: 14px;
+  --nav-offset-standalone: 62px;
 
   --nav-bottom-normal: 6px;
   --nav-bottom-standalone: -6px;
@@ -60,6 +59,7 @@ html,body{
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* top safe area black */
 .top-safe{
   height: env(safe-area-inset-top);
   background: var(--bg);
@@ -189,7 +189,6 @@ html,body{
   position: relative;
 }
 
-/* icon sizing and stroke/fill defaults */
 .nav-item svg{
   width:28px;
   height:28px;
@@ -203,30 +202,20 @@ html,body{
 /* active color */
 .nav-item.active{ color: var(--nav-active); }
 
-/* faint background circle (if using fill="currentColor") */
+/* faint bg circle if used */
 .nav-item svg circle[fill="currentColor"] { opacity: 0.07; }
 
-/* ---------------- SPECIFIC ICON ADJUSTMENTS ---------------- */
-
-/* Filled Recents: ensure the path is filled and uses color */
-.nav-item.recents { color: #9b9b9b; } /* grey like screenshot */
-.nav-item.recents svg path { fill: currentColor; stroke: none; }
-
-/* Favorites star filled */
-.nav-item.favorites { color: #9b9b9b; }
-.nav-item.favorites svg path { fill: currentColor; }
-
-/* Contacts: outer ring (stroke circle outside) and filled silhouette inside */
+/* Contacts outer ring + silhouette */
 .nav-item.contacts { color: #9b9b9b; }
 .nav-item.contacts svg circle { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.07; }
 .nav-item.contacts svg path { fill: currentColor; }
 
-/* purple notification dot under Contacts */
+/* small purple notification dot under Contacts */
 .nav-item.contacts .notif-dot{
   position:absolute;
   width:8px;
   height:8px;
-  background: #9b59ff; /* purple */
+  background: #9b59ff;
   border-radius:50%;
   left:50%;
   transform: translateX(-50%) translateY(-6px);
@@ -236,10 +225,24 @@ html,body{
   opacity:0.95;
 }
 
-/* Keypad active */
+/* Recents (clock) */
+.nav-item.recents { color: #9b9b9b; }
+.nav-item.recents svg circle[fill="currentColor"] { opacity: 0.07; }
+.nav-item.recents svg circle[fill="none"], 
+.nav-item.recents svg line {
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* Favorites filled */
+.nav-item.favorites { color: #9b9b9b; }
+
+/* Keypad active blue */
 .nav-item.keypad.active { color: var(--nav-active); }
 
-/* Voicemail: ensure circles and top line are at the top */
+/* Voicemail top circles */
 .nav-item.voicemail { color: #9b9b9b; }
 .nav-item.voicemail svg line,
 .nav-item.voicemail svg circle{
@@ -248,7 +251,7 @@ html,body{
   fill: none;
 }
 
-/* STANDALONE overrides: push nav down when app is launched from home screen */
+/* Standalone overrides: push nav down when added to Home Screen */
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
