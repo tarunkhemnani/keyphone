@@ -1,10 +1,7 @@
-/* styles.css
-   Full stylesheet. Includes special styling when running as standalone (A2HS).
-   Standalone mode will add .standalone to .app automatically via JS,
-   and CSS will then move the bottom nav/icons further down to match iPhone Home Screen display.
+/* styles.css - full file
+   Bottom nav visuals updated to match screenshot.
 */
 
-/* -------- VARIABLES -------- */
 :root{
   --bg: #000000;
 
@@ -14,7 +11,7 @@
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  /* sizes */
+  /* keypad sizes */
   --circle-size: 76px;
   --gap-x: 34px;
   --gap-y: 22px;
@@ -31,25 +28,19 @@
   --call-size: 84px;
   --call-color: #2fd55b;
 
-  /* nav default */
+  /* nav */
   --nav-height: 78px;
   --nav-inactive: #8e8e93;
   --nav-active: #0a84ff;
 
-  /* nav offsets:
-     --nav-offset-normal : position in regular browser,
-     --nav-offset-standalone : position when added to home (standalone),
-     we'll use transforms on .nav-item to nudge icons visually.
-  */
-  --nav-offset-normal: 14px;
-  --nav-offset-standalone: 63px;
+  --nav-offset-normal: 14px;      /* vertical nudge for normal browsing */
+  --nav-offset-standalone: 62px;  /* vertical nudge when A2HS (standalone) */
 
-  /* nav container bottom adjust (will be larger in standalone) */
-  --nav-bottom-normal: 0px;
-  --nav-bottom-standalone: -14px;
+  --nav-bottom-normal: 6px;
+  --nav-bottom-standalone: -6px;
 }
 
-/* -------- BASE RESET -------- */
+/* base reset */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -61,7 +52,7 @@ html,body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* app container: paint safe-areas black */
+/* app container */
 .app{
   width:100%;
   min-height:100svh;
@@ -72,25 +63,18 @@ html,body{
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* when JS detects standalone mode we add .standalone to .app */
-.app.standalone {
-  /* nothing global yet; specific rules below override nav */
-}
-
-/* ensure top area is black */
+/* top safe area black */
 .top-safe{
   height: env(safe-area-inset-top);
   background: var(--bg);
-  width: 100%;
-  position: relative;
-  z-index: 10;
+  width:100%;
 }
 
-/* display for typed digits (hidden when empty) */
+/* typed digits display */
 .display{
   width:100%;
   height:48px;
-  margin-top: 86px; /* keeps keypad lower per previous requests */
+  margin-top: 86px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -103,7 +87,7 @@ html,body{
   pointer-events:none;
 }
 
-/* -------- KEYPAD GRID -------- */
+/* keypad grid */
 .keys-grid{
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   width: var(--grid-w);
@@ -119,7 +103,6 @@ html,body{
   touch-action: manipulation;
 }
 
-/* key visuals */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -140,7 +123,6 @@ html,body{
   user-select: none;
 }
 
-/* pressed state (brighten slightly) */
 .key.pressed{
   transform: scale(0.98);
   background: var(--key-bg-pressed);
@@ -157,7 +139,6 @@ html,body{
   margin-top:-2px;
   letter-spacing:0.2px;
 }
-
 .letters{
   font-size: var(--letters-size);
   color: var(--letters-color);
@@ -168,7 +149,7 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* -------- CALL BUTTON -------- */
+/* call button */
 .call-row{ width:100%; display:flex; justify-content:center; margin-top: 12px; pointer-events:none; }
 .call-button{
   width:var(--call-size);
@@ -187,8 +168,7 @@ html,body{
 .call-button:active{ transform: scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* -------- BOTTOM NAV -------- */
-/* Default (regular browser) */
+/* bottom nav container */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -201,38 +181,91 @@ html,body{
   pointer-events:auto;
 }
 
-/* nav items default position (normal browser) */
+/* each nav item (icon + label) */
 .nav-item{
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:6px;
-  font-size:11px;
+  font-size:12px;
   color:var(--nav-inactive);
   transform: translateY(var(--nav-offset-normal));
   pointer-events:auto;
+  position: relative;
 }
-.nav-item svg{ width:22px; height:22px; fill:currentColor; }
-.nav-item span{ font-size:11px; color:inherit; }
-.nav-item.active{ color:var(--nav-active); }
 
-/* subtle: ensure faint svg background circles appear */
+/* icon size & stroke handling */
+.nav-item svg{
+  width:28px;
+  height:28px;
+  display:block;
+  fill: currentColor;
+  stroke: currentColor;
+  vector-effect: non-scaling-stroke;
+}
+.nav-item span{ font-size:12px; color:inherit; }
+
+/* active item color */
+.nav-item.active{ color: var(--nav-active); }
+
+/* subtle faint background circles (Recents/Contacts) */
 .nav-item svg circle[fill="currentColor"] { opacity: 0.07; }
 
-/* -------- STANDALONE MODE OVERRIDES -------- */
-/* When the app runs as a standalone/home-screen webapp, the .standalone class
-   is added to .app by app.js. These rules push the nav + icons further down. */
+/* notification dot under Contacts (small purple dot) */
+.nav-item.contacts .notif-dot{
+  position:absolute;
+  width:8px;
+  height:8px;
+  background: #9b59ff; /* purple dot like screenshot */
+  border-radius:50%;
+  left:50%;
+  transform: translateX(-50%) translateY(-6px);
+  bottom: 18px; /* sits above label, below icon */
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.12);
+  pointer-events:none;
+  opacity:0.95;
+}
+
+/* tweak individual icon appearances (match screenshot) */
+/* Favorites star filled light grey */
+.nav-item.favorites svg { color: #9b9b9b; }
+
+/* Recents uses faint background + outline */
+.nav-item.recents svg { color: #9b9b9b; }
+
+/* Contacts silhouette uses the faint background + filled shape */
+.nav-item.contacts svg path { color: #9b9b9b; }
+
+/* Keypad active: bright blue label + dots */
+.nav-item.keypad.active { color: var(--nav-active); }
+
+/* Voicemail outline style */
+.nav-item.voicemail svg { color: #9b9b9b; }
+
+/* home indicator (white rounded bar) */
+.home-indicator{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: env(safe-area-inset-bottom, 6px);
+  width: 110px;
+  height: 6px;
+  background: #fff;
+  border-radius: 999px;
+  z-index: 40;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+/* standalone mode overrides - when A2HS, push nav icons down more */
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
 .app.standalone .nav-item{
   transform: translateY(var(--nav-offset-standalone));
 }
-
-/* also slightly enlarge the nav hit area in standalone to match feel */
 .app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 4px); }
 
-/* -------- accessibility / reduced motion -------- */
+/* reduced motion */
 @media (prefers-reduced-motion: reduce){
   .key, .call-button{ transition:none; transform:none; }
 }
@@ -246,7 +279,7 @@ html,body{
     --gap-x:24px;
     --gap-y:18px;
     --nav-offset-normal: 10px;
-    --nav-offset-standalone: 22px;
+    --nav-offset-standalone: 28px;
   }
+  .nav-item svg{ width:26px; height:26px; }
 }
-
