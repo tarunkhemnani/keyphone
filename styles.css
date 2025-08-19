@@ -210,8 +210,7 @@ html,body{
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Contacts: filled base uses currentColor; silhouette drawn inline as two shapes (head + torso) */
-/* we rely on the inline SVG fill="#000" for the silhouette so no additional CSS needed. */
+/* Contacts: filled base uses currentColor; silhouette drawn inline as circle + torso path */
 .nav-item.contacts { color: var(--nav-inactive); }
 
 /* Favorites filled */
