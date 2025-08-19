@@ -53,7 +53,7 @@
       </div>
     </main>
 
-    <!-- bottom nav (visual only) - Voicemail removed -->
+    <!-- bottom nav (visual only) - voicemail removed -->
     <nav class="bottom-nav" aria-hidden="true">
       <!-- Favorites -->
       <div class="nav-item favorites" role="button" aria-label="Favorites">
@@ -73,11 +73,15 @@
         <span>Recents</span>
       </div>
 
-      <!-- Contacts: filled grey circle + black silhouette -->
+      <!-- Contacts: bigger head + rounded shoulders/body -->
       <div class="nav-item contacts" role="button" aria-label="Contacts">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <!-- grey filled base -->
           <circle cx="12" cy="12" r="10" fill="currentColor" />
-          <path d="M12 10.5a3 3 0 100-6 3 3 0 000 6zm0 2.2c-3.2 0-5.5 1.6-5.5 3.6V20h11v-3.7c0-2-2.3-3.6-5.5-3.6z" fill="#000"/>
+          <!-- larger head (bigger, centered slightly higher) -->
+          <circle cx="12" cy="9.2" r="2.8" fill="#000"/>
+          <!-- rounded shoulders / torso: soft rounded path for a shoulder shape -->
+          <path fill="#000" d="M6.5 17.4c0-2.2 3.1-4.1 5.5-4.1s5.5 1.9 5.5 4.1V19H6.5v-1.6z" />
         </svg>
         <span>Contacts</span>
       </div>
