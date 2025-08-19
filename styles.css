@@ -1,6 +1,4 @@
-/* styles.css - contacts filled circle uses same grey as Recents (currentColor);
-   silhouette for contacts is pure black via inline SVG fill="#000" so no CSS override needed.
-   Rest of file unchanged. */
+/* styles.css - purple notification dot removed from contacts; rest preserved */
 
 :root{
   --bg: #000000;
@@ -11,7 +9,7 @@
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  /* keypad sizes */
+  /* sizes */
   --circle-size: 76px;
   --gap-x: 34px;
   --gap-y: 22px;
@@ -30,7 +28,7 @@
 
   /* nav */
   --nav-height: 78px;
-  --nav-inactive: #9b9b9b; /* grey for inactive icons (used by currentColor) */
+  --nav-inactive: #9b9b9b; /* grey used by currentColor for inactive icons */
   --nav-active: #0a84ff;
 
   --nav-offset-normal: 14px;
@@ -40,6 +38,7 @@
   --nav-bottom-standalone: -6px;
 }
 
+/* basic reset */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -51,6 +50,7 @@ html,body{
   -moz-osx-font-smoothing:grayscale;
 }
 
+/* app container */
 .app{
   width:100%;
   min-height:100svh;
@@ -85,7 +85,7 @@ html,body{
   pointer-events:none;
 }
 
-/* KEYPAD */
+/* KEYPAD GRID */
 .keys-grid{
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   width: var(--grid-w);
@@ -101,6 +101,7 @@ html,body{
   touch-action: manipulation;
 }
 
+/* keys */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -147,7 +148,7 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* CALL button */
+/* call button */
 .call-row{ width:100%; display:flex; justify-content:center; margin-top: 12px; pointer-events:none; }
 .call-button{
   width:var(--call-size);
@@ -166,7 +167,7 @@ html,body{
 .call-button:active{ transform: scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* BOTTOM NAV */
+/* bottom nav */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -185,7 +186,7 @@ html,body{
   align-items:center;
   gap:6px;
   font-size:12px;
-  color:var(--nav-inactive); /* currentColor for icons comes from here */
+  color:var(--nav-inactive); /* currentColor for icons */
   transform: translateY(var(--nav-offset-normal));
   pointer-events:auto;
   position: relative;
@@ -209,24 +210,8 @@ html,body{
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Contacts filled base uses currentColor (via circle in SVG). silhouette is inline black fill. */
+/* Contacts: filled base uses currentColor; silhouette black via inline SVG fill */
 .nav-item.contacts { color: var(--nav-inactive); }
-/* no CSS override needed for silhouette since fill="#000" is set inline in SVG */
-
-/* small purple notification dot under Contacts */
-.nav-item.contacts .notif-dot{
-  position:absolute;
-  width:8px;
-  height:8px;
-  background: #9b59ff;
-  border-radius:50%;
-  left:50%;
-  transform: translateX(-50%) translateY(-6px);
-  bottom: 18px;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.12);
-  pointer-events:none;
-  opacity:0.95;
-}
 
 /* Favorites filled */
 .nav-item.favorites { color: var(--nav-inactive); }
