@@ -42,7 +42,7 @@
      we'll use transforms on .nav-item to nudge icons visually.
   */
   --nav-offset-normal: 14px;
-  --nav-offset-standalone: 28px;
+  --nav-offset-standalone: 63px;
 
   /* nav container bottom adjust (will be larger in standalone) */
   --nav-bottom-normal: 0px;
@@ -249,3 +249,4 @@ html,body{
     --nav-offset-standalone: 22px;
   }
 }
+
