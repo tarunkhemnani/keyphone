@@ -29,8 +29,10 @@
   --nav-inactive: #9b9b9b; /* grey used by currentColor for inactive icons */
   --nav-active: #0a84ff;
 
-  --nav-offset-normal: 14px;
-  --nav-offset-standalone: 62px;
+  /* ---------- MOVED DOWN a bit ---------- */
+  /* increased these so icons translate further downward */
+  --nav-offset-normal: 22px;      /* was 14px */
+  --nav-offset-standalone: 80px;  /* was 62px */
 
   --nav-bottom-normal: 6px;
   --nav-bottom-standalone: -6px;
@@ -67,11 +69,11 @@ html,body{
   width:100%;
 }
 
-/* typed-digit display - small upward shift already in place */
+/* typed-digit display */
 .display{
   width:100%;
   height:48px;
-  margin-top: 66px; /* keeps keypad higher */
+  margin-top: 66px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -88,7 +90,7 @@ html,body{
 .keys-grid{
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 6px; /* keypad moved up previously */
+  margin-top: 6px;
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -146,10 +148,7 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* CALL ROW & CALL BUTTON
-   Call button now sits slightly lower (translateY(-14px))
-   so it appears less lifted than before.
-*/
+/* call row & call button */
 .call-row{
   width: var(--grid-w);
   margin: 0 auto;
@@ -173,8 +172,7 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  /* moved downward a bit compared to previous version (-22px -> -14px) */
-  transform: translateY(-9px);
+  transform: translateY(-14px);
 }
 .call-button:active{ transform: translateY(-14px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
@@ -186,7 +184,7 @@ html,body{
   bottom: calc(var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   height: var(--nav-height);
   display:flex;
-  justify-content: space-around; /* icons auto-spaced */
+  justify-content: space-around;
   align-items:flex-end;
   padding-bottom: env(safe-area-inset-bottom, 12px);
   pointer-events:auto;
@@ -198,7 +196,7 @@ html,body{
   align-items:center;
   gap:6px;
   font-size:12px;
-  color:var(--nav-inactive); /* currentColor for icons */
+  color:var(--nav-inactive);
   transform: translateY(var(--nav-offset-normal));
   pointer-events:auto;
   position: relative;
@@ -214,21 +212,20 @@ html,body{
 }
 .nav-item span{ font-size:12px; color:inherit; }
 
-/* active color */
 .nav-item.active{ color: var(--nav-active); }
 
-/* Recents: filled base uses currentColor; hands black via inline attributes */
+/* Recents */
 .nav-item.recents { color: var(--nav-inactive); }
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Contacts: filled base uses currentColor; silhouette drawn inline as circle + torso path */
+/* Contacts */
 .nav-item.contacts { color: var(--nav-inactive); }
 
-/* Favorites filled */
+/* Favorites */
 .nav-item.favorites { color: var(--nav-inactive); }
 
-/* Keypad active blue */
+/* Keypad */
 .nav-item.keypad.active { color: var(--nav-active); }
 
 /* Standalone overrides: push nav down when added to Home Screen */
@@ -253,10 +250,9 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-offset-normal: 10px;
-    --nav-offset-standalone: 28px;
+    --nav-offset-normal: 18px;
+    --nav-offset-standalone: 72px;
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
 }
-
