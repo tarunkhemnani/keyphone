@@ -1,4 +1,4 @@
-/* styles.css - voicemail removed; remaining nav items align automatically */
+/* styles.css - updated contacts silhouette size/shape, rest unchanged */
 
 :root{
   --bg: #000000;
@@ -205,12 +205,13 @@ html,body{
 /* active color */
 .nav-item.active{ color: var(--nav-active); }
 
-/* Recents */
+/* Recents: filled base uses currentColor; hands black via inline attributes */
 .nav-item.recents { color: var(--nav-inactive); }
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Contacts: filled base uses currentColor; silhouette black inline */
+/* Contacts: filled base uses currentColor; silhouette drawn inline as two shapes (head + torso) */
+/* we rely on the inline SVG fill="#000" for the silhouette so no additional CSS needed. */
 .nav-item.contacts { color: var(--nav-inactive); }
 
 /* Favorites filled */
