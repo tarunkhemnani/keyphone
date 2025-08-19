@@ -1,4 +1,6 @@
-/* styles.css - Recents hands now black (9:00) and filled base uses same grey as other icons. */
+/* styles.css - contacts filled circle uses same grey as Recents (currentColor);
+   silhouette for contacts is pure black via inline SVG fill="#000" so no CSS override needed.
+   Rest of file unchanged. */
 
 :root{
   --bg: #000000;
@@ -28,7 +30,7 @@
 
   /* nav */
   --nav-height: 78px;
-  --nav-inactive: #9b9b9b; /* grey for inactive icons */
+  --nav-inactive: #9b9b9b; /* grey for inactive icons (used by currentColor) */
   --nav-active: #0a84ff;
 
   --nav-offset-normal: 14px;
@@ -183,7 +185,7 @@ html,body{
   align-items:center;
   gap:6px;
   font-size:12px;
-  color:var(--nav-inactive);
+  color:var(--nav-inactive); /* currentColor for icons comes from here */
   transform: translateY(var(--nav-offset-normal));
   pointer-events:auto;
   position: relative;
@@ -202,13 +204,14 @@ html,body{
 /* active color */
 .nav-item.active{ color: var(--nav-active); }
 
-/* faint bg circle rule - for recents we intentionally show filled base */
-.nav-item svg circle[fill="currentColor"] { opacity: 1; }
+/* Recents: filled base uses currentColor; hands black via inline attributes */
+.nav-item.recents { color: var(--nav-inactive); }
+.nav-item.recents svg circle { opacity: 1; }
+.nav-item.recents svg line { stroke: #000; }
 
-/* Contacts outer ring + silhouette */
+/* Contacts filled base uses currentColor (via circle in SVG). silhouette is inline black fill. */
 .nav-item.contacts { color: var(--nav-inactive); }
-.nav-item.contacts svg circle { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.07; }
-.nav-item.contacts svg path { fill: currentColor; }
+/* no CSS override needed for silhouette since fill="#000" is set inline in SVG */
 
 /* small purple notification dot under Contacts */
 .nav-item.contacts .notif-dot{
@@ -224,11 +227,6 @@ html,body{
   pointer-events:none;
   opacity:0.95;
 }
-
-/* Recents: filled base uses currentColor (same grey as icons); hands drawn black for exact match to screenshot */
-.nav-item.recents { color: var(--nav-inactive); }
-.nav-item.recents svg circle { opacity: 1; } /* filled base */
-.nav-item.recents svg line { stroke: #000; stroke-width: 1.8; stroke-linecap: round; }
 
 /* Favorites filled */
 .nav-item.favorites { color: var(--nav-inactive); }
