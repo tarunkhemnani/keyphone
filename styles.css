@@ -174,7 +174,7 @@ html,body{
   transition: transform 120ms ease;
   pointer-events:auto;
   /* moved downward a bit compared to previous version (-22px -> -14px) */
-  transform: translateY(-14px);
+  transform: translateY(-9px);
 }
 .call-button:active{ transform: translateY(-14px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
@@ -259,3 +259,4 @@ html,body{
   }
   .nav-item svg{ width:26px; height:26px; }
 }
+
