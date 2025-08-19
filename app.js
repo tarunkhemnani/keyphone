@@ -1,11 +1,5 @@
 // app.js
-// Dynamic behavior (preserved):
-// - keys brighten while pressed
-// - vibration on press if supported
-// - long-press on 0 inserts '+'
-// - call button opens tel: when digits are present
-// - digits persist until user clears them (no auto-clear)
-// - ALSO: detect standalone (A2HS) and add `.standalone` class to .app so CSS moves nav down
+// Preserves keypad behavior and adds standalone detection to apply .standalone class.
 
 (() => {
   const displayEl = document.getElementById('display');
@@ -32,16 +26,12 @@
       appEl.classList.remove('standalone');
     }
   }
-  // run immediately and also listen for changes (some browsers support the media query)
   detectStandalone();
   if (window.matchMedia) {
     try {
       const mq = window.matchMedia('(display-mode: standalone)');
-      if (mq && mq.addEventListener) {
-        mq.addEventListener('change', detectStandalone);
-      } else if (mq && mq.addListener) {
-        mq.addListener(detectStandalone);
-      }
+      if (mq && mq.addEventListener) mq.addEventListener('change', detectStandalone);
+      else if (mq && mq.addListener) mq.addListener(detectStandalone);
     } catch (e) { /* ignore */ }
   }
 
@@ -75,6 +65,7 @@
 
   /* ---------- Key pointer handlers ---------- */
   keysGrid.querySelectorAll('.key').forEach(key => {
+    // note: data-value attribute in HTML used for digits
     const value = key.dataset.value;
 
     key.addEventListener('pointerdown', (ev) => {
@@ -131,7 +122,7 @@
     window.location.href = 'tel:' + sanitized;
   });
 
-  /* ---------- Keyboard support & manual delete ---------- */
+  /* ---------- Keyboard & delete ---------- */
   window.addEventListener('keydown', (ev) => {
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+') appendChar('+');
@@ -139,7 +130,6 @@
     else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); }
   });
 
-  /* expose helpers for debugging / manual control */
   window.__phoneKeypad = {
     append: (ch) => { appendChar(ch); },
     clear: clearDigits,
