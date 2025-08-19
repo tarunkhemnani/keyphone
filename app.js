@@ -1,6 +1,4 @@
-// app.js
-// Preserves keypad behavior and adds standalone detection to apply .standalone class.
-
+// app.js - unchanged behavior except standalone detection still present
 (() => {
   const displayEl = document.getElementById('display');
   const keysGrid = document.getElementById('keysGrid');
@@ -11,12 +9,6 @@
   let longPressActive = false;
   const LONG_PRESS_MS = 600;
 
-  /* ---------- Standalone detection ----------
-     Add class .standalone to .app when running as a home-screen app.
-     Covers:
-       - iOS old-style: window.navigator.standalone
-       - modern browsers: window.matchMedia('(display-mode: standalone)')
-  */
   function detectStandalone() {
     const isIOSStandalone = window.navigator.standalone === true;
     const isDisplayModeStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
@@ -32,10 +24,9 @@
       const mq = window.matchMedia('(display-mode: standalone)');
       if (mq && mq.addEventListener) mq.addEventListener('change', detectStandalone);
       else if (mq && mq.addListener) mq.addListener(detectStandalone);
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
   }
 
-  /* ---------- UI helpers ---------- */
   function updateDisplay() {
     if (digits.length === 0) {
       displayEl.style.opacity = '0';
@@ -63,9 +54,7 @@
     }
   }
 
-  /* ---------- Key pointer handlers ---------- */
   keysGrid.querySelectorAll('.key').forEach(key => {
-    // note: data-value attribute in HTML used for digits
     const value = key.dataset.value;
 
     key.addEventListener('pointerdown', (ev) => {
@@ -75,7 +64,6 @@
       doVibrate();
       longPressActive = false;
 
-      // long-press for 0 => '+'
       if (value === '0') {
         longPressTimer = setTimeout(() => {
           longPressActive = true;
@@ -101,7 +89,6 @@
       longPressActive = false;
     });
 
-    // keyboard support (Enter/Space)
     key.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.add('pressed'); }
     });
@@ -110,11 +97,9 @@
     });
   });
 
-  /* ---------- Call button ---------- */
   callBtn.addEventListener('click', (ev) => {
     ev.preventDefault();
     if (!digits || digits.length === 0) {
-      // brief feedback when no digits
       callBtn.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220 });
       return;
     }
@@ -122,7 +107,6 @@
     window.location.href = 'tel:' + sanitized;
   });
 
-  /* ---------- Keyboard & delete ---------- */
   window.addEventListener('keydown', (ev) => {
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+') appendChar('+');
@@ -137,6 +121,5 @@
     isStandalone: () => appEl.classList.contains('standalone')
   };
 
-  // initial render
   updateDisplay();
 })();
