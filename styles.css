@@ -29,10 +29,9 @@
   --nav-inactive: #9b9b9b; /* grey used by currentColor for inactive icons */
   --nav-active: #0a84ff;
 
-  /* ---------- MOVED DOWN a bit ---------- */
-  /* increased these so icons translate further downward */
-  --nav-offset-normal: 22px;      /* was 14px */
-  --nav-offset-standalone: 80px;  /* was 62px */
+  /* custom offsets */
+  --nav-icon-offset: 18px;   /* how far to push icons down */
+  --nav-text-offset: 0px;    /* keep labels visible */
 
   --nav-bottom-normal: 6px;
   --nav-bottom-standalone: -6px;
@@ -172,9 +171,9 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  transform: translateY(-14px);
+  transform: translateY(-22px); /* raised to avoid overlap */
 }
-.call-button:active{ transform: translateY(-14px) scale(0.98); }
+.call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
 /* bottom nav */
@@ -194,14 +193,14 @@ html,body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:6px;
+  gap:4px;
   font-size:12px;
   color:var(--nav-inactive);
-  transform: translateY(var(--nav-offset-normal));
   pointer-events:auto;
   position: relative;
 }
 
+/* Apply offset only to icons */
 .nav-item svg{
   width:28px;
   height:28px;
@@ -209,8 +208,15 @@ html,body{
   fill: currentColor;
   stroke: currentColor;
   vector-effect: non-scaling-stroke;
+  transform: translateY(var(--nav-icon-offset));
 }
-.nav-item span{ font-size:12px; color:inherit; }
+
+/* Labels stay visible */
+.nav-item span{
+  font-size:12px;
+  color:inherit;
+  transform: translateY(var(--nav-text-offset));
+}
 
 .nav-item.active{ color: var(--nav-active); }
 
@@ -228,12 +234,12 @@ html,body{
 /* Keypad */
 .nav-item.keypad.active { color: var(--nav-active); }
 
-/* Standalone overrides: push nav down when added to Home Screen */
+/* Standalone overrides */
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
-.app.standalone .nav-item{
-  transform: translateY(var(--nav-offset-standalone));
+.app.standalone .nav-item svg{
+  transform: translateY( var(--nav-icon-offset) + 12px );
 }
 .app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 4px); }
 
@@ -250,8 +256,7 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-offset-normal: 18px;
-    --nav-offset-standalone: 72px;
+    --nav-icon-offset: 14px;
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
