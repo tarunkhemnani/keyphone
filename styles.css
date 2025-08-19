@@ -35,7 +35,6 @@
   --nav-bottom-normal: 6px;
   --nav-bottom-standalone: -6px;
 
-  /* grid width uses circle size + gaps – keep it in :root so other rules can read it */
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
 }
 
@@ -85,7 +84,7 @@ html,body{
   pointer-events:none;
 }
 
-/* KEYPAD GRID - keep the grid width variable in sync with :root */
+/* KEYPAD GRID */
 .keys-grid{
   width: var(--grid-w);
   margin: 0 auto;
@@ -148,9 +147,8 @@ html,body{
 .key .letters:empty{ height:14px; }
 
 /* CALL ROW & CALL BUTTON
-   Key change: .call-row now uses the same width as .keys-grid (var(--grid-w)),
-   so the call button is guaranteed to be horizontally centered beneath the keypad.
-   The button is raised with transform: translateY(-22px) (keeps it centered & overlapping nav).
+   Call button now sits slightly lower (translateY(-14px))
+   so it appears less lifted than before.
 */
 .call-row{
   width: var(--grid-w);
@@ -175,10 +173,10 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  /* use transform to lift the button so its origin remains centered */
-  transform: translateY(-22px);
+  /* moved downward a bit compared to previous version (-22px -> -14px) */
+  transform: translateY(-14px);
 }
-.call-button:active{ transform: translateY(-22px) scale(0.98); }
+.call-button:active{ transform: translateY(-14px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
 /* bottom nav */
