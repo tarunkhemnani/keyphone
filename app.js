@@ -1,4 +1,4 @@
-// app.js - unchanged behavior except standalone detection still present
+// app.js - keypad behavior + standalone detection (unchanged core behavior)
 (() => {
   const displayEl = document.getElementById('display');
   const keysGrid = document.getElementById('keysGrid');
@@ -9,6 +9,7 @@
   let longPressActive = false;
   const LONG_PRESS_MS = 600;
 
+  /* Standalone detection */
   function detectStandalone() {
     const isIOSStandalone = window.navigator.standalone === true;
     const isDisplayModeStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
@@ -24,9 +25,10 @@
       const mq = window.matchMedia('(display-mode: standalone)');
       if (mq && mq.addEventListener) mq.addEventListener('change', detectStandalone);
       else if (mq && mq.addListener) mq.addListener(detectStandalone);
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   }
 
+  /* UI helpers */
   function updateDisplay() {
     if (digits.length === 0) {
       displayEl.style.opacity = '0';
@@ -54,6 +56,7 @@
     }
   }
 
+  /* Key pointer handlers */
   keysGrid.querySelectorAll('.key').forEach(key => {
     const value = key.dataset.value;
 
@@ -97,6 +100,7 @@
     });
   });
 
+  /* Call button */
   callBtn.addEventListener('click', (ev) => {
     ev.preventDefault();
     if (!digits || digits.length === 0) {
@@ -107,6 +111,7 @@
     window.location.href = 'tel:' + sanitized;
   });
 
+  /* Keyboard support & delete */
   window.addEventListener('keydown', (ev) => {
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+') appendChar('+');
