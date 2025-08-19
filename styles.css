@@ -1,8 +1,3 @@
-/* styles.css - small upward alignment adjustments for keypad + call button
-   Only minimal changes: display margin-top, keys-grid margin-top, and call-button top
-   were adjusted to shift the keypad and call button upward while preserving behavior.
-*/
-
 :root{
   --bg: #000000;
 
@@ -39,6 +34,9 @@
 
   --nav-bottom-normal: 6px;
   --nav-bottom-standalone: -6px;
+
+  /* grid width uses circle size + gaps – keep it in :root so other rules can read it */
+  --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
 }
 
 /* basic reset */
@@ -70,13 +68,11 @@ html,body{
   width:100%;
 }
 
-/* typed-digit display
-   Reduced margin-top so keypad sits higher on the screen.
-*/
+/* typed-digit display - small upward shift already in place */
 .display{
   width:100%;
   height:48px;
-  margin-top: 66px; /* was 86px -> shifted the keypad up */
+  margin-top: 66px; /* keeps keypad higher */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -89,14 +85,11 @@ html,body{
   pointer-events:none;
 }
 
-/* KEYPAD GRID
-   Reduced margin-top to pull the grid upward.
-*/
+/* KEYPAD GRID - keep the grid width variable in sync with :root */
 .keys-grid{
-  --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 6px; /* was 18px -> moved keypad up */
+  margin-top: 6px; /* keypad moved up previously */
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -154,12 +147,21 @@ html,body{
 }
 .key .letters:empty{ height:14px; }
 
-/* call button
-   Moved upward by applying a negative top to the button.
-   This keeps the button centered but raised to overlap the nav similarly
-   to your screenshot.
+/* CALL ROW & CALL BUTTON
+   Key change: .call-row now uses the same width as .keys-grid (var(--grid-w)),
+   so the call button is guaranteed to be horizontally centered beneath the keypad.
+   The button is raised with transform: translateY(-22px) (keeps it centered & overlapping nav).
 */
-.call-row{ width:100%; display:flex; justify-content:center; margin-top: 4px; pointer-events:none; }
+.call-row{
+  width: var(--grid-w);
+  margin: 0 auto;
+  margin-top: 6px;
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+  position: relative;
+}
+
 .call-button{
   width:var(--call-size);
   height:var(--call-size);
@@ -173,10 +175,10 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  position: relative;
-  top: -22px; /* SHIFTED UP to overlap nav like the screenshot */
+  /* use transform to lift the button so its origin remains centered */
+  transform: translateY(-22px);
 }
-.call-button:active{ transform: scale(0.98); }
+.call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
 /* bottom nav */
@@ -186,7 +188,7 @@ html,body{
   bottom: calc(var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   height: var(--nav-height);
   display:flex;
-  justify-content: space-around; /* four icons auto-spaced */
+  justify-content: space-around; /* icons auto-spaced */
   align-items:flex-end;
   padding-bottom: env(safe-area-inset-bottom, 12px);
   pointer-events:auto;
@@ -242,7 +244,7 @@ html,body{
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .key, .call-button{ transition:none; transform:none; top: 0; }
+  .key, .call-button{ transition:none; transform:none; }
 }
 
 /* small-screen fallback */
@@ -255,6 +257,7 @@ html,body{
     --gap-y:18px;
     --nav-offset-normal: 10px;
     --nav-offset-standalone: 28px;
+    --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
 }
