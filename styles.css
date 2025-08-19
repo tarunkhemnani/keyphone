@@ -1,4 +1,4 @@
-/* styles.css - purple notification dot removed from contacts; rest preserved */
+/* styles.css - voicemail removed; remaining nav items align automatically */
 
 :root{
   --bg: #000000;
@@ -174,7 +174,7 @@ html,body{
   bottom: calc(var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   height: var(--nav-height);
   display:flex;
-  justify-content: space-around;
+  justify-content: space-around; /* four icons auto-spaced */
   align-items:flex-end;
   padding-bottom: env(safe-area-inset-bottom, 12px);
   pointer-events:auto;
@@ -205,12 +205,12 @@ html,body{
 /* active color */
 .nav-item.active{ color: var(--nav-active); }
 
-/* Recents: filled base uses currentColor; hands black via inline attributes */
+/* Recents */
 .nav-item.recents { color: var(--nav-inactive); }
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Contacts: filled base uses currentColor; silhouette black via inline SVG fill */
+/* Contacts: filled base uses currentColor; silhouette black inline */
 .nav-item.contacts { color: var(--nav-inactive); }
 
 /* Favorites filled */
@@ -218,15 +218,6 @@ html,body{
 
 /* Keypad active blue */
 .nav-item.keypad.active { color: var(--nav-active); }
-
-/* Voicemail top circles */
-.nav-item.voicemail { color: var(--nav-inactive); }
-.nav-item.voicemail svg line,
-.nav-item.voicemail svg circle{
-  stroke: currentColor;
-  stroke-width: 1.6;
-  fill: none;
-}
 
 /* Standalone overrides: push nav down when added to Home Screen */
 .app.standalone .bottom-nav{
