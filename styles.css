@@ -1,4 +1,4 @@
-/* styles.css - Recents filled with same grey; hands show 9:00; rest preserved */
+/* styles.css - Recents hands now black (9:00) and filled base uses same grey as other icons. */
 
 :root{
   --bg: #000000;
@@ -28,7 +28,7 @@
 
   /* nav */
   --nav-height: 78px;
-  --nav-inactive: #9b9b9b; /* same grey used for icons */
+  --nav-inactive: #9b9b9b; /* grey for inactive icons */
   --nav-active: #0a84ff;
 
   --nav-offset-normal: 14px;
@@ -202,7 +202,7 @@ html,body{
 /* active color */
 .nav-item.active{ color: var(--nav-active); }
 
-/* faint bg circle if used */
+/* faint bg circle rule - for recents we intentionally show filled base */
 .nav-item svg circle[fill="currentColor"] { opacity: 1; }
 
 /* Contacts outer ring + silhouette */
@@ -225,10 +225,10 @@ html,body{
   opacity:0.95;
 }
 
-/* Recents: filled base uses currentColor (same grey as icons); hands drawn white */
+/* Recents: filled base uses currentColor (same grey as icons); hands drawn black for exact match to screenshot */
 .nav-item.recents { color: var(--nav-inactive); }
 .nav-item.recents svg circle { opacity: 1; } /* filled base */
-.nav-item.recents svg line { stroke: #fff; stroke-width: 1.8; stroke-linecap: round; }
+.nav-item.recents svg line { stroke: #000; stroke-width: 1.8; stroke-linecap: round; }
 
 /* Favorites filled */
 .nav-item.favorites { color: var(--nav-inactive); }
