@@ -66,22 +66,24 @@
       <!-- Recents (filled with same grey as other icons; hands set to 9:00 and black) -->
       <div class="nav-item recents" role="button" aria-label="Recents">
         <svg viewBox="0 0 24 24" aria-hidden="true">
+          <!-- filled base uses currentColor -->
           <circle cx="12" cy="12" r="10" fill="currentColor" />
+          <!-- minute hand pointing up (12) - BLACK -->
           <line x1="12" y1="12" x2="12" y2="6" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
+          <!-- hour hand pointing left (9) - BLACK -->
           <line x1="12" y1="12" x2="6" y2="12" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
         <span>Recents</span>
       </div>
 
-      <!-- Contacts: filled grey circle (same as Recents) + person silhouette in BLACK -->
+      <!-- Contacts: filled grey circle (same as Recents) + black person silhouette; NO purple dot -->
       <div class="nav-item contacts" role="button" aria-label="Contacts">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <!-- filled base circle uses currentColor (same grey as other inactive icons) -->
+          <!-- filled base circle uses currentColor (grey) -->
           <circle cx="12" cy="12" r="10" fill="currentColor" />
-          <!-- person silhouette filled BLACK to match your screenshot -->
+          <!-- person silhouette filled BLACK -->
           <path d="M12 10.5a3 3 0 100-6 3 3 0 000 6zm0 2.2c-3.2 0-5.5 1.6-5.5 3.6V20h11v-3.7c0-2-2.3-3.6-5.5-3.6z" fill="#000"/>
         </svg>
-        <span class="notif-dot" aria-hidden="true"></span>
         <span>Contacts</span>
       </div>
 
