@@ -63,26 +63,23 @@
         <span>Favorites</span>
       </div>
 
-      <!-- Recents (filled with same grey as other icons; hands set to 9:00 and drawn black) -->
+      <!-- Recents (filled with same grey as other icons; hands set to 9:00 and black) -->
       <div class="nav-item recents" role="button" aria-label="Recents">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <!-- filled base uses currentColor so it matches other icons -->
           <circle cx="12" cy="12" r="10" fill="currentColor" />
-          <!-- minute hand pointing up (12) - BLACK -->
           <line x1="12" y1="12" x2="12" y2="6" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
-          <!-- hour hand pointing left (9) - BLACK -->
           <line x1="12" y1="12" x2="6" y2="12" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
         <span>Recents</span>
       </div>
 
-      <!-- Contacts (outer ring + silhouette) -->
+      <!-- Contacts: filled grey circle (same as Recents) + person silhouette in BLACK -->
       <div class="nav-item contacts" role="button" aria-label="Contacts">
-        <svg viewBox="0 0 28 28" aria-hidden="true">
-          <!-- outer ring outside the silhouette -->
-          <circle cx="14" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.07"/>
-          <!-- filled silhouette -->
-          <path fill="currentColor" d="M14 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm0 2.2c-4 0-6.5 2-6.5 4.1V22h13v-4.7c0-2.1-2.5-4.1-6.5-4.1z"/>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <!-- filled base circle uses currentColor (same grey as other inactive icons) -->
+          <circle cx="12" cy="12" r="10" fill="currentColor" />
+          <!-- person silhouette filled BLACK to match your screenshot -->
+          <path d="M12 10.5a3 3 0 100-6 3 3 0 000 6zm0 2.2c-3.2 0-5.5 1.6-5.5 3.6V20h11v-3.7c0-2-2.3-3.6-5.5-3.6z" fill="#000"/>
         </svg>
         <span class="notif-dot" aria-hidden="true"></span>
         <span>Contacts</span>
