@@ -14,78 +14,34 @@
     <!-- top safe area painted black -->
     <header class="top-safe" aria-hidden="true"></header>
 
-    <!-- small display that appears when typing -->
-    <div class="display" id="display" aria-live="polite" aria-atomic="true" aria-label="Dialed digits"></div>
+    <!-- typed-digit display -->
+    <div class="display" id="display" aria-live="polite" aria-atomic="true"></div>
 
     <!-- keypad -->
     <main class="keypad-wrap" role="application" aria-label="Dial pad">
       <div class="keys-grid" id="keysGrid">
-        <!-- row 1 -->
-        <button class="key" data-value="1" aria-label="1">
-          <span class="digit">1</span>
-          <span class="letters"></span>
-        </button>
+        <!-- Row 1 -->
+        <button class="key" data-value="1" aria-label="1"><span class="digit">1</span><span class="letters"></span></button>
+        <button class="key" data-value="2" aria-label="2"><span class="digit">2</span><span class="letters">ABC</span></button>
+        <button class="key" data-value="3" aria-label="3"><span class="digit">3</span><span class="letters">DEF</span></button>
 
-        <button class="key" data-value="2" aria-label="2">
-          <span class="digit">2</span>
-          <span class="letters">ABC</span>
-        </button>
+        <!-- Row 2 -->
+        <button class="key" data-value="4" aria-label="4"><span class="digit">4</span><span class="letters">GHI</span></button>
+        <button class="key" data-value="5" aria-label="5"><span class="digit">5</span><span class="letters">JKL</span></button>
+        <button class="key" data-value="6" aria-label="6"><span class="digit">6</span><span class="letters">MNO</span></button>
 
-        <button class="key" data-value="3" aria-label="3">
-          <span class="digit">3</span>
-          <span class="letters">DEF</span>
-        </button>
+        <!-- Row 3 -->
+        <button class="key" data-value="7" aria-label="7"><span class="digit">7</span><span class="letters">PQRS</span></button>
+        <button class="key" data-value="8" aria-label="8"><span class="digit">8</span><span class="letters">TUV</span></button>
+        <button class="key" data-value="9" aria-label="9"><span class="digit">9</span><span class="letters">WXYZ</span></button>
 
-        <!-- row 2 -->
-        <button class="key" data-value="4" aria-label="4">
-          <span class="digit">4</span>
-          <span class="letters">GHI</span>
-        </button>
-
-        <button class="key" data-value="5" aria-label="5">
-          <span class="digit">5</span>
-          <span class="letters">JKL</span>
-        </button>
-
-        <button class="key" data-value="6" aria-label="6">
-          <span class="digit">6</span>
-          <span class="letters">MNO</span>
-        </button>
-
-        <!-- row 3 -->
-        <button class="key" data-value="7" aria-label="7">
-          <span class="digit">7</span>
-          <span class="letters">PQRS</span>
-        </button>
-
-        <button class="key" data-value="8" aria-label="8">
-          <span class="digit">8</span>
-          <span class="letters">TUV</span>
-        </button>
-
-        <button class="key" data-value="9" aria-label="9">
-          <span class="digit">9</span>
-          <span class="letters">WXYZ</span>
-        </button>
-
-        <!-- row 4 -->
-        <button class="key" data-value="*" aria-label="star">
-          <span class="digit">*</span>
-          <span class="letters"></span>
-        </button>
-
-        <button class="key" data-value="0" aria-label="0">
-          <span class="digit">0</span>
-          <span class="letters">+</span>
-        </button>
-
-        <button class="key" data-value="#" aria-label="hash">
-          <span class="digit">#</span>
-          <span class="letters"></span>
-        </button>
+        <!-- Row 4 -->
+        <button class="key" data-value="*" aria-label="star"><span class="digit">*</span><span class="letters"></span></button>
+        <button class="key" data-value="0" aria-label="0"><span class="digit">0</span><span class="letters">+</span></button>
+        <button class="key" data-value="#" aria-label="hash"><span class="digit">#</span><span class="letters"></span></button>
       </div>
 
-      <!-- call button -->
+      <!-- Call button (overlaps nav) -->
       <div class="call-row">
         <button id="callBtn" class="call-button" aria-label="Call" title="Call">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -97,64 +53,59 @@
       </div>
     </main>
 
-    <!-- bottom nav (visual only) -->
+    <!-- bottom nav (visual only) - matches screenshot -->
     <nav class="bottom-nav" aria-hidden="true">
-      <div class="nav-item">
-        <!-- Favorites (star) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 17.3L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+      <!-- Favorites (star) -->
+      <div class="nav-item favorites" role="button" aria-label="Favorites">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M12 17.3L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
         </svg>
         <span>Favorites</span>
       </div>
 
-      <div class="nav-item">
-        <!-- Recents: faint circular shading + clock (hour near 9, minute at 12) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <!-- subtle background circle -->
+      <!-- Recents (faint circle bg + clock) -->
+      <div class="nav-item recents" role="button" aria-label="Recents">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.07"/>
-          <!-- clock outline -->
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <!-- minute hand at 12 -->
-          <line x1="12" y1="12" x2="12" y2="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <!-- hour hand at 9-ish -->
-          <line x1="12" y1="12" x2="7.2" y2="12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="12" y1="12" x2="12" y2="6.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="12" y1="12" x2="7.4" y2="12.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
         <span>Recents</span>
       </div>
 
-      <div class="nav-item">
-        <!-- Contacts: faint circular shading + person glyph -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <!-- subtle background circle -->
+      <!-- Contacts (faint circle bg + silhouette) -->
+      <div class="nav-item contacts" role="button" aria-label="Contacts">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.07"/>
-          <!-- person silhouette -->
-          <path d="M12 12a3 3 0 100-6 3 3 0 000 6zm0 2c-3.5 0-6.5 1.7-6.5 3.8V20h13v-2.2c0-2.1-3-3.8-6.5-3.8z" fill="currentColor"/>
+          <path fill="currentColor" d="M12 12a3 3 0 100-6 3 3 0 000 6zm0 2c-3.5 0-6.5 1.7-6.5 3.8V20h13v-2.2c0-2.1-3-3.8-6.5-3.8z"/>
         </svg>
+        <!-- small purple notification dot under the icon (as in screenshot) -->
+        <span class="notif-dot" aria-hidden="true"></span>
         <span>Contacts</span>
       </div>
 
-      <div class="nav-item active">
-        <!-- Keypad (blue dots grid) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+      <!-- Keypad (active) -->
+      <div class="nav-item active keypad" role="button" aria-label="Keypad">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M5 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7-12a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"/>
         </svg>
         <span>Keypad</span>
       </div>
 
-      <div class="nav-item">
-        <!-- Voicemail: two circles at top with connecting line above them -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <!-- connecting line above the circles -->
-          <line x1="5.2" y1="6.2" x2="18.8" y2="6.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <!-- left circle (top) -->
-          <circle cx="7.2" cy="9.0" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <!-- right circle (top) -->
-          <circle cx="16.8" cy="9.0" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <!-- Voicemail (two circles on top with line above) -->
+      <div class="nav-item voicemail" role="button" aria-label="Voicemail">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <line x1="5.2" y1="6.4" x2="18.8" y2="6.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="7.2" cy="9.2" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="16.8" cy="9.2" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
         </svg>
         <span>Voicemail</span>
       </div>
     </nav>
 
+    <!-- home indicator (white rounded bar) -->
+    <div class="home-indicator" aria-hidden="true"></div>
   </div>
 
   <script src="app.js"></script>
