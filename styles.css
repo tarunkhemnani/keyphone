@@ -29,11 +29,17 @@
   --nav-inactive: #9b9b9b; /* grey used by currentColor for inactive icons */
   --nav-active: #0a84ff;
 
-  /* custom offsets (changed: push icons + labels further down) */
-  --nav-icon-offset: 30px;   /* ← increased from 18px to 30px */
-  --nav-text-offset: 8px;    /* ← increased from 0px to 8px */
+  /* ---------------------
+     NEW: move the whole nav item (icon + label) together
+     control with this variable (positive -> moves down)
+     --------------------- */
+  --nav-item-offset: 12px;
 
-  --nav-bottom-normal: 6px;
+  /* keep old variables available but not used for the independent transforms */
+  --nav-icon-offset: 0px;
+  --nav-text-offset: 0px;
+
+  --nav-bottom-normal: 14px; /* slightly increased so labels don't get clipped */
   --nav-bottom-standalone: -6px;
 
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
@@ -171,7 +177,8 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  transform: translateY(-22px); /* raised to avoid overlap */
+  transform: translateY(-22px); /* raised to avoid overlap with keypad */
+  z-index: 6; /* ensure call button sits above nav if needed */
 }
 .call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
@@ -185,8 +192,9 @@ html,body{
   display:flex;
   justify-content: space-around;
   align-items:flex-end;
-  padding-bottom: env(safe-area-inset-bottom, 12px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 6px); /* give a touch more breathing room */
   pointer-events:auto;
+  z-index: 5;
 }
 
 .nav-item{
@@ -198,9 +206,13 @@ html,body{
   color:var(--nav-inactive);
   pointer-events:auto;
   position: relative;
+
+  /* MOVE whole item down (icon + label together) */
+  transform: translateY(var(--nav-item-offset));
+  transition: transform 180ms ease;
 }
 
-/* Apply offset only to icons */
+/* Keep SVGs in their natural place (no independent translation) */
 .nav-item svg{
   width:28px;
   height:28px;
@@ -208,14 +220,16 @@ html,body{
   fill: currentColor;
   stroke: currentColor;
   vector-effect: non-scaling-stroke;
-  transform: translateY(var(--nav-icon-offset)); /* uses the updated variable */
+  transform: none;
 }
 
-/* Labels stay visible */
+/* Labels stay visible under their icons */
 .nav-item span{
   font-size:12px;
   color:inherit;
-  transform: translateY(var(--nav-text-offset)); /* uses the updated variable */
+  transform: none;
+  line-height:1;
+  margin-top: 2px;
 }
 
 .nav-item.active{ color: var(--nav-active); }
@@ -234,19 +248,18 @@ html,body{
 /* Keypad */
 .nav-item.keypad.active { color: var(--nav-active); }
 
-/* Standalone overrides */
+/* Standalone overrides: push items a bit further when in PWA standalone */
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
-/* fixed: use calc so standalone also adds the extra offset */
-.app.standalone .nav-item svg{
-  transform: translateY(calc(var(--nav-icon-offset) + 12px));
+.app.standalone .nav-item{
+  transform: translateY(calc(var(--nav-item-offset) + 12px));
 }
-.app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 4px); }
+.app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 10px); }
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .key, .call-button{ transition:none; transform:none; }
+  .key, .call-button, .nav-item{ transition:none; transform:none; }
 }
 
 /* small-screen fallback */
@@ -257,7 +270,7 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-icon-offset: 22px; /* smaller for tiny screens */
+    --nav-item-offset: 10px;
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
