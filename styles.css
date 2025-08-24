@@ -25,17 +25,17 @@
   --call-color: #2fd55b;
 
   /* nav */
-  --nav-height: 78px;                  /* base nav height */
+  --nav-height: 78px;                 /* visible bar height (kept small) */
   --nav-inactive: #9b9b9b;
   --nav-active: #0a84ff;
 
-  /* YOUR chosen offset (you said you use 70px) */
+  /* YOUR offset (icons + labels moved down this much) */
   --nav-item-offset: 70px;
 
-  /* compute extra space needed so icons + labels don't overlap the safe/home area */
+  /* extra invisible space needed above the visible bar so icons don't overlap home indicator */
   --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
 
-  /* base breathing room below the nav */
+  /* base breathing room under the visual bar */
   --nav-bottom-normal: 12px;
 
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
@@ -174,33 +174,44 @@ html,body{
   transition: transform 120ms ease;
   pointer-events:auto;
   transform: translateY(-22px);
-  z-index: 12; /* keep call button above nav */
+  z-index: 20; /* keep call button above nav & items */
 }
 .call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
-/* --------------- BOTTOM NAV (fixed and taller when offset large) --------------- */
-/*
- - bottom is anchored to screen bottom (0)
- - height grows by --nav-extra-space so nav background expands upward
- - padding-bottom keeps a little breathing room for touch and safe-area
-*/
+/* -------------------------
+   BOTTOM NAV (container)
+   - container IS tall so items can be positioned,
+   - but the visible black bar is drawn with ::after and stays thin
+   ------------------------- */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
   bottom: 0;
+  /* container height grows so nav items can be pushed down without clipping */
   height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   display:flex;
   justify-content: space-around;
   align-items:flex-end;
   padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 6px);
-  background: linear-gradient(180deg, rgba(0,0,0,1), rgba(0,0,0,1)); /* solid black area */
   pointer-events:auto;
+  z-index: 8;
+}
+
+/* draw the visible thin nav bar at the bottom only (keeps UI like iOS) */
+.bottom-nav::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--nav-height);
+  background: #000;
   z-index: 6;
   box-shadow: 0 -6px 18px rgba(0,0,0,0.35) inset;
 }
 
-/* move the whole nav item (icon + label) down */
+/* NAV ITEMS: move the icon + label down by your offset */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -213,10 +224,10 @@ html,body{
 
   top: var(--nav-item-offset);
   transition: top 180ms ease;
-  z-index: 8; /* above nav background */
+  z-index: 10; /* place above the visible bar */
 }
 
-/* keep SVGs in natural place */
+/* keep SVGs natural */
 .nav-item svg{
   width:28px;
   height:28px;
@@ -243,14 +254,12 @@ html,body{
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Standalone / PWA tweaks */
+/* Standalone tweaks */
 .app.standalone .bottom-nav{
-  /* if the app is standalone, keep bottom still anchored but add a touch more bottom padding */
   height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom) + 8px);
 }
 .app.standalone .nav-item{
   top: calc(var(--nav-item-offset) + 12px);
-  transition: top 180ms ease;
 }
 
 /* reduced motion */
@@ -266,7 +275,7 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-item-offset: 26px; /* smaller on tiny screens */
+    --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
