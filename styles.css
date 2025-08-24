@@ -30,7 +30,7 @@
   --nav-active: #0a84ff;
 
   /* amount to move whole nav item (icon + label) down */
-  --nav-item-offset: 60px; /* ← increased from 30px to 46px */
+  --nav-item-offset: 70px; /* ← increased from 30px to 46px */
 
   --nav-bottom-normal: 22px; /* extra breathing room under labels */
   --nav-bottom-standalone: -6px;
@@ -262,4 +262,5 @@ html,body{
   }
   .nav-item svg{ width:26px; height:26px; }
 }
+
 
