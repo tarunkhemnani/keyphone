@@ -182,7 +182,7 @@ html,body{
 /* -------------------------
    BOTTOM NAV (container)
    - container IS tall so items can be positioned,
-   - but the visible black bar is drawn with ::after and stays thin
+   - we remove any visible overlay so icons remain exactly where you placed them
    ------------------------- */
 .bottom-nav{
   position: fixed;
@@ -196,10 +196,13 @@ html,body{
   padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 6px);
   pointer-events:auto;
   z-index: 8;
+
+  /* ensure container itself has no visible background or shadow */
+  background: transparent;
+  box-shadow: none;
 }
 
-/* draw the visible thin nav bar at the bottom only (keeps UI like iOS) */
-/* <-- CHANGED: make the overlay invisible while keeping nav container height */
+/* remove any visible thin bar overlay */
 .bottom-nav::after{
   content: "";
   position: absolute;
@@ -207,15 +210,15 @@ html,body{
   right: 0;
   bottom: 0;
 
-  /* removed visible bar — keep container spacing but make overlay invisible */
-  height: 0;
-  background: transparent;
+  /* invisible overlay — keeps layout but shows nothing */
+  height: 0 !important;
+  background: transparent !important;
   z-index: 6;
-  box-shadow: none;
+  box-shadow: none !important;
   pointer-events: none;
 }
 
-/* NAV ITEMS: move the icon + label down by your offset */
+/* NAV ITEMS: keep icons exactly where you placed them */
 .nav-item{
   display:flex;
   flex-direction:column;
