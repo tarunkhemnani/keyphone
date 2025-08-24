@@ -111,26 +111,18 @@
   function clearDigits() { digits = ''; updateDisplay(); }
   function doVibrate() { if (navigator.vibrate) try { navigator.vibrate(8); } catch(e){} }
 
-  // attach handlers to keys in the overlay (transparent buttons)
-  // NOTE: only attach to numeric keys 0-9. '*' and '#' are intentionally left inactive.
+  // attach handlers to keys in the overlay (transparent buttons) — ALL keys (1-9,0,*,#)
   keysGrid.querySelectorAll('.key').forEach(key => {
     const value = key.dataset.value;
 
-    // If not a single digit (0-9), make non-interactive and skip handler setup
-    if (!/^[0-9]$/.test(value)) {
-      key.setAttribute('aria-disabled', 'true');
-      key.tabIndex = -1;
-      // keep visual styling but don't attach listeners
-      return;
-    }
-
-    // pointer handlers for numeric keys
+    // pointer handlers
     key.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       try { key.setPointerCapture(ev.pointerId); } catch (e) {}
       key.classList.add('pressed');
       doVibrate();
       longPressActive = false;
+
       if (value === '0') {
         longPressTimer = setTimeout(() => {
           longPressActive = true;
@@ -138,21 +130,25 @@
         }, LONG_PRESS_MS);
       }
     });
+
     key.addEventListener('pointerup', (ev) => {
       ev.preventDefault();
       try { key.releasePointerCapture(ev.pointerId); } catch (e) {}
       key.classList.remove('pressed');
+
       if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+
       if (!longPressActive) appendChar(value);
       longPressActive = false;
     });
+
     key.addEventListener('pointerleave', (ev) => {
       if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
       key.classList.remove('pressed');
       longPressActive = false;
     });
 
-    // keyboard accessibility (Enter / Space)
+    // keyboard accessibility
     key.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.add('pressed'); }
     });
@@ -189,9 +185,9 @@
       return;
     }
 
-    // Only allow digit keys + '+' (if you want to type plus explicitly)
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+') appendChar('+');
+    else if (ev.key === '*' || ev.key === '#') appendChar(ev.key);
     else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); }
   });
 
