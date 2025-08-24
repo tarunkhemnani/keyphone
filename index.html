@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Phone Keypad</title>
+  <title>Phone Keypad (Screenshot UI)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10,16 +10,15 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app" id="app">
-    <!-- top safe area painted black -->
-    <header class="top-safe" aria-hidden="true"></header>
+  <div class="app" id="app" aria-hidden="false">
 
-    <!-- typed-digit display -->
+    <!-- background screenshot is purely visual (in CSS) -->
+    <!-- typed-digit display (kept for accessibility / debugging) -->
     <div class="display" id="display" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- keypad -->
+    <!-- actual interactive DOM sits over the screenshot (transparent) -->
     <main class="keypad-wrap" role="application" aria-label="Dial pad">
-      <div class="keys-grid" id="keysGrid">
+      <div class="keys-grid" id="keysGrid" aria-hidden="false">
         <!-- Row 1 -->
         <button class="key" data-value="1" aria-label="1"><span class="digit">1</span><span class="letters"></span></button>
         <button class="key" data-value="2" aria-label="2"><span class="digit">2</span><span class="letters">ABC</span></button>
@@ -41,68 +40,34 @@
         <button class="key" data-value="#" aria-label="hash"><span class="digit">#</span><span class="letters"></span></button>
       </div>
 
-      <!-- Call button (overlaps nav) -->
+      <!-- Call button (transparent overlay placed where screenshot's green button is) -->
       <div class="call-row">
         <button id="callBtn" class="call-button" aria-label="Call" title="Call">
+          <!-- We keep SVG (invisible) so taps still have a target -->
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 
                      1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 
-                     3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/>
+                     3.57a1 1 0 01-.25 1.02l-2.2 2.2z" />
           </svg>
         </button>
       </div>
     </main>
 
-    <!-- bottom nav (visual only) - voicemail removed -->
-    <nav class="bottom-nav" aria-hidden="true">
-      <!-- Favorites -->
-      <div class="nav-item favorites" role="button" aria-label="Favorites">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="currentColor" d="M12 17.3L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-        <span>Favorites</span>
-      </div>
-
-      <!-- Recents -->
-      <div class="nav-item recents" role="button" aria-label="Recents">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" fill="currentColor" />
-          <line x1="12" y1="12" x2="12" y2="6" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="12" y1="12" x2="6" y2="12" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <span>Recents</span>
-      </div>
-
-      <!-- Contacts -->
-      <div class="nav-item contacts" role="button" aria-label="Contacts">
-        <svg viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="10" fill="currentColor" />
-          <circle cx="12" cy="9.0" r="3.4" fill="#000"/>
-          <path fill="#000" d="M4.8 17.6c0-2.9 4.2-5.0 7.2-5.0s7.2 2.1 7.2 5.0V19H4.8v-1.4z" />
-        </svg>
-        <span>Contacts</span>
-      </div>
-
-      <!-- Keypad (active) -->
-      <div class="nav-item active keypad" role="button" aria-label="Keypad">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="6"  cy="6"  r="1.8" fill="currentColor"/>
-          <circle cx="12" cy="6"  r="1.8" fill="currentColor"/>
-          <circle cx="18" cy="6"  r="1.8" fill="currentColor"/>
-          <circle cx="6"  cy="12" r="1.8" fill="currentColor"/>
-          <circle cx="12" cy="12" r="1.8" fill="currentColor"/>
-          <circle cx="18" cy="12" r="1.8" fill="currentColor"/>
-          <circle cx="6"  cy="18" r="1.8" fill="currentColor"/>
-          <circle cx="12" cy="18" r="1.8" fill="currentColor"/>
-          <circle cx="18" cy="18" r="1.8" fill="currentColor"/>
-        </svg>
-        <span>Keypad</span>
-      </div>
+    <!-- bottom navigation overlay (transparent) -->
+    <nav class="bottom-nav" aria-hidden="false">
+      <div class="nav-item favorites" role="button" tabindex="0" aria-label="Favorites"></div>
+      <div class="nav-item recents" role="button" tabindex="0" aria-label="Recents"></div>
+      <div class="nav-item contacts" role="button" tabindex="0" aria-label="Contacts"></div>
+      <div class="nav-item active keypad" role="button" tabindex="0" aria-label="Keypad"></div>
+      <div class="nav-item voicemail" role="button" tabindex="0" aria-label="Voicemail"></div>
     </nav>
+
   </div>
 
-  <!-- Blend element to visually match & hide the system capsule (only visible in PWA) -->
-  <div class="home-capsule-blend" aria-hidden="true"></div>
+  <!-- calibration helper instructions (hidden by default) -->
+  <div id="calibrationUI" class="calibration-ui" aria-hidden="true">
+    <div>Calibration mode — use arrow keys to nudge overlay. Press <strong>Enter</strong> to save, <strong>Esc</strong> to exit.</div>
+  </div>
 
   <script src="app.js"></script>
 </body>
