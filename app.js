@@ -5,14 +5,15 @@
   const callBtn = document.getElementById('callBtn');
   const appEl = document.getElementById('app');
   const calUI = document.getElementById('calibrationUI');
+  const calText = document.getElementById('calText');
 
   let digits = '';
   let longPressTimer = null;
   let longPressActive = false;
   const LONG_PRESS_MS = 600;
 
-  // Calibration state (persisted)
-  const STORAGE_KEY = 'overlay-calibration-v1';
+  // Calibration (persisted)
+  const STORAGE_KEY = 'overlay-calibration-screenshot-v1';
   let calibration = { x: 0, y: 0 };
 
   function loadCalibration() {
@@ -22,17 +23,17 @@
         calibration = JSON.parse(raw);
         setCalibrationVars();
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
   }
   function saveCalibration() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(calibration)); } catch (e) {}
   }
   function setCalibrationVars() {
-    document.documentElement.style.setProperty('--overlay-offset-x', calibration.x + 'px');
-    document.documentElement.style.setProperty('--overlay-offset-y', calibration.y + 'px');
+    document.documentElement.style.setProperty('--overlay-offset-x', (calibration.x) + 'px');
+    document.documentElement.style.setProperty('--overlay-offset-y', (calibration.y) + 'px');
   }
 
-  // Standalone detection (adds .standalone & .is-pwa)
+  // Standalone detection
   function detectStandalone() {
     const isIOSStandalone = window.navigator.standalone === true;
     const isDisplayModeStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
@@ -53,7 +54,7 @@
     } catch (e) {}
   }
 
-  // keypad UI helpers
+  // UI helpers
   function updateDisplay() {
     if (digits.length === 0) {
       displayEl.style.opacity = '0';
@@ -78,20 +79,18 @@
     }
   }
 
-  // Map taps on invisible nav items to events (user can customize)
+  // Nav items: simple tap feedback
   const navItems = document.querySelectorAll('.bottom-nav .nav-item');
   navItems.forEach((el, idx) => {
     el.addEventListener('click', (ev) => {
       ev.preventDefault();
-      // default behavior: log — replace with actual behavior if you want
-      console.log('nav tap', idx, el.className);
-      // optionally give visual feedback
       el.classList.add('pressed');
       setTimeout(()=>el.classList.remove('pressed'), 160);
+      console.log('nav tapped', idx);
     });
   });
 
-  // Key pointer handlers
+  // Key handlers
   keysGrid.querySelectorAll('.key').forEach(key => {
     const value = key.dataset.value;
 
@@ -127,7 +126,6 @@
       longPressActive = false;
     });
 
-    // keyboard accessibility
     key.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.add('pressed'); }
     });
@@ -136,11 +134,10 @@
     });
   });
 
-  // call button
+  // Call button
   callBtn.addEventListener('click', (ev) => {
     ev.preventDefault();
     if (!digits || digits.length === 0) {
-      // small feedback pulse if no digits
       callBtn.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220 });
       return;
     }
@@ -148,35 +145,64 @@
     window.location.href = 'tel:' + sanitized;
   });
 
-  // keyboard support & delete
+  // keyboard & calibration keys
+  let calibrationMode = false;
+  function enterCalibration() {
+    calibrationMode = true;
+    calUI.classList.add('show');
+    calUI.setAttribute('aria-hidden', 'false');
+    calText.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — arrow keys to nudge, Enter to save, Esc to cancel.`;
+  }
+  function exitCalibration(save) {
+    calibrationMode = false;
+    calUI.classList.remove('show');
+    calUI.setAttribute('aria-hidden', 'true');
+    if (save) saveCalibration();
+    else { loadCalibration(); setCalibrationVars(); }
+  }
+  function adjustCalibration(dir) {
+    const step = 2;
+    if (dir === 'up') calibration.y -= step;
+    if (dir === 'down') calibration.y += step;
+    if (dir === 'left') calibration.x -= step;
+    if (dir === 'right') calibration.x += step;
+    setCalibrationVars();
+    calText.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — arrow keys to nudge, Enter to save, Esc to cancel.`;
+  }
+
   window.addEventListener('keydown', (ev) => {
-    // Calibration toggle: press 'c' to toggle calibration mode (desktop only)
+    // toggle calibration (for desktop testing)
     if (ev.key === 'c' || ev.key === 'C') {
-      toggleCalibration();
+      if (!calibrationMode) enterCalibration();
+      else exitCalibration(true);
       return;
     }
 
-    if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown' || ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') {
-      if (calibrationMode) {
-        ev.preventDefault();
-        adjustCalibration(ev.key);
-        return;
-      }
+    if (calibrationMode) {
+      if (ev.key === 'ArrowUp') { ev.preventDefault(); adjustCalibration('up'); }
+      if (ev.key === 'ArrowDown') { ev.preventDefault(); adjustCalibration('down'); }
+      if (ev.key === 'ArrowLeft') { ev.preventDefault(); adjustCalibration('left'); }
+      if (ev.key === 'ArrowRight') { ev.preventDefault(); adjustCalibration('right'); }
+      if (ev.key === 'Enter') { ev.preventDefault(); exitCalibration(true); }
+      if (ev.key === 'Escape') { ev.preventDefault(); exitCalibration(false); }
+      return;
     }
 
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+') appendChar('+');
     else if (ev.key === '*' || ev.key === '#') appendChar(ev.key);
     else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); }
-    else if (ev.key === 'Enter' && calibrationMode) {
-      // save and exit calibration
-      exitCalibration(true);
-    } else if (ev.key === 'Escape' && calibrationMode) {
-      exitCalibration(false);
-    }
   });
 
-  // Expose API
+  // initialize
+  loadCalibration();
+  detectStandalone();
+  updateDisplay();
+
+  // ensure taps don't leave input focus weirdness
+  document.addEventListener('click', () => { try { document.activeElement.blur(); } catch (e) {} });
+
+  // expose API
   window.__phoneKeypad = {
     append: (ch) => { appendChar(ch); },
     clear: clearDigits,
@@ -184,47 +210,4 @@
     isStandalone: () => appEl.classList.contains('standalone'),
     calibration: () => ({...calibration})
   };
-
-  // Calibration helpers (toggle with 'c' key on desktop or call window functions)
-  let calibrationMode = false;
-  function toggleCalibration() {
-    calibrationMode = !calibrationMode;
-    if (calibrationMode) enterCalibration();
-    else exitCalibration(true);
-  }
-  function enterCalibration() {
-    calUI.classList.add('show');
-    calUI.setAttribute('aria-hidden', 'false');
-    calibrationMode = true;
-    // show current offsets
-    calUI.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — Arrow keys to nudge. Enter to save, Esc to cancel.`;
-  }
-  function exitCalibration(save) {
-    calibrationMode = false;
-    calUI.classList.remove('show');
-    calUI.setAttribute('aria-hidden', 'true');
-    if (save) saveCalibration();
-    else { loadCalibration(); setCalibrationVars(); } // revert
-  }
-  function adjustCalibration(arrowKey) {
-    const step = 2; // px per press (small)
-    if (arrowKey === 'ArrowUp') calibration.y = calibration.y - step;
-    if (arrowKey === 'ArrowDown') calibration.y = calibration.y + step;
-    if (arrowKey === 'ArrowLeft') calibration.x = calibration.x - step;
-    if (arrowKey === 'ArrowRight') calibration.x = calibration.x + step;
-    setCalibrationVars();
-    calUI.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — Arrow keys to nudge. Enter to save, Esc to cancel.`;
-  }
-
-  // initialize
-  loadCalibration();
-  detectStandalone();
-  updateDisplay();
-
-  // Helpful: tap anywhere on background to focus (mobile)
-  document.addEventListener('click', (ev) => {
-    // allow normal clicks to flow to buttons; this just ensures focus on body for keyboard
-    try { document.activeElement.blur(); } catch (e) {}
-  });
-
 })();
