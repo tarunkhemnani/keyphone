@@ -1,4 +1,5 @@
 // app.js — visible keypad overlay, all keys active, viewport-sync, calibration + long-press 0 -> +
+// When the first digit is typed the background image switches from screenshot.png -> numpad.png
 (() => {
   const displayEl = document.getElementById('display');
   const keysGrid = document.getElementById('keysGrid');
@@ -13,6 +14,10 @@
   const LONG_PRESS_MS = 600;
   const STORAGE_KEY = 'overlay-calibration-screenshot-v3';
   let calibration = { x: 0, y: 0 };
+
+  // Background image filenames (update these if your files are named differently)
+  const ORIGINAL_BG = "url('screenshot.png')";
+  const FIRST_TYPED_BG = "url('numpad.png')";
 
   /* ---------- Viewport sync ---------- */
   (function setupViewportSync() {
@@ -90,12 +95,34 @@
       displayEl.textContent = digits;
     }
   }
+
+  // Called when the very first character is appended — flips the background
+  function onFirstCharTyped() {
+    try {
+      // Set inline style on the app element to override CSS background-image
+      appEl.style.backgroundImage = FIRST_TYPED_BG;
+    } catch (e) { console.warn(e); }
+  }
+
   function appendChar(ch) {
     if (digits.length >= 50) return;
+    const wasEmpty = digits.length === 0;
     digits += ch;
     updateDisplay();
+    if (wasEmpty) {
+      onFirstCharTyped();
+    }
   }
-  function clearDigits() { digits = ''; updateDisplay(); }
+
+  function clearDigits() {
+    digits = '';
+    updateDisplay();
+    try {
+      // restore original background
+      appEl.style.backgroundImage = ORIGINAL_BG;
+    } catch(e){}
+  }
+
   function doVibrate() { if (navigator.vibrate) try { navigator.vibrate(8); } catch(e){} }
 
   /* ---------- Attach events to all keys (1..9,0,*,#) ---------- */
@@ -202,7 +229,7 @@
     // general keypad typing
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+' || ev.key === '*' || ev.key === '#') appendChar(ev.key);
-    else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); }
+    else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); if (digits.length === 0) { try { appEl.style.backgroundImage = ORIGINAL_BG; } catch(e){} } }
   });
 
   // bottom nav taps (transparent overlay)
