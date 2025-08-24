@@ -1,37 +1,29 @@
 :root{
   --bg: #000000;
 
-  /* slightly bigger than your last small set */
-  --circle-size: 72px;   /* key diameter (bigger) */
+  /* keep your current sizing & positions — these should match your existing setup */
+  --circle-size: 72px;
   --gap-x: 20px;
   --gap-y: 16px;
-
-  /* calibration default; nudge with 'c' */
   --overlay-offset-x: 0px;
-  --overlay-offset-y: 320px; /* keypad positioned a bit lower */
-
+  --overlay-offset-y: 300px;
   --call-size: 68px;
   --call-color: #2fd55b;
   --call-lift: -14px;
-
   --digit-size: 28px;
   --digit-weight: 500;
-
   --letters-size: 11px;
-  --letters-color: #e6e6e6;
+  --letters-color: #d6d6d6; /* lighter label color to match screenshot */
   --letters-weight: 700;
-  --letters-spacing: 1.2px;
-
-  /* nav and safe handling */
+  --letters-spacing: 2.6px; /* wider spacing like iPhone */
   --nav-height: 78px;
   --nav-item-offset: 70px;
   --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
   --nav-bottom-normal: 12px;
-
   --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
 }
 
-/* Basic reset */
+/* reset */
 *{box-sizing:border-box}
 html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; -webkit-text-size-adjust:100%; }
 
@@ -47,13 +39,13 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   touch-action: manipulation;
 }
 
-/* typed-digit display: positioned relative to keypad so digits show lower */
+/* typed-digit display */
 .display{
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
-  transform: translateY(calc(var(--overlay-offset-y) - 96px)); /* <--- lowered relative to keypad */
+  transform: translateY(calc(var(--overlay-offset-y) - 96px));
   width:100%;
   height:48px;
   display:flex;
@@ -64,22 +56,14 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   letter-spacing:2px;
   font-weight:600;
   pointer-events:none;
-  opacity:0; /* shown when user types */
+  opacity:0;
   transition: opacity 140ms ease, transform 120ms ease;
 }
 
-/* overlay container */
-.keypad-wrap{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  pointer-events:none;
-}
+/* container */
+.keypad-wrap{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; pointer-events:none; }
 
-/* keys grid */
+/* grid */
 .keys-grid{
   width: var(--grid-w);
   margin: 0 auto;
@@ -96,50 +80,79 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   will-change: transform;
 }
 
-/* key visuals (iPhone-like) */
+/* KEY LOOK — updated to match your screenshot:
+   - uniform matte dark grey fill
+   - slight top highlight (soft inner gradient)
+   - subtle inner shadow at the bottom
+   - soft outer shadow
+   - no white ring / border
+*/
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
+
+  /* matte dark grey core */
+  background: linear-gradient(180deg, rgba(80,80,80,0.08), rgba(56,56,56,1) 45%);
+
+  /* inner highlight and inside shadow to mimic iOS key look */
+  box-shadow:
+    /* soft outer drop shadow */
+    0 8px 18px rgba(0,0,0,0.55),
+    /* subtle darker bottom inset */
+    inset 0 -8px 12px rgba(0,0,0,0.5),
+    /* faint top sheen */
+    inset 0 8px 14px rgba(255,255,255,0.02);
+
+  border: none !important; /* ensure no visible stroke */
+  background-clip: padding-box;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background: #3a3a3a;
-  box-shadow:
-    0 10px 20px rgba(0,0,0,0.55),
-    inset 0 -6px 12px rgba(0,0,0,0.45),
-    inset 0 6px 10px rgba(255,255,255,0.02);
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
-  transition: transform 100ms cubic-bezier(.2,.8,.2,1), background-color 120ms linear;
+  transition: transform 110ms cubic-bezier(.2,.8,.2,1), box-shadow 110ms ease, background 110ms ease;
 }
-.key.pressed{ transform: scale(0.98); background: #454545; box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 6px 10px rgba(255,255,255,0.01); }
 
-/* numbers + letters */
+/* pressed state: darker and slightly flattened */
+.key.pressed{
+  transform: scale(0.98);
+  background: linear-gradient(180deg, rgba(60,60,60,0.06), rgba(44,44,44,1) 45%);
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.55),
+    inset 0 -6px 10px rgba(0,0,0,0.6),
+    inset 0 6px 10px rgba(255,255,255,0.01);
+}
+
+/* NUMBERS - crisp white, vertically centered similar to iOS */
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color: #fff;
+  color: #ffffff;
   line-height:1;
-  margin-top:-3px;
+  margin-top:-4px;
   letter-spacing:0.2px;
   pointer-events:none;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.25); /* tiny depth like screenshot */
 }
+
+/* LETTERS - spaced, lighter color */
 .letters{
   font-size: var(--letters-size);
   color: var(--letters-color);
   letter-spacing: var(--letters-spacing);
-  margin-top:5px;
+  margin-top:6px;
   text-transform: uppercase;
   font-weight: var(--letters-weight);
   pointer-events:none;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.22);
 }
 .key .letters:empty{ height:10px; }
 
-/* call button area (tuned for new circle size) */
+/* Call button */
 .call-row{
   width: var(--grid-w);
   margin: 0 auto;
@@ -148,7 +161,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   justify-content:center;
   pointer-events:none;
   position: relative;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 380px));
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 360px));
 }
 .call-button{
   width:var(--call-size);
@@ -158,7 +171,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.45);
   border:none;
   cursor:pointer;
   transition: transform 120ms ease;
@@ -166,10 +179,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transform: translateY(var(--call-lift));
   z-index: 40;
 }
-.call-button:active{ transform: translateY(calc(var(--call-lift) + 2px)) scale(0.98); }
 .call-button svg{ width:36px; height:36px; fill:#fff; }
 
-/* bottom nav (fixed) */
+/* bottom nav and nav items (unchanged) */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -183,10 +195,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   pointer-events:auto;
   z-index: 20;
   box-shadow: 0 -6px 18px rgba(0,0,0,0.25) inset;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 920px));
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 900px));
 }
 
-/* nav items */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -204,22 +215,15 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 .nav-item span{ font-size:11px; color:inherit; margin-top:2px; }
 .nav-item.active{ color:#0a84ff; }
 
-/* calibration UI */
-.calibration-ui{
-  position: fixed; left:50%; transform: translateX(-50%); bottom: 18px;
-  background: rgba(0,0,0,0.6); color:#fff; padding:8px 12px; border-radius:8px; font-size:13px; display:none; z-index:9999;
-}
-.calibration-ui.show{ display:block; }
+/* focus outlines (keep for a11y) */
+.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
-/* focus outlines */
-.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset:3px; }
-
-/* reduced motion */
+/* reduced motion fallback */
 @media (prefers-reduced-motion: reduce){
   .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
 }
 
-/* small screens fallback */
+/* small screens fallback - keep same visuals */
 @media (max-width:360px){
   :root{
     --circle-size:58px;
