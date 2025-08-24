@@ -15,8 +15,11 @@
     const isDisplayModeStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
     if (isIOSStandalone || isDisplayModeStandalone) {
       appEl.classList.add('standalone');
+      // add a document-level class for PWA-only CSS rules (blend, lift)
+      document.documentElement.classList.add('is-pwa');
     } else {
       appEl.classList.remove('standalone');
+      document.documentElement.classList.remove('is-pwa');
     }
   }
   detectStandalone();
