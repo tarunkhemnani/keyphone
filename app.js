@@ -1,5 +1,8 @@
-// app.js - keypad + transparent overlay + standalone detection + calibration
+// app.js — merged behavior:
+//  - visualViewport / viewport-sync (from your working app.js)
+//  - transparent screenshot overlay keypad + calibration + keypad logic
 (() => {
+  const API_BASE = ""; // not used here but kept for parity with your code
   const displayEl = document.getElementById('display');
   const keysGrid = document.getElementById('keysGrid');
   const callBtn = document.getElementById('callBtn');
@@ -12,10 +15,46 @@
   let longPressActive = false;
   const LONG_PRESS_MS = 600;
 
-  // Calibration (persisted)
+  /* ---------- Viewport sync: match visualViewport and pin heights to avoid sliding/gaps ---------- */
+  (function setupViewportSync() {
+    function updateViewportHeight() {
+      try {
+        const vv = window.visualViewport;
+        const base = vv ? Math.round(vv.height) : window.innerHeight;
+        const overfill = 8; // small overfill to avoid rounding gaps
+        const used = Math.max(100, base + overfill);
+        document.documentElement.style.setProperty('--app-viewport-height', used + 'px');
+        // also set explicit sizes on app / body to keep painting consistent
+        const ls = document.querySelector('.lockscreen');
+        if (ls) ls.style.height = used + 'px';
+        document.body.style.height = used + 'px';
+      } catch (err) {
+        console.warn('viewport sync failed', err);
+      }
+    }
+
+    window.addEventListener('load', updateViewportHeight, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportHeight, { passive: true });
+      window.visualViewport.addEventListener('scroll', updateViewportHeight, { passive: true });
+    }
+    window.addEventListener('resize', updateViewportHeight, { passive: true });
+    window.addEventListener('orientationchange', updateViewportHeight, { passive: true });
+
+    updateViewportHeight();
+
+    // catch iOS toolbar animation frames with a few repeats
+    let t = 0;
+    const id = setInterval(() => {
+      updateViewportHeight();
+      t += 1;
+      if (t > 20) clearInterval(id);
+    }, 120);
+  })();
+
+  /* ---------- Calibration (persisted) ---------- */
   const STORAGE_KEY = 'overlay-calibration-screenshot-v1';
   let calibration = { x: 0, y: 0 };
-
   function loadCalibration() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -23,17 +62,17 @@
         calibration = JSON.parse(raw);
         setCalibrationVars();
       }
-    } catch (e) {}
+    } catch (e){}
   }
   function saveCalibration() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(calibration)); } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(calibration)); } catch(e){}
   }
   function setCalibrationVars() {
-    document.documentElement.style.setProperty('--overlay-offset-x', (calibration.x) + 'px');
-    document.documentElement.style.setProperty('--overlay-offset-y', (calibration.y) + 'px');
+    document.documentElement.style.setProperty('--overlay-offset-x', (calibration.x || 0) + 'px');
+    document.documentElement.style.setProperty('--overlay-offset-y', (calibration.y || 0) + 'px');
   }
 
-  // Standalone detection
+  /* ---------- Standalone detection (adds class if PWA) ---------- */
   function detectStandalone() {
     const isIOSStandalone = window.navigator.standalone === true;
     const isDisplayModeStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
@@ -54,7 +93,7 @@
     } catch (e) {}
   }
 
-  // UI helpers
+  /* ---------- keypad helpers ---------- */
   function updateDisplay() {
     if (digits.length === 0) {
       displayEl.style.opacity = '0';
@@ -69,38 +108,19 @@
     digits += ch;
     updateDisplay();
   }
-  function clearDigits() {
-    digits = '';
-    updateDisplay();
-  }
-  function doVibrate() {
-    if (navigator.vibrate) {
-      try { navigator.vibrate(8); } catch (e) {}
-    }
-  }
+  function clearDigits() { digits = ''; updateDisplay(); }
+  function doVibrate() { if (navigator.vibrate) try { navigator.vibrate(8); } catch(e){} }
 
-  // Nav items: simple tap feedback
-  const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-  navItems.forEach((el, idx) => {
-    el.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      el.classList.add('pressed');
-      setTimeout(()=>el.classList.remove('pressed'), 160);
-      console.log('nav tapped', idx);
-    });
-  });
-
-  // Key handlers
+  // attach handlers to keys in the overlay (transparent buttons)
   keysGrid.querySelectorAll('.key').forEach(key => {
     const value = key.dataset.value;
-
+    // pointer handlers
     key.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       try { key.setPointerCapture(ev.pointerId); } catch (e) {}
       key.classList.add('pressed');
       doVibrate();
       longPressActive = false;
-
       if (value === '0') {
         longPressTimer = setTimeout(() => {
           longPressActive = true;
@@ -108,24 +128,21 @@
         }, LONG_PRESS_MS);
       }
     });
-
     key.addEventListener('pointerup', (ev) => {
       ev.preventDefault();
       try { key.releasePointerCapture(ev.pointerId); } catch (e) {}
       key.classList.remove('pressed');
-
       if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-
       if (!longPressActive) appendChar(value);
       longPressActive = false;
     });
-
     key.addEventListener('pointerleave', (ev) => {
       if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
       key.classList.remove('pressed');
       longPressActive = false;
     });
 
+    // keyboard accessibility
     key.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.add('pressed'); }
     });
@@ -134,50 +151,24 @@
     });
   });
 
-  // Call button
+  // call button behavior (invisible overlay)
   callBtn.addEventListener('click', (ev) => {
     ev.preventDefault();
     if (!digits || digits.length === 0) {
-      callBtn.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220 });
+      callBtn.animate([{ transform: 'scale(1)' },{ transform: 'scale(0.96)' },{ transform: 'scale(1)' }], { duration: 220 });
       return;
     }
     const sanitized = digits.replace(/[^\d+#*]/g, '');
     window.location.href = 'tel:' + sanitized;
   });
 
-  // keyboard & calibration keys
-  let calibrationMode = false;
-  function enterCalibration() {
-    calibrationMode = true;
-    calUI.classList.add('show');
-    calUI.setAttribute('aria-hidden', 'false');
-    calText.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — arrow keys to nudge, Enter to save, Esc to cancel.`;
-  }
-  function exitCalibration(save) {
-    calibrationMode = false;
-    calUI.classList.remove('show');
-    calUI.setAttribute('aria-hidden', 'true');
-    if (save) saveCalibration();
-    else { loadCalibration(); setCalibrationVars(); }
-  }
-  function adjustCalibration(dir) {
-    const step = 2;
-    if (dir === 'up') calibration.y -= step;
-    if (dir === 'down') calibration.y += step;
-    if (dir === 'left') calibration.x -= step;
-    if (dir === 'right') calibration.x += step;
-    setCalibrationVars();
-    calText.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — arrow keys to nudge, Enter to save, Esc to cancel.`;
-  }
-
+  // keyboard support & delete
   window.addEventListener('keydown', (ev) => {
-    // toggle calibration (for desktop testing)
+    // calibration toggle (desktop)
     if (ev.key === 'c' || ev.key === 'C') {
-      if (!calibrationMode) enterCalibration();
-      else exitCalibration(true);
+      if (!calibrationMode) enterCalibration(); else exitCalibration(true);
       return;
     }
-
     if (calibrationMode) {
       if (ev.key === 'ArrowUp') { ev.preventDefault(); adjustCalibration('up'); }
       if (ev.key === 'ArrowDown') { ev.preventDefault(); adjustCalibration('down'); }
@@ -194,13 +185,49 @@
     else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); }
   });
 
-  // initialize
+  // --- simple bottom nav feedback (transparent overlay buttons) ---
+  document.querySelectorAll('.bottom-nav .nav-item').forEach((el, idx) => {
+    el.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      el.classList.add('pressed');
+      setTimeout(()=>el.classList.remove('pressed'), 160);
+      // you can hook navigation behavior here
+      console.log('nav tap', idx);
+    });
+  });
+
+  // ---------- Calibration mode ----------
+  let calibrationMode = false;
+  function enterCalibration() {
+    calibrationMode = true;
+    calUI.classList.add('show');
+    calText.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — arrow keys to nudge. Enter save, Esc cancel.`;
+    calUI.setAttribute('aria-hidden', 'false');
+  }
+  function exitCalibration(save) {
+    calibrationMode = false;
+    calUI.classList.remove('show');
+    calUI.setAttribute('aria-hidden', 'true');
+    if (save) saveCalibration();
+    else { loadCalibration(); setCalibrationVars(); }
+  }
+  function adjustCalibration(dir) {
+    const step = 2;
+    if (dir === 'up') calibration.y -= step;
+    if (dir === 'down') calibration.y += step;
+    if (dir === 'left') calibration.x -= step;
+    if (dir === 'right') calibration.x += step;
+    setCalibrationVars();
+    calText.textContent = `Calibration: x=${calibration.x}px y=${calibration.y}px — arrow keys to nudge. Enter save, Esc cancel.`;
+  }
+
+  // init
   loadCalibration();
   detectStandalone();
   updateDisplay();
 
-  // ensure taps don't leave input focus weirdness
-  document.addEventListener('click', () => { try { document.activeElement.blur(); } catch (e) {} });
+  // tidy focus behaviour
+  document.addEventListener('click', () => { try { document.activeElement.blur(); } catch(e){} });
 
   // expose API
   window.__phoneKeypad = {
