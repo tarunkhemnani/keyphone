@@ -7,12 +7,12 @@
   --key-shadow: rgba(0,0,0,0.6);
   --key-inner: rgba(255,255,255,0.03);
 
-  /* sizes (tuned to match screenshot) */
-  --circle-size: 82px;        /* slightly bigger keys */
+  /* sizes */
+  --circle-size: 76px;
   --gap-x: 34px;
   --gap-y: 22px;
 
-  --digit-size: 44px;
+  --digit-size: 42px;
   --digit-weight: 500;
 
   --letters-size: 12px;
@@ -21,20 +21,19 @@
   --letters-spacing: 1.6px;
 
   /* call button */
-  --call-size: 92px;          /* larger call button */
-  --call-translate: -18px;    /* how much the call button is raised (negative = up) */
-  --call-shadow-y: 12px;
+  --call-size: 84px;
+  --call-color: #2fd55b;
 
   /* nav */
   --nav-height: 78px;
   --nav-inactive: #9b9b9b; /* grey used by currentColor for inactive icons */
   --nav-active: #0a84ff;
 
-  /* custom offsets */
-  --nav-icon-offset: 22px;   /* push icons down more (matches screenshot) */
-  --nav-text-offset: 6px;    /* keep labels visible below icons */
+  /* custom offsets (changed: push icons + labels further down) */
+  --nav-icon-offset: 30px;   /* ← increased from 18px to 30px */
+  --nav-text-offset: 8px;    /* ← increased from 0px to 8px */
 
-  --nav-bottom-normal: 12px;
+  --nav-bottom-normal: 6px;
   --nav-bottom-standalone: -6px;
 
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
@@ -73,7 +72,7 @@ html,body{
 .display{
   width:100%;
   height:48px;
-  margin-top: 46px; /* nudged up so keypad sits visually like screenshot */
+  margin-top: 66px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -90,7 +89,7 @@ html,body{
 .keys-grid{
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 26px; /* moved slightly down to align with screenshot */
+  margin-top: 6px;
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -152,31 +151,29 @@ html,body{
 .call-row{
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 10px; /* slight spacing between keypad and call button */
+  margin-top: 6px;
   display:flex;
   justify-content:center;
   pointer-events:none;
   position: relative;
 }
 
-/* call button positioned so it sits between keypad and nav (not overlapping zero) */
 .call-button{
   width:var(--call-size);
   height:var(--call-size);
   border-radius:999px;
-  background:var(--call-color, #2fd55b);
+  background:var(--call-color);
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 var(--call-shadow-y) 28px rgba(0,0,0,0.45);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
   border:none;
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  transform: translateY(var(--call-translate));
-  z-index: 6;
+  transform: translateY(-22px); /* raised to avoid overlap */
 }
-.call-button:active{ transform: translateY(var(--call-translate)) scale(0.98); }
+.call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
 /* bottom nav */
@@ -190,7 +187,6 @@ html,body{
   align-items:flex-end;
   padding-bottom: env(safe-area-inset-bottom, 12px);
   pointer-events:auto;
-  z-index: 5;
 }
 
 .nav-item{
@@ -212,14 +208,14 @@ html,body{
   fill: currentColor;
   stroke: currentColor;
   vector-effect: non-scaling-stroke;
-  transform: translateY(var(--nav-icon-offset));
+  transform: translateY(var(--nav-icon-offset)); /* uses the updated variable */
 }
 
 /* Labels stay visible */
 .nav-item span{
   font-size:12px;
   color:inherit;
-  transform: translateY(var(--nav-text-offset));
+  transform: translateY(var(--nav-text-offset)); /* uses the updated variable */
 }
 
 .nav-item.active{ color: var(--nav-active); }
@@ -242,7 +238,7 @@ html,body{
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
-/* Be explicit about calc to ensure valid CSS */
+/* fixed: use calc so standalone also adds the extra offset */
 .app.standalone .nav-item svg{
   transform: translateY(calc(var(--nav-icon-offset) + 12px));
 }
@@ -261,10 +257,8 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-icon-offset: 14px;
+    --nav-icon-offset: 22px; /* smaller for tiny screens */
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
-    --call-translate: -14px;
-    --nav-bottom-normal: 8px;
   }
   .nav-item svg{ width:26px; height:26px; }
 }
