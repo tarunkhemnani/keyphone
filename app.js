@@ -1,5 +1,5 @@
 // app.js — visible keypad overlay, all keys active, viewport-sync, calibration + long-press 0 -> +
-// When the first digit is typed the background image switches from screenshot.png -> numpad.png
+// Preloads replacement background (numpad.png) so the swap on first typed digit does not glitch.
 (() => {
   const displayEl = document.getElementById('display');
   const keysGrid = document.getElementById('keysGrid');
@@ -15,9 +15,40 @@
   const STORAGE_KEY = 'overlay-calibration-screenshot-v3';
   let calibration = { x: 0, y: 0 };
 
-  // Background image filenames (update these if your files are named differently)
+  // Background image filenames
   const ORIGINAL_BG = "url('screenshot.png')";
   const FIRST_TYPED_BG = "url('numpad.png')";
+
+  // Preload flags and object
+  let _numpadPreloaded = false;
+  let _numpadImage = null;
+
+  function preloadReplacementImage() {
+    try {
+      // also supported by the <link rel="preload"> hint in index.html, but do JS caching as well
+      _numpadImage = new Image();
+      // optional: set crossOrigin if you serve it with CORS and want to reuse canvas/etc.
+      // _numpadImage.crossOrigin = 'anonymous';
+      _numpadImage.onload = () => {
+        _numpadPreloaded = true;
+        // keep the image object referenced so it stays in memory
+        console.log('numpad.png preloaded');
+      };
+      _numpadImage.onerror = (err) => {
+        _numpadPreloaded = false;
+        console.warn('numpad.png preload failed', err);
+        _numpadImage = null;
+      };
+      // start the load
+      _numpadImage.src = 'numpad.png';
+      // also kick off a slightly-robust fetch (for browsers that may defer image load):
+      // we intentionally do not await — just start it early.
+    } catch (e) {
+      console.warn('preload replacement image failed', e);
+      _numpadPreloaded = false;
+      _numpadImage = null;
+    }
+  }
 
   /* ---------- Viewport sync ---------- */
   (function setupViewportSync() {
@@ -99,7 +130,8 @@
   // Called when the very first character is appended — flips the background
   function onFirstCharTyped() {
     try {
-      // Set inline style on the app element to override CSS background-image
+      // If preloaded flag is true we know the image is cached and swap is immediate.
+      // If not preloaded, still attempt to set it — browser will fetch it (may show slight delay).
       appEl.style.backgroundImage = FIRST_TYPED_BG;
     } catch (e) { console.warn(e); }
   }
@@ -243,6 +275,7 @@
   });
 
   // init
+  preloadReplacementImage();   // <-- start fetching the replacement image immediately
   loadCalibration();
   detectStandalone();
   setupKeys();
@@ -256,6 +289,8 @@
     clear: clearDigits,
     getDigits: () => digits,
     isStandalone: () => appEl.classList.contains('standalone'),
-    calibration: () => ({...calibration})
+    calibration: () => ({...calibration}),
+    // expose preload state for debugging if desired
+    __numpadPreloaded: () => _numpadPreloaded
   };
 })();
