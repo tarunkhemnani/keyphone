@@ -12,11 +12,10 @@
 <body>
   <div class="app" id="app" aria-hidden="false">
 
-    <!-- background screenshot is purely visual (in CSS) -->
-    <!-- typed-digit display (kept for accessibility / debugging) -->
+    <!-- hidden display kept for a11y/debug -->
     <div class="display" id="display" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- actual interactive DOM sits over the screenshot (transparent) -->
+    <!-- interactive overlay (transparent) -->
     <main class="keypad-wrap" role="application" aria-label="Dial pad">
       <div class="keys-grid" id="keysGrid" aria-hidden="false">
         <!-- Row 1 -->
@@ -40,10 +39,9 @@
         <button class="key" data-value="#" aria-label="hash"><span class="digit">#</span><span class="letters"></span></button>
       </div>
 
-      <!-- Call button (transparent overlay placed where screenshot's green button is) -->
+      <!-- Call button overlay -->
       <div class="call-row">
         <button id="callBtn" class="call-button" aria-label="Call" title="Call">
-          <!-- We keep SVG (invisible) so taps still have a target -->
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 
                      1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 
@@ -53,7 +51,7 @@
       </div>
     </main>
 
-    <!-- bottom navigation overlay (transparent) -->
+    <!-- invisible bottom nav overlay (matches screenshot icons) -->
     <nav class="bottom-nav" aria-hidden="false">
       <div class="nav-item favorites" role="button" tabindex="0" aria-label="Favorites"></div>
       <div class="nav-item recents" role="button" tabindex="0" aria-label="Recents"></div>
@@ -64,9 +62,9 @@
 
   </div>
 
-  <!-- calibration helper instructions (hidden by default) -->
+  <!-- calibration UI (toggle with key 'c' on desktop; used for micro-adjust) -->
   <div id="calibrationUI" class="calibration-ui" aria-hidden="true">
-    <div>Calibration mode — use arrow keys to nudge overlay. Press <strong>Enter</strong> to save, <strong>Esc</strong> to exit.</div>
+    <div id="calText">Calibration mode — arrow keys to nudge, Enter save, Esc cancel.</div>
   </div>
 
   <script src="app.js"></script>
