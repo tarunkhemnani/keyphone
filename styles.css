@@ -1,21 +1,21 @@
 :root{
   --bg: #000000;
 
-  /* tuned to your screenshot (944×2048) */
-  --circle-size: 188px;    /* diameter of keypad circles measured from screenshot */
-  --gap-x: 57px;           /* horizontal gap between circles (approx) */
-  --gap-y: 42px;           /* vertical gap between circles (approx) */
+  /* tuned to your screenshot */
+  --circle-size: 188px;
+  --gap-x: 57px;
+  --gap-y: 42px;
 
-  /* overlay offsets: these place the transparent controls over the screenshot */
-  /* Y was set so first row centers match screenshot; tweak with calibration if needed */
+  /* overlay offsets (you can calibrate if needed) */
   --overlay-offset-x: 0px;
-  --overlay-offset-y: 629px; /* tuned for your screenshot */
+  --overlay-offset-y: 629px;
 
-  /* call button lift (so overlay call tap sits over green circle) */
   --call-lift: -20px;
-
   --digit-size: 42px;
   --digit-weight: 500;
+
+  /* app viewport height set by JS: --app-viewport-height */
+  --app-viewport-height: 100svh;
 }
 
 /* base */
@@ -24,26 +24,30 @@ html,body{
   height:100%;
   margin:0;
   background:var(--bg);
-  font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color:#fff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text","SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+  background-color: #000; /* ensure black behind everything */
 }
 
-/* screenshot as full-screen background (place screenshot.png beside these files) */
+/* app container pinned to viewport height (visualViewport sync will set --app-viewport-height) */
 .app{
   position:fixed;
-  inset:0;
+  left:0; right:0;
+  top:0;
+  /* important: use the JS-updated variable to pin height to visualViewport */
+  height: var(--app-viewport-height);
+  min-height: var(--app-viewport-height);
   background-image: url('screenshot.png');
   background-repeat: no-repeat;
   background-position: center top;
   background-size: cover;
+  overflow: hidden;
   touch-action: manipulation;
-  -webkit-user-select: none;
-  user-select: none;
-  overflow:hidden;
 }
 
-/* hidden display (kept for accessibility) */
+/* hidden display */
 .display{
   width:100%;
   height:48px;
@@ -55,11 +59,10 @@ html,body{
   font-size:22px;
   letter-spacing:2px;
   font-weight:500;
-  opacity:0;
-  pointer-events:none;
+  opacity:0; pointer-events:none;
 }
 
-/* overlay container for interactive controls */
+/* overlay container */
 .keypad-wrap{
   position:absolute;
   inset:0;
@@ -70,7 +73,7 @@ html,body{
   pointer-events:none;
 }
 
-/* keys grid — centered horizontally, shifted vertically with overlay-offset-y */
+/* keys grid */
 .keys-grid{
   width: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   margin: 0 auto;
@@ -85,42 +88,28 @@ html,body{
   transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
 }
 
-/* transparent keys (visual comes from screenshot) */
+/* transparent keys */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
   display:flex;
-  flex-direction:column;
   align-items:center;
   justify-content:center;
-  border:none;
   background: transparent;
+  border:none;
   cursor:pointer;
-  transition: transform 120ms ease, background-color 120ms ease;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
 }
+.key.pressed{ transform: scale(0.98); background: rgba(255,255,255,0.04); }
 
-/* subtle visible feedback on press */
-.key.pressed{
-  transform: scale(0.98);
-  background: rgba(255,255,255,0.04);
-}
-
-/* digits kept for a11y, invisible visually */
-.digit{
-  font-size: var(--digit-size);
-  font-weight: var(--digit-weight);
-  color: rgba(255,255,255,0.0001);
-  line-height:1;
-  margin-top:-2px;
-  pointer-events:none;
-}
+/* digits invisible but present for accessibility */
+.digit{ font-size: var(--digit-size); font-weight: var(--digit-weight); color: rgba(255,255,255,0.0001); pointer-events:none; }
 .letters{ color: rgba(255,255,255,0.0001); pointer-events:none; }
 
-/* call button overlay placed roughly where screenshot shows green circle */
+/* call button overlay */
 .call-row{
   width: calc(var(--call-size,84px));
   margin: 0 auto;
@@ -129,77 +118,46 @@ html,body{
   justify-content:center;
   pointer-events:none;
   position: relative;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 786px)); /* fine-tuned placement */
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 786px));
 }
 .call-button{
-  width:84px;
-  height:84px;
-  border-radius:999px;
-  background: transparent;
-  border: none;
-  cursor:pointer;
-  pointer-events:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform: translateY(var(--call-lift));
-  transition: transform 120ms ease;
-  -webkit-tap-highlight-color: transparent;
+  width:84px; height:84px; border-radius:999px; background:transparent; border:none;
+  pointer-events:auto; display:flex; align-items:center; justify-content:center;
+  transform: translateY(var(--call-lift)); transition: transform 120ms ease;
 }
-.call-button svg { width:48px; height:48px; opacity:0; }
+.call-button svg{ width:48px; height:48px; opacity:0; }
 
-/* bottom nav overlay (transparent areas matching screenshot bottom icons) */
+/* bottom nav overlay — ensure no visible bar is drawn */
 .bottom-nav{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(env(safe-area-inset-bottom)); /* sit just above safe area */
+  position:absolute;
+  left:0; right:0;
+  bottom: 0;
   height: calc(var(--nav-area, 120px));
   display:flex;
   justify-content: space-around;
   align-items:center;
   pointer-events:auto;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 1140px)); /* tuned */
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 1140px));
+  background: transparent; /* ensure transparent */
+  box-shadow: none;
 }
-.nav-item{
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: transparent;
-  pointer-events:auto;
-}
+.bottom-nav::after{ display:none; content:none; } /* defensive: remove any pseudo bar */
 
-/* pressed feedback */
-.nav-item:active, .nav-item.pressed {
-  background: rgba(255,255,255,0.03);
-}
+.nav-item{ width: 64px; height: 64px; background:transparent; pointer-events:auto; border-radius:999px; }
+.nav-item:active, .nav-item.pressed { background: rgba(255,255,255,0.03); }
 
-/* calibration UI (toggle with 'c' on desktop) */
+/* calibration UI */
 .calibration-ui{
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 18px;
-  background: rgba(0,0,0,0.6);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  display:none;
-  z-index: 9999;
+  position: fixed; left:50%; transform: translateX(-50%); bottom: 18px;
+  background: rgba(0,0,0,0.6); color:#fff; padding:8px 12px; border-radius:8px; font-size:13px; display:none; z-index:9999;
 }
-.calibration-ui.show { display:block; }
+.calibration-ui.show{ display:block; }
 
-/* accessibility focus */
-.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset: 2px; }
+/* focus outlines */
+.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset:2px; }
 
-/* small-screen fallback */
+/* small screens */
 @media (max-width:360px){
-  :root{
-    --circle-size:170px;
-    --digit-size:38px;
-    --gap-x:40px;
-    --gap-y:36px;
-  }
-  .nav-item { width:52px; height:52px; }
+  :root{ --circle-size:170px; --gap-x:40px; --gap-y:36px; }
+  .nav-item{ width:52px; height:52px; }
 }
