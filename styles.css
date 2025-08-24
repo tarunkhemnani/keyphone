@@ -25,20 +25,23 @@
   --call-color: #2fd55b;
 
   /* nav */
-  --nav-height: 78px;
+  --nav-height: 78px;                  /* base nav height */
   --nav-inactive: #9b9b9b;
   --nav-active: #0a84ff;
 
-  /* amount to move whole nav item (icon + label) down */
-  --nav-item-offset: 70px; /* ← increased from 30px to 46px */
+  /* YOUR chosen offset (you said you use 70px) */
+  --nav-item-offset: 70px;
 
-  --nav-bottom-normal: 22px; /* extra breathing room under labels */
-  --nav-bottom-standalone: -6px;
+  /* compute extra space needed so icons + labels don't overlap the safe/home area */
+  --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
+
+  /* base breathing room below the nav */
+  --nav-bottom-normal: 12px;
 
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
 }
 
-/* reset */
+/* basic reset */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -171,28 +174,33 @@ html,body{
   transition: transform 120ms ease;
   pointer-events:auto;
   transform: translateY(-22px);
-  z-index: 6;
+  z-index: 12; /* keep call button above nav */
 }
 .call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
 
- /* bottom nav */
+/* --------------- BOTTOM NAV (fixed and taller when offset large) --------------- */
+/*
+ - bottom is anchored to screen bottom (0)
+ - height grows by --nav-extra-space so nav background expands upward
+ - padding-bottom keeps a little breathing room for touch and safe-area
+*/
 .bottom-nav{
   position: fixed;
   left:0; right:0;
-  bottom: calc(var(--nav-bottom-normal) + env(safe-area-inset-bottom));
-  height: var(--nav-height);
+  bottom: 0;
+  height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   display:flex;
   justify-content: space-around;
   align-items:flex-end;
-  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 10px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 6px);
+  background: linear-gradient(180deg, rgba(0,0,0,1), rgba(0,0,0,1)); /* solid black area */
   pointer-events:auto;
-  z-index: 5;
+  z-index: 6;
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.35) inset;
 }
 
-/* ------------------------------------------------------------------
-   use position:relative + top to move the entire nav item (icon+label)
-   ------------------------------------------------------------------ */
+/* move the whole nav item (icon + label) down */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -203,12 +211,12 @@ html,body{
   pointer-events:auto;
   position: relative;
 
-  /* push the whole item down */
   top: var(--nav-item-offset);
   transition: top 180ms ease;
+  z-index: 8; /* above nav background */
 }
 
-/* keep SVGs no longer independently translated */
+/* keep SVGs in natural place */
 .nav-item svg{
   width:28px;
   height:28px;
@@ -235,14 +243,15 @@ html,body{
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Standalone overrides */
+/* Standalone / PWA tweaks */
 .app.standalone .bottom-nav{
-  bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
+  /* if the app is standalone, keep bottom still anchored but add a touch more bottom padding */
+  height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom) + 8px);
 }
 .app.standalone .nav-item{
   top: calc(var(--nav-item-offset) + 12px);
+  transition: top 180ms ease;
 }
-.app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 16px); }
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
@@ -257,10 +266,9 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-item-offset: 26px; /* increased from 16px to 26px */
+    --nav-item-offset: 26px; /* smaller on tiny screens */
+    --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
 }
-
-
