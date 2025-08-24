@@ -80,31 +80,25 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   will-change: transform;
 }
 
-/* KEY LOOK — updated to match your screenshot:
-   - uniform matte dark grey fill
-   - slight top highlight (soft inner gradient)
-   - subtle inner shadow at the bottom
-   - soft outer shadow
-   - no white ring / border
-*/
+/* KEY LOOK — solid matte grey fill to match screenshot (no border / filled circle)
+   Keeps the same sizes & layout, only changes visual appearance */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
 
-  /* matte dark grey core */
-  background: linear-gradient(180deg, rgba(80,80,80,0.08), rgba(56,56,56,1) 45%);
+  /* solid matte grey fill that matches the screenshot */
+  background-color: #3a3a3a;
+  /* subtle radial/top highlight for a tiny depth cue, but still matte */
+  background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,0.03), transparent 32%);
 
-  /* inner highlight and inside shadow to mimic iOS key look */
+  /* outer drop and subtle inset shadow to match screenshot depth */
   box-shadow:
-    /* soft outer drop shadow */
-    0 8px 18px rgba(0,0,0,0.55),
-    /* subtle darker bottom inset */
-    inset 0 -8px 12px rgba(0,0,0,0.5),
-    /* faint top sheen */
-    inset 0 8px 14px rgba(255,255,255,0.02);
+    0 10px 18px rgba(0,0,0,0.60),     /* outer shadow */
+    inset 0 -6px 10px rgba(0,0,0,0.55), /* darker bottom inset */
+    inset 0 6px 10px rgba(255,255,255,0.01); /* very faint top sheen */
 
-  border: none !important; /* ensure no visible stroke */
+  border: none !important;
   background-clip: padding-box;
   display:flex;
   flex-direction:column;
@@ -117,14 +111,15 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: transform 110ms cubic-bezier(.2,.8,.2,1), box-shadow 110ms ease, background 110ms ease;
 }
 
-/* pressed state: darker and slightly flattened */
+/* pressed state: slightly darker and flattened (keeps same scale & position) */
 .key.pressed{
   transform: scale(0.98);
-  background: linear-gradient(180deg, rgba(60,60,60,0.06), rgba(44,44,44,1) 45%);
+  background-color: #2f2f2f;
+  background-image: none;
   box-shadow:
-    0 4px 8px rgba(0,0,0,0.55),
-    inset 0 -6px 10px rgba(0,0,0,0.6),
-    inset 0 6px 10px rgba(255,255,255,0.01);
+    0 6px 10px rgba(0,0,0,0.65),
+    inset 0 -5px 8px rgba(0,0,0,0.62),
+    inset 0 5px 8px rgba(255,255,255,0.005);
 }
 
 /* NUMBERS - crisp white, vertically centered similar to iOS */
@@ -137,6 +132,14 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   letter-spacing:0.2px;
   pointer-events:none;
   text-shadow: 0 1px 0 rgba(0,0,0,0.25); /* tiny depth like screenshot */
+}
+
+/* Specific tweak for the star/hash glyphs so they visually match the numeric glyphs:
+   same size, slightly heavier weight and a tiny vertical nudge so '*' and '#' sit perfectly centered. */
+.key[data-value="*"] .digit,
+.key[data-value="#"] .digit {
+  font-weight: 600;   /* a touch heavier so they read like the screenshot */
+  margin-top: -3px;   /* tiny vertical nudge to visually center the glyph */
 }
 
 /* LETTERS - spaced, lighter color */
