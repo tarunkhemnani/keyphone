@@ -1,19 +1,21 @@
 :root{
   --bg: #000000;
 
-  /* layout sizing (tweak these if your screenshot layout differs) */
-  --circle-size: 76px;
-  --gap-x: 34px;
-  --gap-y: 22px;
+  /* tuned to your screenshot (944×2048) */
+  --circle-size: 188px;    /* diameter of keypad circles measured from screenshot */
+  --gap-x: 57px;           /* horizontal gap between circles (approx) */
+  --gap-y: 42px;           /* vertical gap between circles (approx) */
+
+  /* overlay offsets: these place the transparent controls over the screenshot */
+  /* Y was set so first row centers match screenshot; tweak with calibration if needed */
+  --overlay-offset-x: 0px;
+  --overlay-offset-y: 629px; /* tuned for your screenshot */
+
+  /* call button lift (so overlay call tap sits over green circle) */
+  --call-lift: -20px;
+
   --digit-size: 42px;
   --digit-weight: 500;
-
-  /* visual overlay offsets — used for calibration */
-  --overlay-offset-x: 0px;
-  --overlay-offset-y: 0px;
-
-  /* call button lift when needed */
-  --call-lift: -32px;
 }
 
 /* base */
@@ -27,25 +29,21 @@ html,body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* Use the screenshot as the full-screen background.
-   This keeps the visible image exactly as you provided. */
+/* screenshot as full-screen background (place screenshot.png beside these files) */
 .app{
   position:fixed;
   inset:0;
-  background-image: url('screenshot.png'); /* your screenshot file */
+  background-image: url('screenshot.png');
   background-repeat: no-repeat;
-  background-position: center top; /* adjust if needed */
-  background-size: cover; /* you can change to 'contain' if you prefer */
+  background-position: center top;
+  background-size: cover;
   touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
   overflow:hidden;
 }
 
-/* keep a transparent top-safe area so system status bar reads correctly */
-.top-safe{ height: env(safe-area-inset-top); }
-
-/* hidden display (we keep for debugging or accessibility) */
+/* hidden display (kept for accessibility) */
 .display{
   width:100%;
   height:48px;
@@ -61,20 +59,18 @@ html,body{
   pointer-events:none;
 }
 
-/* The interactive grid sits on top of the screenshot.
-   Buttons are transparent so screenshot remains visible. */
+/* overlay container for interactive controls */
 .keypad-wrap{
   position:absolute;
-  left:0; right:0;
-  top:0; bottom:0;
+  inset:0;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  pointer-events:none; /* enable pointer-events selectively on controls */
+  justify-content:flex-start;
+  pointer-events:none;
 }
 
-/* grid width matches your circle sizes — tweak if alignment needed */
+/* keys grid — centered horizontally, shifted vertically with overlay-offset-y */
 .keys-grid{
   width: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   margin: 0 auto;
@@ -85,12 +81,11 @@ html,body{
   row-gap: var(--gap-y);
   justify-items:center;
   align-items:center;
-  pointer-events:auto; /* accept taps */
-  /* Calibration offset: move the whole overlay to match screenshot */
+  pointer-events:auto;
   transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
 }
 
-/* Transparent buttons: no visible background so screenshot shines through */
+/* transparent keys (visual comes from screenshot) */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -108,39 +103,33 @@ html,body{
   user-select:none;
 }
 
-/* On press show a subtle highlight so user gets feedback (semi-transparent) */
+/* subtle visible feedback on press */
 .key.pressed{
   transform: scale(0.98);
-  background: rgba(255,255,255,0.04); /* subtle highlight */
+  background: rgba(255,255,255,0.04);
 }
 
-/* digits are kept in DOM for accessibility but can be hidden visually */
+/* digits kept for a11y, invisible visually */
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color: rgba(255,255,255,0.0001); /* visually invisible but available for screen readers */
+  color: rgba(255,255,255,0.0001);
   line-height:1;
   margin-top:-2px;
-  letter-spacing:0.2px;
   pointer-events:none;
 }
-.letters{
-  font-size: 11px;
-  color: rgba(255,255,255,0.0001);
-  margin-top:6px;
-  pointer-events:none;
-}
+.letters{ color: rgba(255,255,255,0.0001); pointer-events:none; }
 
-/* Call button overlay — keep transparent but still receives taps */
+/* call button overlay placed roughly where screenshot shows green circle */
 .call-row{
   width: calc(var(--call-size,84px));
   margin: 0 auto;
-  margin-top: 6px;
+  margin-top: 12px;
   display:flex;
   justify-content:center;
   pointer-events:none;
   position: relative;
-  transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 786px)); /* fine-tuned placement */
 }
 .call-button{
   width:84px;
@@ -157,35 +146,35 @@ html,body{
   transition: transform 120ms ease;
   -webkit-tap-highlight-color: transparent;
 }
-.call-button svg { width:48px; height:48px; opacity:0; /* invisible but present */ }
+.call-button svg { width:48px; height:48px; opacity:0; }
 
-/* bottom nav overlay — invisible items placed to match screenshot bottom icons */
+/* bottom nav overlay (transparent areas matching screenshot bottom icons) */
 .bottom-nav{
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(env(safe-area-inset-bottom)); /* sit above safe area so taps are available */
-  height: calc(var(--nav-area, 96px));
+  bottom: calc(env(safe-area-inset-bottom)); /* sit just above safe area */
+  height: calc(var(--nav-area, 120px));
   display:flex;
   justify-content: space-around;
   align-items:center;
   pointer-events:auto;
-  transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 1140px)); /* tuned */
 }
 .nav-item{
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 999px;
   background: transparent;
   pointer-events:auto;
 }
 
-/* pressed feedback for nav items (subtle) */
+/* pressed feedback */
 .nav-item:active, .nav-item.pressed {
   background: rgba(255,255,255,0.03);
 }
 
-/* calibration UI (hidden by default) */
+/* calibration UI (toggle with 'c' on desktop) */
 .calibration-ui{
   position: fixed;
   left: 50%;
@@ -201,14 +190,16 @@ html,body{
 }
 .calibration-ui.show { display:block; }
 
-/* small-screen tweaks */
+/* accessibility focus */
+.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset: 2px; }
+
+/* small-screen fallback */
 @media (max-width:360px){
   :root{
-    --circle-size:70px;
+    --circle-size:170px;
     --digit-size:38px;
+    --gap-x:40px;
+    --gap-y:36px;
   }
-  .nav-item { width:48px; height:48px; }
+  .nav-item { width:52px; height:52px; }
 }
-
-/* accessibility: make sure elements can be focused */
-.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset: 2px; }
