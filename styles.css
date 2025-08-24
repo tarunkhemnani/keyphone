@@ -1,13 +1,14 @@
 :root{
   --bg: #000000;
 
-  /* keep your current sizing & positions — these should match your existing setup */
-  --circle-size: 72px;
+  /* slightly increased circle size (from 72 -> 78) to make keys a bit larger */
+  --circle-size: 78px;
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
   --overlay-offset-y: 300px;
-  --call-size: 68px;
+  /* bump call size slightly to visually match the larger keys */
+  --call-size: 74px;
   --call-color: #2fd55b;
   --call-lift: -14px;
   --digit-size: 28px;
@@ -81,7 +82,8 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 }
 
 /* KEY LOOK — solid matte grey fill to match screenshot (no border / filled circle)
-   Keeps the same sizes & layout, only changes visual appearance */
+   Keeps the same sizes & layout, only changes visual appearance
+   NOTE: Removed the heavy outer black drop-shadow per request; kept subtle inner shading */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -92,11 +94,15 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   /* subtle radial/top highlight for a tiny depth cue, but still matte */
   background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,0.03), transparent 32%);
 
-  /* outer drop and subtle inset shadow to match screenshot depth */
+  /*
+    Removed the strong outer drop shadow to remove that "black shadow" look.
+    Keep very subtle inner shading for depth so the keys don't look flat.
+  */
   box-shadow:
-    0 10px 18px rgba(0,0,0,0.60),     /* outer shadow */
-    inset 0 -6px 10px rgba(0,0,0,0.55), /* darker bottom inset */
-    inset 0 6px 10px rgba(255,255,255,0.01); /* very faint top sheen */
+    /* subtle darker bottom inset to hint depth without an outer black shadow */
+    inset 0 -6px 10px rgba(0,0,0,0.40),
+    /* very faint top sheen */
+    inset 0 6px 10px rgba(255,255,255,0.01);
 
   border: none !important;
   background-clip: padding-box;
@@ -111,14 +117,14 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: transform 110ms cubic-bezier(.2,.8,.2,1), box-shadow 110ms ease, background 110ms ease;
 }
 
-/* pressed state: slightly darker and flattened (keeps same scale & position) */
+/* pressed state: slightly darker and flattened (keeps same scale & position)
+   outer shadow removed here too to prevent the black halo when pressed */
 .key.pressed{
   transform: scale(0.98);
   background-color: #2f2f2f;
   background-image: none;
   box-shadow:
-    0 6px 10px rgba(0,0,0,0.65),
-    inset 0 -5px 8px rgba(0,0,0,0.62),
+    inset 0 -5px 8px rgba(0,0,0,0.50),
     inset 0 5px 8px rgba(255,255,255,0.005);
 }
 
@@ -174,7 +180,11 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+  /*
+    reduce the call button shadow a bit so it doesn't feel as "black-heavy"
+    while still keeping a gentle lift for clarity.
+  */
+  box-shadow: 0 8px 18px rgba(0,0,0,0.28);
   border:none;
   cursor:pointer;
   transition: transform 120ms ease;
@@ -226,15 +236,16 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
 }
 
-/* small screens fallback - keep same visuals */
+/* small screens fallback - keep same visuals but slightly larger than before */
 @media (max-width:360px){
   :root{
-    --circle-size:58px;
+    /* increase from 58 -> 64 for small screens */
+    --circle-size:64px;
     --gap-x:14px;
     --gap-y:12px;
     --overlay-offset-y: 280px;
     --digit-size:22px;
-    --call-size:56px;
+    --call-size:60px;
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
