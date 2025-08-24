@@ -1,80 +1,55 @@
 :root{
   --bg: #000000;
 
-  /* keys */
-  --key-bg: #3a3a3a;
-  --key-bg-pressed: #4a4a4a;
-  --key-shadow: rgba(0,0,0,0.6);
-  --key-inner: rgba(255,255,255,0.03);
-
-  /* sizes */
+  /* layout sizing (tweak these if your screenshot layout differs) */
   --circle-size: 76px;
   --gap-x: 34px;
   --gap-y: 22px;
-
   --digit-size: 42px;
   --digit-weight: 500;
 
-  --letters-size: 12px;
-  --letters-color: #e1e1e1;
-  --letters-weight: 600;
-  --letters-spacing: 1.6px;
+  /* visual overlay offsets — used for calibration */
+  --overlay-offset-x: 0px;
+  --overlay-offset-y: 0px;
 
-  /* call button */
-  --call-size: 84px;
-  --call-color: #2fd55b;
-
-  /* nav */
-  --nav-height: 78px;                 /* visible bar height (kept small) */
-  --nav-inactive: #9b9b9b;
-  --nav-active: #0a84ff;
-
-  /* YOUR offset (icons + labels moved down this much) */
-  --nav-item-offset: 70px;
-
-  /* extra invisible space needed above the visible bar so icons don't overlap home indicator */
-  --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
-
-  /* base breathing room under the visual bar */
-  --nav-bottom-normal: 12px;
-
-  --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
+  /* call button lift when needed */
+  --call-lift: -32px;
 }
 
-/* basic reset */
+/* base */
 *{box-sizing:border-box}
 html,body{
   height:100%;
   margin:0;
-  background:var(--bg) !important;
+  background:var(--bg);
   font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  -webkit-text-size-adjust:100%;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
 
+/* Use the screenshot as the full-screen background.
+   This keeps the visible image exactly as you provided. */
 .app{
-  width:100%;
-  min-height:100svh;
-  background:var(--bg);
-  color:#fff;
-  position:relative;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  position:fixed;
+  inset:0;
+  background-image: url('screenshot.png'); /* your screenshot file */
+  background-repeat: no-repeat;
+  background-position: center top; /* adjust if needed */
+  background-size: cover; /* you can change to 'contain' if you prefer */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow:hidden;
 }
 
-/* top safe area black */
-.top-safe{
-  height: env(safe-area-inset-top);
-  background: var(--bg);
-  width:100%;
-}
+/* keep a transparent top-safe area so system status bar reads correctly */
+.top-safe{ height: env(safe-area-inset-top); }
 
-/* typed-digit display */
+/* hidden display (we keep for debugging or accessibility) */
 .display{
   width:100%;
   height:48px;
-  margin-top: 66px;
+  margin-top: 6px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -83,15 +58,26 @@ html,body{
   letter-spacing:2px;
   font-weight:500;
   opacity:0;
-  transition: opacity 160ms ease;
   pointer-events:none;
 }
 
-/* KEYPAD GRID */
+/* The interactive grid sits on top of the screenshot.
+   Buttons are transparent so screenshot remains visible. */
+.keypad-wrap{
+  position:absolute;
+  left:0; right:0;
+  top:0; bottom:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none; /* enable pointer-events selectively on controls */
+}
+
+/* grid width matches your circle sizes — tweak if alignment needed */
 .keys-grid{
-  width: var(--grid-w);
+  width: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   margin: 0 auto;
-  margin-top: 6px;
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -99,230 +85,130 @@ html,body{
   row-gap: var(--gap-y);
   justify-items:center;
   align-items:center;
-  touch-action: manipulation;
+  pointer-events:auto; /* accept taps */
+  /* Calibration offset: move the whole overlay to match screenshot */
+  transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
 }
 
-/* keys */
+/* Transparent buttons: no visible background so screenshot shines through */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
-  background: var(--key-bg);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  box-shadow:
-    0 10px 18px var(--key-shadow),
-    inset 0 -6px 12px var(--key-inner);
   border:none;
-  outline:none;
+  background: transparent;
   cursor:pointer;
-  transition: transform 100ms ease, background-color 100ms linear, box-shadow 100ms linear;
+  transition: transform 120ms ease, background-color 120ms ease;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  pointer-events:auto;
+  user-select:none;
 }
 
+/* On press show a subtle highlight so user gets feedback (semi-transparent) */
 .key.pressed{
   transform: scale(0.98);
-  background: var(--key-bg-pressed);
-  box-shadow:
-    0 6px 12px rgba(0,0,0,0.55),
-    inset 0 6px 12px rgba(255,255,255,0.02);
+  background: rgba(255,255,255,0.04); /* subtle highlight */
 }
 
+/* digits are kept in DOM for accessibility but can be hidden visually */
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color:#fff;
+  color: rgba(255,255,255,0.0001); /* visually invisible but available for screen readers */
   line-height:1;
   margin-top:-2px;
   letter-spacing:0.2px;
+  pointer-events:none;
 }
 .letters{
-  font-size: var(--letters-size);
-  color: var(--letters-color);
-  letter-spacing: var(--letters-spacing);
+  font-size: 11px;
+  color: rgba(255,255,255,0.0001);
   margin-top:6px;
-  text-transform: uppercase;
-  font-weight: var(--letters-weight);
+  pointer-events:none;
 }
-.key .letters:empty{ height:14px; }
 
-/* call row & call button */
+/* Call button overlay — keep transparent but still receives taps */
 .call-row{
-  width: var(--grid-w);
+  width: calc(var(--call-size,84px));
   margin: 0 auto;
   margin-top: 6px;
   display:flex;
   justify-content:center;
   pointer-events:none;
   position: relative;
+  transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
 }
-
 .call-button{
-  width:var(--call-size);
-  height:var(--call-size);
+  width:84px;
+  height:84px;
   border-radius:999px;
-  background:var(--call-color);
+  background: transparent;
+  border: none;
+  cursor:pointer;
+  pointer-events:auto;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
-  border:none;
-  cursor:pointer;
+  transform: translateY(var(--call-lift));
   transition: transform 120ms ease;
-  pointer-events:auto;
-  /* default position */
-  transform: translateY(-22px);
-  z-index: 20; /* keep call button above nav & items */
+  -webkit-tap-highlight-color: transparent;
 }
-.call-button:active{ transform: translateY(-22px) scale(0.98); }
-.call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
+.call-button svg { width:48px; height:48px; opacity:0; /* invisible but present */ }
 
-/* -------------------------
-   BOTTOM NAV (container)
-   ------------------------- */
+/* bottom nav overlay — invisible items placed to match screenshot bottom icons */
 .bottom-nav{
-  position: fixed;
-  left:0; right:0;
-  bottom: 0;
-  /* container height grows so nav items can be pushed down without clipping */
-  height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom));
-  display:flex;
-  justify-content: space-around;
-  align-items:flex-end;
-  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 6px);
-  pointer-events:auto;
-  z-index: 8;
-
-  /* ensure container itself has no visible background or shadow */
-  background: transparent;
-  box-shadow: none;
-}
-
-/* remove any visible thin bar overlay (defensive) */
-.bottom-nav::after{
-  content: "";
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
-  height: 0 !important;
-  background: transparent !important;
-  z-index: 6;
-  box-shadow: none !important;
-  pointer-events: none;
-}
-
-/* NAV ITEMS: move the icon + label down by your offset */
-.nav-item{
+  bottom: calc(env(safe-area-inset-bottom)); /* sit above safe area so taps are available */
+  height: calc(var(--nav-area, 96px));
   display:flex;
-  flex-direction:column;
+  justify-content: space-around;
   align-items:center;
-  gap:4px;
-  font-size:12px;
-  color:var(--nav-inactive);
   pointer-events:auto;
-  position: relative;
-
-  top: var(--nav-item-offset);
-  transition: top 180ms ease;
-  z-index: 10; /* place above the visible bar */
+  transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
+}
+.nav-item{
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: transparent;
+  pointer-events:auto;
 }
 
-/* keep SVGs natural */
-.nav-item svg{
-  width:28px;
-  height:28px;
-  display:block;
-  fill: currentColor;
-  stroke: currentColor;
-  vector-effect: non-scaling-stroke;
-  transform: none;
+/* pressed feedback for nav items (subtle) */
+.nav-item:active, .nav-item.pressed {
+  background: rgba(255,255,255,0.03);
 }
 
-/* Labels */
-.nav-item span{
-  font-size:12px;
-  color:inherit;
-  transform: none;
-  line-height:1;
-  margin-top: 2px;
+/* calibration UI (hidden by default) */
+.calibration-ui{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  display:none;
+  z-index: 9999;
 }
+.calibration-ui.show { display:block; }
 
-.nav-item.active{ color: var(--nav-active); }
-
-/* Recents specifics */
-.nav-item.recents { color: var(--nav-inactive); }
-.nav-item.recents svg circle { opacity: 1; }
-.nav-item.recents svg line { stroke: #000; }
-
-/* Standalone tweaks */
-.app.standalone .bottom-nav{
-  height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom) + 8px);
-}
-.app.standalone .nav-item{
-  top: calc(var(--nav-item-offset) + 12px);
-}
-
-/* reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
-}
-
-/* small-screen fallback */
+/* small-screen tweaks */
 @media (max-width:360px){
   :root{
     --circle-size:70px;
     --digit-size:38px;
-    --call-size:72px;
-    --gap-x:24px;
-    --gap-y:18px;
-    --nav-item-offset: 26px;
-    --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
-    --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
-  .nav-item svg{ width:26px; height:26px; }
+  .nav-item { width:48px; height:48px; }
 }
 
-/* -------------------------
-   PWA-only visual blend for the home indicator capsule
-   - This element visually matches the rounded black backdrop that iOS shows.
-   - It is placed underneath the system pill, so the system pill blends into page content.
-   - Only active when documentElement has .is-pwa class (we add it from JS).
-   ------------------------- */
-
-.home-capsule-blend {
-  display: none;              /* default hidden for normal Safari browser */
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  /* Use safe-area value to size the capsule so it matches different iPhone sizes.
-     env(safe-area-inset-bottom) is usually ~34px on modern iPhones with home indicator */
-  height: calc(env(safe-area-inset-bottom) + 14px);
-  max-height: 56px;
-  width: 220px;               /* width visually matches system capsule in screenshots */
-  bottom: calc(max(6px, env(safe-area-inset-bottom) / 2) - 6px);
-  background: #000;           /* match your page background so capsule blends */
-  border-radius: 999px;
-  z-index: 7;                 /* just under call-button (call-button has z-index:20) */
-  pointer-events: none;
-  box-shadow: none;
-  opacity: 1;
-}
-
-/* Show the blend only in PWA/standalone mode so browser view isn't affected */
-html.is-pwa .home-capsule-blend {
-  display: block;
-}
-
-/* Slight optional lift for call-button only in PWA so it reads above the indicator */
-html.is-pwa .call-button {
-  transform: translateY(-32px); /* raise a few more px so call button clears the pill */
-}
-
-/* defensive: ensure blend doesn't show in very small widths too wide for it */
-@media (max-width:360px) {
-  .home-capsule-blend { width: 180px; height: calc(env(safe-area-inset-bottom) + 12px); }
-}
+/* accessibility: make sure elements can be focused */
+.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset: 2px; }
