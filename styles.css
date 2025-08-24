@@ -1,60 +1,57 @@
 :root{
   --bg: #000000;
 
-  /* tuned to your screenshot */
-  --circle-size: 188px;
-  --gap-x: 57px;
-  --gap-y: 42px;
+  /* iPhone-ish keypad sizing tuned for screenshot overlay */
+  --circle-size: 110px;   /* key diameter */
+  --gap-x: 36px;
+  --gap-y: 28px;
 
-  /* overlay offsets (you can calibrate if needed) */
+  /* calibration default; nudge with 'c' */
   --overlay-offset-x: 0px;
-  --overlay-offset-y: 629px;
+  --overlay-offset-y: 430px;
 
-  --call-lift: -20px;
   --call-size: 84px;
   --call-color: #2fd55b;
+  --call-lift: -18px;
 
-  --digit-size: 42px;
+  --digit-size: 44px;
   --digit-weight: 500;
 
-  /* app viewport height set by JS: --app-viewport-height */
-  --app-viewport-height: 100svh;
+  --letters-size: 12px;
+  --letters-color: #e6e6e6;
+  --letters-weight: 700;
+  --letters-spacing: 2px;
+
+  /* nav and safe handling */
+  --nav-height: 78px;
+  --nav-item-offset: 70px;
+  --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
+  --nav-bottom-normal: 12px;
+
+  --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
 }
 
-/* base */
+/* Basic reset */
 *{box-sizing:border-box}
-html,body{
-  height:100%;
-  margin:0;
-  background:var(--bg);
-  color:#fff;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text","SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  background-color: #000; /* ensure black behind everything */
-}
+html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; -webkit-text-size-adjust:100%; }
 
-/* app container pinned to viewport height (visualViewport sync will set --app-viewport-height) */
 .app{
-  position:fixed;
-  left:0; right:0;
-  top:0;
-  /* important: use the JS-updated variable to pin height to visualViewport */
-  height: var(--app-viewport-height);
-  min-height: var(--app-viewport-height);
+  position:fixed; left:0; right:0; top:0;
+  height: var(--app-viewport-height, 100svh);
+  min-height: var(--app-viewport-height, 100svh);
   background-image: url('screenshot.png');
   background-repeat: no-repeat;
   background-position: center top;
   background-size: cover;
-  overflow: hidden;
+  overflow:hidden;
   touch-action: manipulation;
 }
 
-/* hidden display */
+/* Display (typed digits) */
 .display{
   width:100%;
   height:48px;
-  margin-top: 6px;
+  margin-top: 8px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -79,8 +76,9 @@ html,body{
 
 /* keys grid */
 .keys-grid{
-  width: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
+  width: var(--grid-w);
   margin: 0 auto;
+  margin-top: 6px;
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -90,95 +88,117 @@ html,body{
   align-items:center;
   pointer-events:auto;
   transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
+  will-change: transform;
 }
 
-/* transparent keys (now with faint ring so you can see them over screenshot) */
+/* key visuals (iPhone-like dark circles with inner shadow) */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  background: rgba(255,255,255,0.02); /* faint ring */
-  border: 1px solid rgba(255,255,255,0.03);
-  backdrop-filter: blur(2px);
-  /* keep visually subtle */
-  border:none;
+  background: #3a3a3a; /* dark ring */
+  box-shadow:
+    0 12px 24px rgba(0,0,0,0.55),
+    inset 0 -8px 18px rgba(0,0,0,0.45),
+    inset 0 6px 10px rgba(255,255,255,0.02);
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
+  transition: transform 100ms cubic-bezier(.2,.8,.2,1), background-color 120ms linear;
 }
-.key.pressed{ transform: scale(0.98); background: rgba(255,255,255,0.04); }
+.key.pressed{ transform: scale(0.98); background: #454545; box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 6px 10px rgba(255,255,255,0.01); }
 
-/* digits visible */
+/* numbers + letters */
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color: rgba(255,255,255,0.96);
-  pointer-events:none;
+  color: #fff;
   line-height:1;
-  margin-top:-2px;
+  margin-top:-4px;
   letter-spacing:0.2px;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+  pointer-events:none;
 }
 .letters{
-  color: rgba(225,225,225,0.88);
-  pointer-events:none;
-  font-size: 14px;
-  letter-spacing: 1.2px;
+  font-size: var(--letters-size);
+  color: var(--letters-color);
+  letter-spacing: var(--letters-spacing);
   margin-top:6px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: var(--letters-weight);
+  pointer-events:none;
 }
 .key .letters:empty{ height:14px; }
 
-/* call button overlay */
+/* call button area (positioned relative to overlay) */
 .call-row{
-  width: calc(var(--call-size,84px));
+  width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 12px;
+  margin-top: 16px;
   display:flex;
   justify-content:center;
   pointer-events:none;
   position: relative;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 786px));
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 520px));
 }
 .call-button{
   width:var(--call-size);
   height:var(--call-size);
   border-radius:999px;
   background:var(--call-color);
-  border:none;
-  pointer-events:auto;
   display:flex;
   align-items:center;
   justify-content:center;
-  transform: translateY(var(--call-lift));
+  box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+  border:none;
+  cursor:pointer;
   transition: transform 120ms ease;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  pointer-events:auto;
+  transform: translateY(var(--call-lift));
+  z-index: 40;
 }
-.call-button svg{ width:48px; height:48px; opacity:1; fill:#fff; }
+.call-button:active{ transform: translateY(calc(var(--call-lift) + 2px)) scale(0.98); }
+.call-button svg{ width:44px; height:44px; fill:#fff; }
 
-/* bottom nav overlay — ensure no visible bar is drawn (we keep it transparent but positionable) */
+/* bottom nav: fixed so it aligns with the real viewport bottom; we enlarge height using --nav-extra-space so icons don't sink */
 .bottom-nav{
-  position:absolute;
+  position: fixed;
   left:0; right:0;
   bottom: 0;
-  height: calc(var(--nav-area, 120px));
+  height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   display:flex;
   justify-content: space-around;
-  align-items:center;
+  align-items:flex-end;
+  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 6px);
+  background: linear-gradient(180deg, rgba(0,0,0,1), rgba(0,0,0,1));
   pointer-events:auto;
+  z-index: 20;
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.25) inset;
   transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 1140px));
-  background: transparent; /* ensure transparent */
-  box-shadow: none;
 }
-.bottom-nav::after{ display:none; content:none; } /* defensive: remove any pseudo bar */
 
-.nav-item{ width: 64px; height: 64px; background:transparent; pointer-events:auto; border-radius:999px; }
-.nav-item:active, .nav-item.pressed { background: rgba(255,255,255,0.03); }
+/* nav items positioned down by --nav-item-offset (so label + icon sits above home indicator) */
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  color:#9b9b9b;
+  pointer-events:auto;
+  position: relative;
+  top: var(--nav-item-offset);
+  transition: top 180ms ease;
+  z-index: 30;
+}
+.nav-item svg{ width:28px; height:28px; fill: currentColor; display:block; }
+.nav-item span{ font-size:12px; color:inherit; margin-top:2px; }
+
+.nav-item.active{ color: #0a84ff; }
 
 /* calibration UI */
 .calibration-ui{
@@ -187,15 +207,26 @@ html,body{
 }
 .calibration-ui.show{ display:block; }
 
-/* focus outlines */
-.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset:2px; }
+/* accessibility outlines */
+.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset:3px; }
 
-/* small screens */
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
+}
+
+/* small screens fallback */
 @media (max-width:360px){
   :root{
-    --circle-size:170px;
-    --gap-x:40px;
-    --gap-y:36px;
+    --circle-size:92px;
+    --gap-x:28px;
+    --gap-y:22px;
+    --digit-size:36px;
+    --call-size:72px;
+    --overlay-offset-y: 400px;
+    --nav-item-offset: 26px;
+    --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
+    --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
   }
-  .nav-item{ width:52px; height:52px; }
+  .nav-item svg{ width:24px; height:24px; }
 }
