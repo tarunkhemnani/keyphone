@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Phone Keypad (Screenshot UI)</title>
+  <title>Phone Keypad (Screenshot UI) — viewport-sync</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10,8 +10,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app" id="app" aria-hidden="false">
-
+  <div class="app lockscreen" id="app" aria-hidden="false">
     <!-- hidden display kept for a11y/debug -->
     <div class="display" id="display" aria-live="polite" aria-atomic="true"></div>
 
@@ -42,30 +41,23 @@
       <!-- Call button overlay -->
       <div class="call-row">
         <button id="callBtn" class="call-button" aria-label="Call" title="Call">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 
-                     1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 
-                     3.57a1 1 0 01-.25 1.02l-2.2 2.2z" />
-          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/></svg>
         </button>
       </div>
     </main>
 
-    <!-- invisible bottom nav overlay (matches screenshot icons) -->
-    <nav class="bottom-nav" aria-hidden="false">
+    <!-- transparent bottom nav overlay (no visible bar) -->
+    <nav class="bottom-nav" aria-hidden="false" id="bottomNav">
       <div class="nav-item favorites" role="button" tabindex="0" aria-label="Favorites"></div>
       <div class="nav-item recents" role="button" tabindex="0" aria-label="Recents"></div>
       <div class="nav-item contacts" role="button" tabindex="0" aria-label="Contacts"></div>
       <div class="nav-item active keypad" role="button" tabindex="0" aria-label="Keypad"></div>
       <div class="nav-item voicemail" role="button" tabindex="0" aria-label="Voicemail"></div>
     </nav>
-
   </div>
 
-  <!-- calibration UI (toggle with key 'c' on desktop; used for micro-adjust) -->
-  <div id="calibrationUI" class="calibration-ui" aria-hidden="true">
-    <div id="calText">Calibration mode — arrow keys to nudge, Enter save, Esc cancel.</div>
-  </div>
+  <!-- calibration UI (toggle with 'c' on desktop) -->
+  <div id="calibrationUI" class="calibration-ui" aria-hidden="true"><div id="calText">Calibration: arrow keys to nudge, Enter save, Esc cancel.</div></div>
 
   <script src="app.js"></script>
 </body>
