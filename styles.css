@@ -26,26 +26,19 @@
 
   /* nav */
   --nav-height: 78px;
-  --nav-inactive: #9b9b9b; /* grey used by currentColor for inactive icons */
+  --nav-inactive: #9b9b9b;
   --nav-active: #0a84ff;
 
-  /* ---------------------
-     MOVE the whole nav item (icon + label)
-     Increased per your request
-     --------------------- */
-  --nav-item-offset: 24px; /* ← changed: was 12px */
+  /* amount to move whole nav item (icon + label) down */
+  --nav-item-offset: 30px; /* ← tune this value to move more/less */
 
-  /* legacy variables kept but not used for independent transforms */
-  --nav-icon-offset: 0px;
-  --nav-text-offset: 0px;
-
-  --nav-bottom-normal: 14px; /* slightly increased previously */
+  --nav-bottom-normal: 18px; /* increased breathing room under labels */
   --nav-bottom-standalone: -6px;
 
   --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
 }
 
-/* basic reset */
+/* reset */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -177,8 +170,8 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
-  transform: translateY(-22px); /* raised to avoid overlap with keypad */
-  z-index: 6; /* ensure call button sits above nav if needed */
+  transform: translateY(-22px);
+  z-index: 6;
 }
 .call-button:active{ transform: translateY(-22px) scale(0.98); }
 .call-button svg{ width:40px; height:40px; fill:#fff; transform: translateY(1px); }
@@ -192,11 +185,14 @@ html,body{
   display:flex;
   justify-content: space-around;
   align-items:flex-end;
-  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 8px); /* increased breathing room */
+  padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 8px);
   pointer-events:auto;
   z-index: 5;
 }
 
+/* ------------------------------------------------------------------
+   HERE: use position:relative + top to move the entire nav item (icon+label)
+   ------------------------------------------------------------------ */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -207,12 +203,12 @@ html,body{
   pointer-events:auto;
   position: relative;
 
-  /* MOVE whole item down (icon + label together) */
-  transform: translateY(var(--nav-item-offset));
-  transition: transform 180ms ease;
+  /* push the whole item down */
+  top: var(--nav-item-offset);
+  transition: top 180ms ease;
 }
 
-/* Keep SVGs in their natural place (no independent translation) */
+/* keep SVGs no longer independently translated */
 .nav-item svg{
   width:28px;
   height:28px;
@@ -223,7 +219,7 @@ html,body{
   transform: none;
 }
 
-/* Labels stay visible under their icons */
+/* Labels */
 .nav-item span{
   font-size:12px;
   color:inherit;
@@ -234,32 +230,23 @@ html,body{
 
 .nav-item.active{ color: var(--nav-active); }
 
-/* Recents */
+/* Recents specifics */
 .nav-item.recents { color: var(--nav-inactive); }
 .nav-item.recents svg circle { opacity: 1; }
 .nav-item.recents svg line { stroke: #000; }
 
-/* Contacts */
-.nav-item.contacts { color: var(--nav-inactive); }
-
-/* Favorites */
-.nav-item.favorites { color: var(--nav-inactive); }
-
-/* Keypad */
-.nav-item.keypad.active { color: var(--nav-active); }
-
-/* Standalone overrides: push items a bit further when in PWA standalone */
+/* Standalone overrides */
 .app.standalone .bottom-nav{
   bottom: calc(var(--nav-bottom-standalone) + env(safe-area-inset-bottom));
 }
 .app.standalone .nav-item{
-  transform: translateY(calc(var(--nav-item-offset) + 12px));
+  top: calc(var(--nav-item-offset) + 12px);
 }
-.app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 16px); }
+.app.standalone .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 12px); }
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .key, .call-button, .nav-item{ transition:none; transform:none; }
+  .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
 }
 
 /* small-screen fallback */
@@ -270,7 +257,7 @@ html,body{
     --call-size:72px;
     --gap-x:24px;
     --gap-y:18px;
-    --nav-item-offset: 18px; /* a little less on tiny screens */
+    --nav-item-offset: 16px; /* less on tiny screens */
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
