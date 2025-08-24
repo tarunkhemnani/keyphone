@@ -11,6 +11,9 @@
   --overlay-offset-y: 629px;
 
   --call-lift: -20px;
+  --call-size: 84px;
+  --call-color: #2fd55b;
+
   --digit-size: 42px;
   --digit-weight: 500;
 
@@ -59,7 +62,8 @@ html,body{
   font-size:22px;
   letter-spacing:2px;
   font-weight:500;
-  opacity:0; pointer-events:none;
+  opacity:0;
+  pointer-events:none;
 }
 
 /* overlay container */
@@ -88,7 +92,7 @@ html,body{
   transform: translate(var(--overlay-offset-x), var(--overlay-offset-y));
 }
 
-/* transparent keys */
+/* transparent keys (now with faint ring so you can see them over screenshot) */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -96,7 +100,10 @@ html,body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background: transparent;
+  background: rgba(255,255,255,0.02); /* faint ring */
+  border: 1px solid rgba(255,255,255,0.03);
+  backdrop-filter: blur(2px);
+  /* keep visually subtle */
   border:none;
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
@@ -105,9 +112,27 @@ html,body{
 }
 .key.pressed{ transform: scale(0.98); background: rgba(255,255,255,0.04); }
 
-/* digits invisible but present for accessibility */
-.digit{ font-size: var(--digit-size); font-weight: var(--digit-weight); color: rgba(255,255,255,0.0001); pointer-events:none; }
-.letters{ color: rgba(255,255,255,0.0001); pointer-events:none; }
+/* digits visible */
+.digit{
+  font-size: var(--digit-size);
+  font-weight: var(--digit-weight);
+  color: rgba(255,255,255,0.96);
+  pointer-events:none;
+  line-height:1;
+  margin-top:-2px;
+  letter-spacing:0.2px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+}
+.letters{
+  color: rgba(225,225,225,0.88);
+  pointer-events:none;
+  font-size: 14px;
+  letter-spacing: 1.2px;
+  margin-top:6px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.key .letters:empty{ height:14px; }
 
 /* call button overlay */
 .call-row{
@@ -121,13 +146,22 @@ html,body{
   transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 786px));
 }
 .call-button{
-  width:84px; height:84px; border-radius:999px; background:transparent; border:none;
-  pointer-events:auto; display:flex; align-items:center; justify-content:center;
-  transform: translateY(var(--call-lift)); transition: transform 120ms ease;
+  width:var(--call-size);
+  height:var(--call-size);
+  border-radius:999px;
+  background:var(--call-color);
+  border:none;
+  pointer-events:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform: translateY(var(--call-lift));
+  transition: transform 120ms ease;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
 }
-.call-button svg{ width:48px; height:48px; opacity:0; }
+.call-button svg{ width:48px; height:48px; opacity:1; fill:#fff; }
 
-/* bottom nav overlay — ensure no visible bar is drawn */
+/* bottom nav overlay — ensure no visible bar is drawn (we keep it transparent but positionable) */
 .bottom-nav{
   position:absolute;
   left:0; right:0;
@@ -158,6 +192,10 @@ html,body{
 
 /* small screens */
 @media (max-width:360px){
-  :root{ --circle-size:170px; --gap-x:40px; --gap-y:36px; }
+  :root{
+    --circle-size:170px;
+    --gap-x:40px;
+    --gap-y:36px;
+  }
   .nav-item{ width:52px; height:52px; }
 }
