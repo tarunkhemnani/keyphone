@@ -1,8 +1,3 @@
-/* Fixed styles.css — adjusted nav-item positioning so icons sit above the bottom bar.
-   I preserved your entire file and only changed the nav-item `top` rules so the
-   icons are moved *up* out of the black rectangle instead of being pushed further down.
-*/
-
 :root{
   --bg: #000000;
 
@@ -204,19 +199,21 @@ html,body{
 }
 
 /* draw the visible thin nav bar at the bottom only (keeps UI like iOS) */
+/* <-- CHANGED: make the overlay invisible while keeping nav container height */
 .bottom-nav::after{
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  /* REMOVED: make the visual bar transparent so it doesn't hide icons while preserving layout */
+
+  /* removed visible bar — keep container spacing but make overlay invisible */
   height: 0;
   background: transparent;
   z-index: 6;
   box-shadow: none;
+  pointer-events: none;
 }
-
 
 /* NAV ITEMS: move the icon + label down by your offset */
 .nav-item{
@@ -229,12 +226,10 @@ html,body{
   pointer-events:auto;
   position: relative;
 
-  /* keep icons where you placed them — positive top so they sit lower as you wanted */
   top: var(--nav-item-offset);
   transition: top 180ms ease;
   z-index: 10; /* place above the visible bar */
 }
-
 
 /* keep SVGs natural */
 .nav-item svg{
@@ -267,9 +262,8 @@ html,body{
 .app.standalone .bottom-nav{
   height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom) + 8px);
 }
-/* Increase the upward offset slightly in standalone mode */
 .app.standalone .nav-item{
-  top: calc(-1 * var(--nav-item-offset) - 12px);
+  top: calc(var(--nav-item-offset) + 12px);
 }
 
 /* reduced motion */
