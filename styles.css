@@ -1,26 +1,26 @@
 :root{
   --bg: #000000;
 
-  /* iPhone-ish keypad sizing tuned for screenshot overlay */
-  --circle-size: 110px;   /* key diameter */
-  --gap-x: 36px;
-  --gap-y: 28px;
+  /* Smaller keypad sizing */
+  --circle-size: 92px;   /* smaller key diameter */
+  --gap-x: 28px;
+  --gap-y: 22px;
 
   /* calibration default; nudge with 'c' */
   --overlay-offset-x: 0px;
   --overlay-offset-y: 430px;
 
-  --call-size: 84px;
+  --call-size: 72px;
   --call-color: #2fd55b;
-  --call-lift: -18px;
+  --call-lift: -14px;
 
-  --digit-size: 44px;
+  --digit-size: 36px;
   --digit-weight: 500;
 
-  --letters-size: 12px;
+  --letters-size: 11px;
   --letters-color: #e6e6e6;
   --letters-weight: 700;
-  --letters-spacing: 2px;
+  --letters-spacing: 1.6px;
 
   /* nav and safe handling */
   --nav-height: 78px;
@@ -91,7 +91,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   will-change: transform;
 }
 
-/* key visuals (iPhone-like dark circles with inner shadow) */
+/* key visuals */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -100,10 +100,10 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background: #3a3a3a; /* dark ring */
+  background: #3a3a3a;
   box-shadow:
-    0 12px 24px rgba(0,0,0,0.55),
-    inset 0 -8px 18px rgba(0,0,0,0.45),
+    0 10px 20px rgba(0,0,0,0.55),
+    inset 0 -6px 12px rgba(0,0,0,0.45),
     inset 0 6px 10px rgba(255,255,255,0.02);
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
@@ -132,13 +132,13 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   font-weight: var(--letters-weight);
   pointer-events:none;
 }
-.key .letters:empty{ height:14px; }
+.key .letters:empty{ height:12px; }
 
-/* call button area (positioned relative to overlay) */
+/* call button area */
 .call-row{
   width: var(--grid-w);
   margin: 0 auto;
-  margin-top: 16px;
+  margin-top: 12px;
   display:flex;
   justify-content:center;
   pointer-events:none;
@@ -153,7 +153,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
   border:none;
   cursor:pointer;
   transition: transform 120ms ease;
@@ -162,9 +162,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   z-index: 40;
 }
 .call-button:active{ transform: translateY(calc(var(--call-lift) + 2px)) scale(0.98); }
-.call-button svg{ width:44px; height:44px; fill:#fff; }
+.call-button svg{ width:40px; height:40px; fill:#fff; }
 
-/* bottom nav: fixed so it aligns with the real viewport bottom; we enlarge height using --nav-extra-space so icons don't sink */
+/* bottom nav */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -178,10 +178,10 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   pointer-events:auto;
   z-index: 20;
   box-shadow: 0 -6px 18px rgba(0,0,0,0.25) inset;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 1140px));
+  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset_y, 0px) + 1140px));
 }
 
-/* nav items positioned down by --nav-item-offset (so label + icon sits above home indicator) */
+/* nav items */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -197,8 +197,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 }
 .nav-item svg{ width:28px; height:28px; fill: currentColor; display:block; }
 .nav-item span{ font-size:12px; color:inherit; margin-top:2px; }
-
-.nav-item.active{ color: #0a84ff; }
+.nav-item.active{ color:#0a84ff; }
 
 /* calibration UI */
 .calibration-ui{
@@ -207,7 +206,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 }
 .calibration-ui.show{ display:block; }
 
-/* accessibility outlines */
+/* focus outlines */
 .key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.08); outline-offset:3px; }
 
 /* reduced motion */
@@ -215,14 +214,14 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
 }
 
-/* small screens fallback */
+/* small screens */
 @media (max-width:360px){
   :root{
-    --circle-size:92px;
-    --gap-x:28px;
-    --gap-y:22px;
-    --digit-size:36px;
-    --call-size:72px;
+    --circle-size:82px;
+    --gap-x:24px;
+    --gap-y:18px;
+    --digit-size:32px;
+    --call-size:64px;
     --overlay-offset-y: 400px;
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
