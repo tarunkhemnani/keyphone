@@ -173,6 +173,7 @@ html,body{
   cursor:pointer;
   transition: transform 120ms ease;
   pointer-events:auto;
+  /* default position */
   transform: translateY(-22px);
   z-index: 20; /* keep call button above nav & items */
 }
@@ -181,8 +182,6 @@ html,body{
 
 /* -------------------------
    BOTTOM NAV (container)
-   - container IS tall so items can be positioned,
-   - we remove any visible overlay so icons remain exactly where you placed them
    ------------------------- */
 .bottom-nav{
   position: fixed;
@@ -202,15 +201,13 @@ html,body{
   box-shadow: none;
 }
 
-/* remove any visible thin bar overlay */
+/* remove any visible thin bar overlay (defensive) */
 .bottom-nav::after{
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-
-  /* invisible overlay — keeps layout but shows nothing */
   height: 0 !important;
   background: transparent !important;
   z-index: 6;
@@ -218,7 +215,7 @@ html,body{
   pointer-events: none;
 }
 
-/* NAV ITEMS: keep icons exactly where you placed them */
+/* NAV ITEMS: move the icon + label down by your offset */
 .nav-item{
   display:flex;
   flex-direction:column;
@@ -287,4 +284,45 @@ html,body{
     --grid-w: calc( (3 * var(--circle-size)) + (2 * var(--gap-x)) );
   }
   .nav-item svg{ width:26px; height:26px; }
+}
+
+/* -------------------------
+   PWA-only visual blend for the home indicator capsule
+   - This element visually matches the rounded black backdrop that iOS shows.
+   - It is placed underneath the system pill, so the system pill blends into page content.
+   - Only active when documentElement has .is-pwa class (we add it from JS).
+   ------------------------- */
+
+.home-capsule-blend {
+  display: none;              /* default hidden for normal Safari browser */
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Use safe-area value to size the capsule so it matches different iPhone sizes.
+     env(safe-area-inset-bottom) is usually ~34px on modern iPhones with home indicator */
+  height: calc(env(safe-area-inset-bottom) + 14px);
+  max-height: 56px;
+  width: 220px;               /* width visually matches system capsule in screenshots */
+  bottom: calc(max(6px, env(safe-area-inset-bottom) / 2) - 6px);
+  background: #000;           /* match your page background so capsule blends */
+  border-radius: 999px;
+  z-index: 7;                 /* just under call-button (call-button has z-index:20) */
+  pointer-events: none;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* Show the blend only in PWA/standalone mode so browser view isn't affected */
+html.is-pwa .home-capsule-blend {
+  display: block;
+}
+
+/* Slight optional lift for call-button only in PWA so it reads above the indicator */
+html.is-pwa .call-button {
+  transform: translateY(-32px); /* raise a few more px so call button clears the pill */
+}
+
+/* defensive: ensure blend doesn't show in very small widths too wide for it */
+@media (max-width:360px) {
+  .home-capsule-blend { width: 180px; height: calc(env(safe-area-inset-bottom) + 12px); }
 }
