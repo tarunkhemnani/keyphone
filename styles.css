@@ -114,11 +114,6 @@ html,body{
 
 /* ============================
    KEY BASE (flat matte buttons)
-   - solid matte fill #343434
-   - no outer gradients or heavy shadows
-   - gap between digit and letters = 0px (very tight)
-   - no transform on press; press color jump handled by JS & instant transition removal
-   - release fades back over --press-fade-ms
    ============================ */
 .key{
   width: var(--circle-size);
@@ -133,7 +128,7 @@ html,body{
   flex-direction:column;
   justify-content:center; /* vertical center of group */
   align-items:center;     /* horizontal center */
-  gap: 0px;               /* digit and letters very close (0px) */
+  gap: 0px;               /* digit and letters very close */
 
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
@@ -147,31 +142,36 @@ html,body{
   will-change: background-color, color;
 }
 
-/* pressed state (peak) — JS makes this appear instantly by removing transition prior to adding .pressed */
+/* pressed state (peak) */
 .key.pressed,
 .key:active {
-  background-color: #7c7c7c; /* peak pressed color */
-  /* intentionally no transform or shadow to avoid visual shift */
+  background-color: #7c7c7c;
 }
 
 /* ----------------------------
    MAIN DIGIT (1..9, 0, #, *) as text
-   - centered, thin weight
-   - larger than letters but cohesive
    ---------------------------- */
 .digit{
   display:block;
   text-align:center;
+
+  /* ensure digits use the intended system font stack for consistent glyph shapes */
+  font-family: -apple-system, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
+  font-style: normal;       /* ensure not italic */
   color: var(--letters-color);
   line-height: 1;
   margin: 0;
   padding: 0;
   align-self: center;
   pointer-events: none;
-  text-shadow: none; /* no shadow for thin look */
+  text-shadow: none;
   letter-spacing: 0.2px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: color var(--press-fade-ms) linear;
 }
 
@@ -183,8 +183,6 @@ html,body{
 
 /* ----------------------------
    LETTERS (ABC, DEF, etc.)
-   - small, centered, tightened spacing
-   - visually close to the digit (gap 0)
    ---------------------------- */
 .letters{
   display:block;
@@ -202,33 +200,48 @@ html,body{
   transition: color var(--press-fade-ms) linear;
 }
 
-/* hide empty labels to keep symbols (*) and (#) vertically centered */
+/* hide empty labels to keep symbols vertically centered */
 .key .letters:empty{ display:none; }
 
-/* letters become white at peak press */
 .key.pressed .letters,
 .key:active .letters {
   color: #FFFFFF;
 }
 
-/* small weight bump for # and * for legibility */
-.key[data-value="#"] .digit { font-weight: 500; }
-.key[data-value="*"] .digit { font-weight: 500; }
+/* ----------------------------
+   HASH (#) — make perfectly straight (no italics/tilt)
+   - set normal font-style, remove transforms, tighten spacing
+   ---------------------------- */
+.key[data-value="#"] .digit {
+  font-style: normal !important;
+  font-weight: 500; /* slightly bolder for clarity, but straight */
+  letter-spacing: 0 !important;
+  transform: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+/* Ensure pressed # becomes white like others */
+.key[data-value="#"].pressed .digit,
+.key[data-value="#"]:active .digit {
+  color: #FFFFFF;
+}
 
 /* ----------------------------
-   ASTERISK (*) AS TEXT GLYPH — SLIGHTLY LARGER
-   - keep textual asterisk (not an icon)
-   - increased from 0.78 → 0.86 of main digit size for a slightly larger star
+   ASTERISK (*) — slightly larger than before
+   - use textual asterisk; increase to 94% -> now 96% for a slightly larger look
    ---------------------------- */
 .key[data-value="*"] .digit {
-  /* keep the character visible as text for exact match */
+  /* keep the glyph as text for exact match */
   text-indent: 0;
   white-space: normal;
   overflow: visible;
 
-  /* slightly larger than previous — now 86% of main digit size */
-  font-size: calc(var(--digit-size) * 0.86);
+  /* increased to 96% so it's clearly larger than previously */
+  font-size: calc(var(--digit-size) * 0.96);
   font-weight: 500;
+  font-style: normal;
   line-height: 1;
   letter-spacing: 0;
   color: var(--letters-color);
@@ -239,11 +252,14 @@ html,body{
   padding: 0;
   pointer-events: none;
 
-  /* ensure any previous mask/background fallback is removed */
+  /* remove any previous mask/background image */
   background-image: none !important;
   -webkit-mask: none !important;
   mask: none !important;
 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
   transition: color var(--press-fade-ms) linear;
 }
 
@@ -251,6 +267,11 @@ html,body{
 .key[data-value="*"].pressed .digit,
 .key[data-value="*"]:active .digit {
   color: #FFFFFF;
+}
+
+/* small weight bump for # for legibility if still needed (kept above) */
+.key[data-value="#"] .digit { /* duplicate just in case */
+  font-weight: 500;
 }
 
 /* ----------------------------
@@ -324,5 +345,5 @@ html,body{
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
   .key { gap: 0px; }
-  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.86); }
+  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.96); }
 }
