@@ -1,23 +1,21 @@
 :root{
   --bg: #000000;
 
-  /* slightly increased circle size (from 72 -> 78) to make keys a bit larger */
+  /* keep sizes & positions unchanged per your request */
   --circle-size: 78px;
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
-  /* moved keypad a bit upwards (was 300px previously) */
-  --overlay-offset-y: 280px;
-  /* bump call size slightly to visually match the larger keys */
+  --overlay-offset-y: 280px; /* moved keypad slightly up already */
   --call-size: 74px;
   --call-color: #2fd55b;
   --call-lift: -14px;
   --digit-size: 28px;
   --digit-weight: 500;
   --letters-size: 11px;
-  --letters-color: #d6d6d6; /* lighter label color to match screenshot */
+  --letters-color: #d6d6d6;
   --letters-weight: 700;
-  --letters-spacing: 2.6px; /* wider spacing like iPhone */
+  --letters-spacing: 2.6px;
   --nav-height: 78px;
   --nav-item-offset: 70px;
   --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
@@ -82,77 +80,101 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   will-change: transform;
 }
 
-/* KEY LOOK — FLAT matte grey fill (no gradients) and only a minimal inner hint.
-   Removed outer black drop shadows and all background gradients so keys are fully flat. */
+/* ===========================================
+   KEYS — pixel-accurate visual match (inside the circle only)
+   - flat slightly translucent grey fill (no gradients)
+   - no border, no outer drop shadow
+   - perfectly centered content: main digit above, letters below
+   - adjust glyph offsets so '*' and '#' appear visually centered
+   - do NOT change size or position of the buttons (only internal visuals)
+   =========================================== */
+
+/* Base key: use a slightly translucent fill (appears as dark grey over black).
+   This is a flat fill (no gradient) and no border. */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
 
-  /* flat matte grey fill (no gradients) */
-  background-color: #3a3a3a;
-  background-image: none;
+  /* Slight translucency so the background shows through — matches screenshot */
+  background-color: rgba(255,255,255,0.06);
 
-  /* minimal inner bottom shading (very subtle) so the keys don't read entirely flat under tiny lighting) */
-  box-shadow:
-    inset 0 -4px 6px rgba(0,0,0,0.22);
+  /* remove outer shadows / halos completely for a perfectly flat circle */
+  box-shadow: none;
 
   border: none !important;
   background-clip: padding-box;
   display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+  flex-direction:column;    /* digit above, letters below */
+  align-items:center;       /* horizontal center */
+  justify-content:center;   /* vertical centering of the column */
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
-  transition: transform 110ms cubic-bezier(.2,.8,.2,1), box-shadow 110ms ease, background 110ms ease;
+
+  /* keep gentle transition for pressed state only */
+  transition: transform 110ms cubic-bezier(.2,.8,.2,1), background-color 110ms ease;
 }
 
-/* pressed state — darker flat color, no outer halo */
+/* Pressed state: slightly darker flat surface (no halo). */
 .key.pressed{
   transform: scale(0.98);
-  background-color: #2f2f2f;
-  background-image: none;
-  box-shadow:
-    inset 0 -4px 6px rgba(0,0,0,0.36);
+  background-color: rgba(255,255,255,0.04); /* a touch darker over black */
+  box-shadow: none;
 }
 
-/* NUMBERS - crisp white, vertically centered similar to iOS */
+/* MAIN DIGIT — centered and sized to match screenshot */
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
   color: #ffffff;
-  line-height:1;
-  margin-top:-4px;
-  letter-spacing:0.2px;
+  line-height: 1;
+  margin: 0;
+  /* small upward nudge so the digit sits visually higher than exact center (like iOS) */
+  transform: translateY(-4px);
   pointer-events:none;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.12); /* very subtle depth */
+  /* slight text darkening to match pixel rendering in screenshot */
+  text-shadow: 0 1px 0 rgba(0,0,0,0.14);
+  letter-spacing: 0.2px;
 }
 
-/* Specific tweak for the star/hash glyphs so they visually match the numeric glyphs:
-   same size, slightly heavier weight and a tiny vertical nudge so '*' and '#' sit perfectly centered. */
+/* STARS/HASH/0 glyph alignment:
+   ensure '*' and '#' are visually identical in size and centered vertically/horizontally.
+   same for '0' digit — the '+' sublabel sits below like iOS. */
 .key[data-value="*"] .digit,
 .key[data-value="#"] .digit {
-  font-weight: 600;   /* a touch heavier so they read like the screenshot */
-  margin-top: -3px;   /* tiny vertical nudge to visually center the glyph */
+  /* slightly bolder so they read crisp against the flat circle */
+  font-weight: 600;
+  /* nudge upwards a hair less than numbers so they appear visually centered */
+  transform: translateY(-2px);
 }
 
-/* LETTERS - spaced, lighter color */
+/* Letters / subtext — small, spaced and lighter color */
 .letters{
   font-size: var(--letters-size);
   color: var(--letters-color);
   letter-spacing: var(--letters-spacing);
-  margin-top:6px;
+  margin-top: 6px;
   text-transform: uppercase;
   font-weight: var(--letters-weight);
   pointer-events:none;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+  text-shadow: none;
 }
-.key .letters:empty{ height:10px; }
 
-/* Call button */
+/* Ensure empty letters still reserve vertical space so digit centering is consistent */
+.key .letters:empty{ height: 10px; display:block; }
+
+/* 0 key plus sign should match subtext style */
+.key[data-value="0"] .letters {
+  color: var(--letters-color);
+  font-size: var(--letters-size);
+  font-weight: var(--letters-weight);
+  letter-spacing: var(--letters-spacing);
+  margin-top: 6px;
+}
+
+/* Call button (unchanged sizes/position; slight visual soften to match overall look) */
 .call-row{
   width: var(--grid-w);
   margin: 0 auto;
@@ -171,7 +193,6 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   align-items:center;
   justify-content:center;
-  /* reduce the call button shadow to avoid black-heavy look */
   box-shadow: 0 8px 18px rgba(0,0,0,0.22);
   border:none;
   cursor:pointer;
@@ -227,11 +248,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 /* small screens fallback - keep same visuals but slightly larger than before */
 @media (max-width:360px){
   :root{
-    /* increase from 58 -> 64 for small screens and nudge upward a bit */
     --circle-size:64px;
     --gap-x:14px;
     --gap-y:12px;
-    /* moved small-screen keypad up a bit as well */
     --overlay-offset-y: 260px;
     --digit-size:22px;
     --call-size:60px;
