@@ -15,18 +15,18 @@
   --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
   --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
 
-  /* call button vars (UI removed visually) */
+  /* call button vars (hidden) */
   --call-size: 76px;
   --call-color: #2fd55b;
   --call-lift: -14px;
 
   /* typography */
-  --digit-size: 36px;        /* user set */
-  --digit-weight: 400;       /* thinner */
+  --digit-size: 36px;        /* main digit size */
+  --digit-weight: 400;       /* reduced thickness for a thin look */
   --letters-size: 11px;
-  --letters-color: #F7F7F7;  /* exact color requested */
+  --letters-color: #F7F7F7;  /* exact requested text color */
   --letters-weight: 600;     /* slightly lighter */
-  --letters-spacing: 1.6px;  /* tightened */
+  --letters-spacing: 1.6px;  /* tightened spacing between letters */
 
   --nav-height: 78px;
   --nav-item-offset: 70px;
@@ -35,11 +35,24 @@
 }
 
 /* reset */
-*{box-sizing:border-box}
-html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; -webkit-text-size-adjust:100%; }
+* { box-sizing: border-box; }
+html,body{
+  height:100%;
+  margin:0;
+  background:var(--bg);
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-text-size-adjust:100%;
+}
 
+/* app background (screenshot by default) */
 .app{
-  position:fixed; left:0; right:0; top:0;
+  position:fixed;
+  left:0;
+  right:0;
+  top:0;
   height: var(--app-viewport-height, 100svh);
   min-height: var(--app-viewport-height, 100svh);
   background-image: url('screenshot.png');
@@ -50,7 +63,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   touch-action: manipulation;
 }
 
-/* typed-digit display */
+/* typed-digit display (small top display when typing) */
 .display{
   position: absolute;
   left: 0;
@@ -71,8 +84,16 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: opacity 140ms ease, transform 120ms ease;
 }
 
-/* container */
-.keypad-wrap{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; pointer-events:none; }
+/* wrapper */
+.keypad-wrap{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  pointer-events:none;
+}
 
 /* grid */
 .keys-grid{
@@ -91,40 +112,53 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   will-change: transform;
 }
 
-/* KEYS — fill, sizing, centering, press behavior */
+/* ============================
+   KEY BASE (flat matte buttons)
+   - solid matte fill #343434
+   - no outer gradients or heavy shadows
+   - gap between digit and letters = 0px (very tight)
+   - no transform on press; press color jump handled by JS & instant transition removal
+   - release fades back over --press-fade-ms
+   ============================ */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
-  background-color: #343434;   /* solid matte fill */
+  background-color: #343434;   /* matte fill */
   box-shadow: none;
   border: none !important;
   background-clip: padding-box;
 
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap: 0px;               /* tight: digit + letters touch by 0px */
+  justify-content:center; /* vertical center of group */
+  align-items:center;     /* horizontal center */
+  gap: 0px;               /* digit and letters very close (0px) */
+
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
 
+  /* transition only affects color/background-color (fade back on release) */
   transition:
     background-color var(--press-fade-ms) linear,
     color var(--press-fade-ms) linear;
   will-change: background-color, color;
 }
 
-/* Pressed/peak: immediate (JS sets transition:none before adding .pressed),
-   fade back on release over --press-fade-ms. No transform/size change. */
+/* pressed state (peak) — JS makes this appear instantly by removing transition prior to adding .pressed */
 .key.pressed,
 .key:active {
-  background-color: #7c7c7c;
+  background-color: #7c7c7c; /* peak pressed color */
+  /* intentionally no transform or shadow to avoid visual shift */
 }
 
-/* DIGIT (big number, * # 0) */
+/* ----------------------------
+   MAIN DIGIT (1..9, 0, #, *) as text
+   - centered, thin weight
+   - larger than letters but cohesive
+   ---------------------------- */
 .digit{
   display:block;
   text-align:center;
@@ -136,18 +170,22 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   padding: 0;
   align-self: center;
   pointer-events: none;
-  text-shadow: none;
+  text-shadow: none; /* no shadow for thin look */
   letter-spacing: 0.2px;
   transition: color var(--press-fade-ms) linear;
 }
 
-/* color at peak */
+/* digit color at pressed peak */
 .key.pressed .digit,
 .key:active .digit {
   color: #FFFFFF;
 }
 
-/* letters (small labels) */
+/* ----------------------------
+   LETTERS (ABC, DEF, etc.)
+   - small, centered, tightened spacing
+   - visually close to the digit (gap 0)
+   ---------------------------- */
 .letters{
   display:block;
   text-align:center;
@@ -164,61 +202,61 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: color var(--press-fade-ms) linear;
 }
 
-/* hide empty labels so * / # visually center perfectly */
+/* hide empty labels to keep symbols (*) and (#) vertically centered */
 .key .letters:empty{ display:none; }
 
+/* letters become white at peak press */
 .key.pressed .letters,
 .key:active .letters {
   color: #FFFFFF;
 }
 
-/* star ('*') — render as centered filled star SVG using mask (falls back to image where mask unsupported) */
-.key[data-value="*"] .digit {
-  /* hide textual char but keep it in DOM for screen readers */
-  text-indent: -9999px;
-  white-space: nowrap;
-  overflow: hidden;
+/* small weight bump for # and * for legibility */
+.key[data-value="#"] .digit { font-weight: 500; }
+.key[data-value="*"] .digit { font-weight: 500; }
 
-  width: 28px;
-  height: 28px;
+/* ----------------------------
+   ASTERISK (*) AS TEXT GLYPH
+   - IMPORTANT: use the textual asterisk (system glyph) — not an icon
+   - slightly smaller than digit (78% of digit size) to match screenshot
+   - centered and follows same color behavior as digits
+   ---------------------------- */
+.key[data-value="*"] .digit {
+  /* keep the character visible as text for exact match */
+  text-indent: 0;
+  white-space: normal;
+  overflow: visible;
+
+  /* slightly smaller than the main digits to match your screenshot */
+  font-size: calc(var(--digit-size) * 0.78);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--letters-color);
   display: block;
+  text-align: center;
   align-self: center;
   margin: 0;
   padding: 0;
+  pointer-events: none;
 
-  /* color driven by currentColor */
-  color: var(--letters-color);
-  background-color: currentColor;
+  /* ensure any previous mask/background fallback is removed */
+  background-image: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
 
-  /* Use mask for modern browsers */
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 17.27L18.18 21 16.54 13.97 22 9.24 14.81 8.62 12 2 9.19 8.62 2 9.24 7.46 13.97 5.82 21z'/></svg>") no-repeat center / contain;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 17.27L18.18 21 16.54 13.97 22 9.24 14.81 8.62 12 2 9.19 8.62 2 9.24 7.46 13.97 5.82 21z'/></svg>") no-repeat center / contain;
-
-  /* fallback inline SVG (color locked) for browsers without mask support */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23F7F7F7' d='M12 17.27L18.18 21 16.54 13.97 22 9.24 14.81 8.62 12 2 9.19 8.62 2 9.24 7.46 13.97 5.82 21z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-
-  transition: background-color var(--press-fade-ms) linear, color var(--press-fade-ms) linear;
+  transition: color var(--press-fade-ms) linear;
 }
 
-/* pressed star: peak white */
+/* pressed asterisk color */
 .key[data-value="*"].pressed .digit,
 .key[data-value="*"]:active .digit {
-  color: #FFFFFF;               /* affects mask fill */
-  background-color: #FFFFFF;    /* for mask-based fill */
-
-  /* update fallback background to white for older browsers */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23FFFFFF' d='M12 17.27L18.18 21 16.54 13.97 22 9.24 14.81 8.62 12 2 9.19 8.62 2 9.24 7.46 13.97 5.82 21z'/></svg>");
+  color: #FFFFFF;
 }
 
-/* '#' heavier for clarity */
-.key[data-value="#"] .digit { font-weight: 500; }
-
-/* '0' plus sign kept as letters (no change) */
-
-/* remove call UI entirely (hidden) */
+/* ----------------------------
+   remove call UI completely (hidden)
+   ---------------------------- */
 .call-row,
 .call-button {
   display: none !important;
@@ -226,7 +264,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   pointer-events: none !important;
 }
 
-/* bottom nav unchanged visually (kept for screenshot match) */
+/* bottom nav (visual-only) */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -260,15 +298,15 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 .nav-item span{ font-size:11px; color:inherit; margin-top:2px; }
 .nav-item.active{ color:#0a84ff; }
 
-/* focus outlines (a11y) */
+/* focus outlines (accessibility) */
 .key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
-/* disable transitions for reduced-motion users */
+/* reduced motion: disable transitions for users who prefer less motion */
 @media (prefers-reduced-motion: reduce){
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens */
+/* small screens adjustments */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
@@ -284,6 +322,8 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
     --letters-spacing: 1.2px;
   }
+  .nav-item svg{ width:22px; height:22px; }
+  .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
   .key { gap: 0px; }
-  .key[data-value="*"] .digit { width:24px; height:24px; }
+  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.78); }
 }
