@@ -21,7 +21,7 @@
   --call-lift: -14px;
 
   /* typography */
-  --digit-size: 34px;
+  --digit-size: 36px;
   --digit-weight: 500;
   --letters-size: 11px;
   --letters-color: #F7F7F7; /* default text color for letters and digits */
@@ -261,3 +261,4 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
   .key { gap: 1px; } /* make the spacing even closer on small screens */
 }
+
