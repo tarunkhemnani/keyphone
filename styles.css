@@ -216,10 +216,9 @@ html,body{
 .key[data-value="*"] .digit { font-weight: 500; }
 
 /* ----------------------------
-   ASTERISK (*) AS TEXT GLYPH
-   - IMPORTANT: use the textual asterisk (system glyph) — not an icon
-   - slightly smaller than digit (78% of digit size) to match screenshot
-   - centered and follows same color behavior as digits
+   ASTERISK (*) AS TEXT GLYPH — SLIGHTLY LARGER
+   - keep textual asterisk (not an icon)
+   - increased from 0.78 → 0.86 of main digit size for a slightly larger star
    ---------------------------- */
 .key[data-value="*"] .digit {
   /* keep the character visible as text for exact match */
@@ -227,8 +226,8 @@ html,body{
   white-space: normal;
   overflow: visible;
 
-  /* slightly smaller than the main digits to match your screenshot */
-  font-size: calc(var(--digit-size) * 0.78);
+  /* slightly larger than previous — now 86% of main digit size */
+  font-size: calc(var(--digit-size) * 0.86);
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
@@ -325,5 +324,5 @@ html,body{
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
   .key { gap: 0px; }
-  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.78); }
+  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.86); }
 }
