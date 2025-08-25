@@ -15,7 +15,7 @@
   --digit-size: 36px;        /* main digit size (used for keys AND top typed display) */
   --digit-weight: 400;       /* thin-but-legible */
   --letters-size: 11px;
-  --letters-color: #F7F7F7;  /* requested text color for labels */
+  --letters-color: #F7F7F7;  /* requested text color */
   --letters-weight: 600;
   --letters-spacing: 1.6px;
 
@@ -59,7 +59,7 @@ html,body{
 /* -------------------------
    TOP TYPED-DIGIT DISPLAY
    Uses the exact same --digit-size & --digit-weight so typed numbers match keys
-   Color forced to #FFFFFF as requested
+   Color forced to #FFFFFF and nudged slightly upwards
    ------------------------- */
 .display{
   position: absolute;
@@ -74,11 +74,12 @@ html,body{
   line-height: 1;
   letter-spacing: 0.2px;
 
-  /* color changed to pure white */
+  /* color forced to pure white */
   color: #FFFFFF;
   text-align: center;
 
-  transform: translateY(calc(var(--overlay-offset-y) - 96px));
+  /* moved slightly upwards compared to previous version */
+  transform: translateY(calc(var(--overlay-offset-y) - 110px));
   width: 100%;
   height: 48px;
   display:flex;
@@ -173,7 +174,7 @@ html,body{
   text-shadow: none;
   letter-spacing: 0.2px;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing:grayscale;
   text-rendering: optimizeLegibility;
   transition: color var(--press-fade-ms) linear;
 }
@@ -347,6 +348,8 @@ html,body{
     --letters-spacing: 1.2px;
   }
   .key { gap: 0px; }
+  /* nudge small-screen typed display up similarly */
+  .display { transform: translateY(calc(var(--overlay-offset-y) - 94px)); font-size: var(--digit-size); }
   .key[data-value="*"] .digit { font-size: var(--digit-size); transform: translateY(-1px); }
   .key[data-value="#"] .digit { font-size: calc(var(--digit-size) * 0.95); }
 }
