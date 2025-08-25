@@ -22,11 +22,11 @@
 
   /* typography */
   --digit-size: 36px;
-  --digit-weight: 500;
+  --digit-weight: 400;          /* reduced thickness (was 500) */
   --letters-size: 11px;
-  --letters-color: #F7F7F7; /* default text color for letters and digits */
-  --letters-weight: 700;
-  --letters-spacing: 2.6px;
+  --letters-color: #F7F7F7;     /* default text color for letters and digits */
+  --letters-weight: 600;        /* reduced thickness (was 700) */
+  --letters-spacing: 1.6px;     /* 1px tighter than before */
 
   --nav-height: 78px;
   --nav-item-offset: 70px;
@@ -94,9 +94,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 /* ===========================================
    KEYS — size 80px and fill color #343434 (flat)
    - digit+letters treated as one centered block
-   - smaller gap between number and letters (2px)
-   - no per-glyph vertical nudges; everything centered exactly
-   - NO visual shift on press; press reaches peak instantly and fades back on release
+   - gap tightened by 1px
+   - reduced thickness for digits and letters
+   - exact center alignment; no transforms on press
    =========================================== */
 
 /* Base key: solid flat fill #343434 */
@@ -105,11 +105,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   height: var(--circle-size);
   border-radius: 999px;
 
-  background-color: #343434;   /* base fill color */
+  background-color: #343434;
 
-  /* remove outer/inner shadows for pure flat look */
   box-shadow: none;
-
   border: none !important;
   background-clip: padding-box;
 
@@ -118,7 +116,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   flex-direction:column;
   justify-content:center; /* center the group vertically */
   align-items:center;     /* center horizontally */
-  gap: 2px;               /* slightly closer: digit and letters 2px apart */
+  gap: 1px;               /* tightened by 1px (was 2px) */
 
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
@@ -132,24 +130,22 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   will-change: background-color, color;
 }
 
-/* Pressed state: peak colors (instant by JS removing transition before adding .pressed)
-   - background: #7c7c7c
-   - text: #FFFFFF
-   - NO transform, NO shadow, NO size change */
+/* Pressed state: peak colors instantly (JS forces instant on press),
+   and fade back on release. No transforms/no shadows. */
 .key.pressed,
 .key:active {
   background-color: #7c7c7c;
 }
 
-/* MAIN DIGIT — centered inside the flex column */
+/* MAIN DIGIT — centered inside the flex column, thinner weight, no shadow for visual thinness */
 .digit{
   font-size: var(--digit-size);
-  font-weight: var(--digit-weight);
+  font-weight: var(--digit-weight); /* thinner now */
   color: var(--letters-color);
   line-height: 1;
   margin: 0;
   pointer-events: none;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+  text-shadow: none;   /* removed shadow to help visual thinness */
   letter-spacing: 0.2px;
   transition: color var(--press-fade-ms) linear;
 }
@@ -160,13 +156,13 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   color: #FFFFFF;
 }
 
-/* letters/subtext — kept directly under the digits, closer spacing via gap:2px */
+/* letters/subtext — thinner weight and slightly tighter spacing */
 .letters{
   font-size: var(--letters-size);
   color: var(--letters-color);
-  letter-spacing: var(--letters-spacing);
+  letter-spacing: var(--letters-spacing); /* now 1.6px */
   text-transform: uppercase;
-  font-weight: var(--letters-weight);
+  font-weight: var(--letters-weight); /* thinner now */
   pointer-events: none;
   text-shadow: none;
   transition: color var(--press-fade-ms) linear;
@@ -181,13 +177,13 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   color: #FFFFFF;
 }
 
-/* '*' and '#' — no manual vertical nudges; they sit centered with the same flex rules */
+/* '*' and '#' sit centered with the same flex rules; keep them slightly bolder if you prefer */
 .key[data-value="*"] .digit,
 .key[data-value="#"] .digit {
-  font-weight: 600;
+  font-weight: 500; /* slightly stronger than main digit weight to improve legibility */
 }
 
-/* 0 key plus sign: keep the small plus under the big digit as part of the centered block */
+/* 0 key plus sign kept under the digit as part of the centered block */
 .key[data-value="0"] .letters {
   display: block;
 }
@@ -242,7 +238,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens fallback - slightly larger digit for readability but keep tighter spacing */
+/* small screens fallback - adjust digit size & spacing proportionally */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
@@ -250,15 +246,15 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --gap-y:12px;
     --overlay-offset-y: 240px;
     --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
-    --digit-size: 26px;
+    --digit-size: 28px;   /* slightly larger for readability on small screens */
     --letters-size: 11px;
     --call-size:64px;
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
+    --letters-spacing: 1.2px;
   }
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
-  .key { gap: 1px; } /* make the spacing even closer on small screens */
+  .key { gap: 0px; } /* even tighter spacing on small screens */
 }
-
