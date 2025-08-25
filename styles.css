@@ -13,15 +13,15 @@
 
   /* typography */
   --digit-size: 36px;        /* main digit size (used for keys AND top typed display) */
-  --digit-weight: 400;      /* thin-but-legible */
+  --digit-weight: 400;       /* thin-but-legible */
   --letters-size: 11px;
-  --letters-color: #F7F7F7; /* requested text color */
+  --letters-color: #F7F7F7;  /* requested text color */
   --letters-weight: 600;
   --letters-spacing: 1.6px;
 
   /* key colors */
-  --key-fill: #343434;      /* matte grey fill */
-  --key-pressed: #7c7c7c;   /* peak press color */
+  --key-fill: #343434;       /* matte grey fill */
+  --key-pressed: #7c7c7c;    /* peak press color */
 
   --nav-height: 78px;
   --nav-item-offset: 70px;
@@ -119,8 +119,6 @@ html,body{
 
 /* ============================
    KEY BASE: matte circular buttons
-   - exact fill, no heavy shadows/gradients
-   - no transform or size change on press to avoid visual shift
    ============================ */
 .key{
   width: var(--circle-size);
@@ -204,62 +202,46 @@ html,body{
 .key:active .letters { color: #FFFFFF; }
 
 /* ----------------------------
-   ASTERISK (*) — SVG-rendered to exactly match the photo
-   - textual '*' kept for accessibility but hidden visually
-   - SVG uses rounded thick strokes; tuned width/height/translate to center visually
+   ASTERISK (*) — TEXT GLYPH exactly same size as digits
+   - uses the same font stack and same --digit-size (36px)
+   - centered, no masks, keeps accessibility (text in DOM)
+   - small vertical nudge to match optical centering
    ---------------------------- */
 .key[data-value="*"] .digit {
-  /* keep the character for screen readers but hide it visually */
-  text-indent: -9999px;
-  white-space: nowrap;
-  overflow: hidden;
+  /* textual asterisk visible (for exact glyph rendering) */
+  text-indent: 0;
+  white-space: normal;
+  overflow: visible;
 
-  width: 36px;
-  height: 36px;
+  /* EXACT same size as digits */
+  font-size: var(--digit-size);
+  font-weight: var(--digit-weight);
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--letters-color);
   display: block;
+  text-align: center;
   align-self: center;
   margin: 0;
   padding: 0;
   pointer-events: none;
 
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-
-  /* default (unpressed) asterisk graphic — rounded, thick strokes */
-  background-image: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-      <g fill='none' stroke='%23F7F7F7' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'>\
-        <line x1='12' y1='2'  x2='12' y2='22'/>\
-        <line x1='3.6' y1='7'  x2='20.4' y2='11'/>\
-        <line x1='3.6' y1='17' x2='20.4' y2='13'/>\
-      </g>\
-    </svg>");
-
-  /* tiny nudge so the star visually sits centered inside the ring */
+  /* a very small optical nudge if needed (adjust to 0px if you want exact font baseline) */
   transform: translateY(-1px);
 
-  /* smooth swap when releasing/pressing */
-  transition: background-image var(--press-fade-ms) linear, transform 120ms ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  transition: color var(--press-fade-ms) linear;
 }
 
-/* pressed (peak) — white asterisk */
+/* pressed asterisk color */
 .key[data-value="*"].pressed .digit,
-.key[data-value="*"]:active .digit {
-  background-image: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-      <g fill='none' stroke='%23FFFFFF' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'>\
-        <line x1='12' y1='2'  x2='12' y2='22'/>\
-        <line x1='3.6' y1='7'  x2='20.4' y2='11'/>\
-        <line x1='3.6' y1='17' x2='20.4' y2='13'/>\
-      </g>\
-    </svg>");
-  transform: translateY(-1px);
-}
+.key[data-value="*"]:active .digit { color: #FFFFFF; }
 
 /* ----------------------------
    HASH (#) tuning — textual glyph kept but forced upright & crisp
-   - uses font smoothing and small spacing tweaks to avoid appearing slanted
    ---------------------------- */
 .key[data-value="#"] .digit {
   text-indent: 0;
@@ -340,7 +322,7 @@ html,body{
 .nav-item span{ font-size:11px; color:inherit; margin-top:2px; }
 .nav-item.active{ color:#0a84ff; }
 
-/* accessibility outlines */
+/* accessibility */
 .key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
 /* reduced motion fallback */
@@ -362,6 +344,6 @@ html,body{
     --letters-spacing: 1.2px;
   }
   .key { gap: 0px; }
-  .key[data-value="*"] .digit { width: 32px; height: 32px; transform: translateY(-1px); background-size: contain; }
+  .key[data-value="*"] .digit { font-size: var(--digit-size); transform: translateY(-1px); }
   .key[data-value="#"] .digit { font-size: calc(var(--digit-size) * 0.95); }
 }
