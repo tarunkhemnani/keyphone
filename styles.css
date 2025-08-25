@@ -21,7 +21,8 @@
   --digit-size: 30px;
   --digit-weight: 500;
   --letters-size: 11px;
-  --letters-color: #d6d6d6;
+  /* updated letters color to exact requested shade */
+  --letters-color: #F7F7F7;
   --letters-weight: 700;
   --letters-spacing: 2.6px;
 
@@ -59,7 +60,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#fff;
+  color:#F7F7F7; /* match keypad text color */
   font-size:20px;
   letter-spacing:2px;
   font-weight:600;
@@ -132,7 +133,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color: #ffffff;
+  color: #F7F7F7; /* exact requested color */
   line-height: 1;
   margin: 0;
   /* upward nudge so digit sits visually a bit higher than center */
@@ -149,10 +150,10 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transform: translateY(-2px);
 }
 
-/* Letters / subtext — small, spaced and lighter color */
+/* Letters / subtext — small, spaced and now using requested color */
 .letters{
   font-size: var(--letters-size);
-  color: var(--letters-color);
+  color: var(--letters-color); /* now #F7F7F7 via root var */
   letter-spacing: var(--letters-spacing);
   margin-top: 6px;
   text-transform: uppercase;
@@ -237,6 +238,8 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
+    /* keep letters color consistent on small screens too */
+    --letters-color: #F7F7F7;
   }
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
