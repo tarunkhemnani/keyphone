@@ -2,7 +2,7 @@
   --bg: #000000;
 
   /* slightly increased circle size */
-  --circle-size: 84px;      /* was 78px */
+  --circle-size: 80px;      /* was 78px */
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
@@ -244,3 +244,4 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
 }
+
