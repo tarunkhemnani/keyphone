@@ -263,7 +263,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --gap-y:12px;
     --overlay-offset-y: 240px;
     --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
-    --digit-size: 28px;  /* <- increased from 24px to 26px for small screens */
+    --digit-size: 26px;  /* <- increased from 24px to 26px for small screens */
     --letters-size: 11px;
     --call-size:64px;
     --nav-item-offset: 26px;
@@ -274,4 +274,5 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
 }
+
 
