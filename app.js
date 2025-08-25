@@ -12,7 +12,7 @@
   let longPressTimer = null;
   let longPressActive = false;
   const LONG_PRESS_MS = 600;
-  const RELEASE_FADE_MS = 600; // ms: how long the release fade should be
+  const RELEASE_FADE_MS = 300; // <-- changed from 600 to 300 ms
   const STORAGE_KEY = 'overlay-calibration-screenshot-v3';
   let calibration = { x: 0, y: 0 };
 
