@@ -1,23 +1,27 @@
 :root{
   --bg: #000000;
 
-  /* keypad sizing & placement */
+  /* keep button size and layout as requested */
   --circle-size: 80px;
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
   --overlay-offset-y: 260px;
 
-  /* press fade duration */
+  /* visual timing */
   --press-fade-ms: 300ms;
 
   /* typography */
-  --digit-size: 36px;        /* main digit size */
-  --digit-weight: 400;       /* thin look */
+  --digit-size: 36px;            /* main digit size */
+  --digit-weight: 400;          /* thin but legible */
   --letters-size: 11px;
-  --letters-color: #F7F7F7;  /* exact requested text color */
+  --letters-color: #F7F7F7;     /* exact requested color for text */
   --letters-weight: 600;
   --letters-spacing: 1.6px;
+
+  /* colors */
+  --key-fill: #3b3b3b;          /* match screenshot matte grey */
+  --key-pressed: #7c7c7c;       /* pressed peak color */
 
   --nav-height: 78px;
   --nav-item-offset: 70px;
@@ -32,7 +36,7 @@ html,body{
   margin:0;
   background:var(--bg);
   color:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,Arial,sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   -webkit-text-size-adjust:100%;
@@ -41,7 +45,9 @@ html,body{
 /* app background */
 .app{
   position:fixed;
-  left:0; right:0; top:0;
+  left:0;
+  right:0;
+  top:0;
   height: var(--app-viewport-height, 100svh);
   min-height: var(--app-viewport-height, 100svh);
   background-image: url('screenshot.png');
@@ -52,12 +58,10 @@ html,body{
   touch-action: manipulation;
 }
 
-/* typed-digit display */
+/* small top display */
 .display{
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
+  position:absolute;
+  left:0; right:0; top:0;
   transform: translateY(calc(var(--overlay-offset-y) - 96px));
   width:100%;
   height:48px;
@@ -79,8 +83,8 @@ html,body{
 /* grid */
 .keys-grid{
   width: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
-  margin: 0 auto;
-  margin-top: 6px;
+  margin:0 auto;
+  margin-top:6px;
   display:grid;
   grid-template-columns: repeat(3, var(--circle-size));
   grid-template-rows: repeat(4, var(--circle-size));
@@ -93,59 +97,60 @@ html,body{
   will-change: transform;
 }
 
-/* KEY BASE */
+/* ---------- KEY BASE (matte) ---------- */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
-  background-color: #343434;   /* matte fill */
-  box-shadow: none;
+  background-color: var(--key-fill);   /* matte grey */
   border: none !important;
+  box-shadow: none;
   background-clip: padding-box;
 
   display:flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:center;   /* center the digit+letters as group */
   align-items:center;
-  gap: 0px;
+  gap: 0px;                 /* very tight: digit + letters sit close */
 
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
 
-  /* fade back on release */
+  /* animate fade back on release only */
   transition:
     background-color var(--press-fade-ms) linear,
     color var(--press-fade-ms) linear;
   will-change: background-color, color;
 }
 
-/* pressed/peak */
+/* pressed visual (peak) */
 .key.pressed,
 .key:active {
-  background-color: #7c7c7c;
+  background-color: var(--key-pressed);
+  /* no transforms — avoid shift entirely */
 }
 
-/* main digits */
+/* ---------- MAIN DIGIT ---------- */
 .digit{
   display:block;
   text-align:center;
-  font-family: -apple-system, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
   font-style: normal;
   color: var(--letters-color);
-  line-height: 1;
-  margin: 0;
-  padding: 0;
-  align-self: center;
-  pointer-events: none;
-  text-shadow: none;
+  line-height:1;
+  margin:0;
+  padding:0;
+  align-self:center;
+  pointer-events:none;
+  text-shadow:none;
   letter-spacing: 0.2px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
   transition: color var(--press-fade-ms) linear;
 }
 
@@ -153,7 +158,7 @@ html,body{
 .key.pressed .digit,
 .key:active .digit { color: #FFFFFF; }
 
-/* letters */
+/* ---------- LETTERS (ABC etc) ---------- */
 .letters{
   display:block;
   text-align:center;
@@ -162,110 +167,103 @@ html,body{
   letter-spacing: var(--letters-spacing);
   text-transform: uppercase;
   font-weight: var(--letters-weight);
-  margin: 0;
-  padding: 0;
-  align-self: center;
-  pointer-events: none;
-  text-shadow: none;
+  margin:0;
+  padding:0;
+  align-self:center;
+  pointer-events:none;
   transition: color var(--press-fade-ms) linear;
 }
-.key .letters:empty{ display:none; }
-.key.pressed .letters, .key:active .letters { color:#FFFFFF; }
 
-/* ---------- ASTERISK: larger & centered ----------
-   textual asterisk kept; increased size & small nudge for visual centering
---------------------------------------------------*/
+/* hide empty letters for perfect centering on * and # */
+.key .letters:empty{ display:none; }
+
+.key.pressed .letters,
+.key:active .letters { color:#FFFFFF; }
+
+/* ---------- ASTERISK (*) tuning ----------
+   Use text glyph. Increase size and slightly adjust vertical position
+   so it visually matches the screenshot.
+-----------------------------------------*/
 .key[data-value="*"] .digit {
+  /* keep the glyph as text for exact match and accessibility */
   text-indent: 0;
   white-space: normal;
   overflow: visible;
 
-  /* larger than digits so it reads prominent */
-  font-size: calc(var(--digit-size) * 0.98); /* 98% of digit size */
+  /* increased slightly above earlier values to better match screenshot */
+  font-size: calc(var(--digit-size) * 1.00); /* ~100% of digit size to appear larger */
   font-weight: 500;
   font-style: normal;
   line-height: 1;
   letter-spacing: 0;
   color: var(--letters-color);
-  display: block;
-  text-align: center;
-  align-self: center;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
+  display:block;
+  text-align:center;
+  align-self:center;
+  margin:0;
+  padding:0;
+  pointer-events:none;
 
-  /* remove any previous mask/background image */
-  background-image: none !important;
-  -webkit-mask: none !important;
-  mask: none !important;
+  /* small vertical nudge to visually center the asterisk with its ring */
+  transform: translateY(-2px);
 
-  /* slightly nudge up by 1px to visually center in some devices */
-  transform: translateY(-1px);
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:geometricPrecision;
   transition: color var(--press-fade-ms) linear;
 }
+
 .key[data-value="*"].pressed .digit,
-.key[data-value="*"]:active .digit { color: #FFFFFF; }
+.key[data-value="*"]:active .digit { color:#FFFFFF; }
 
-/* ---------- HASH: replace with precise SVG background ----------
-   keep textual # for a11y but hide visually and show a straight SVG hash
-   so it is perfectly upright and consistent across devices.
---------------------------------------------------*/
-.key[data-value="#"] .digit {
-  /* keep the char for screen readers but hide visually */
-  text-indent: -9999px;
-  white-space: nowrap;
-  overflow: hidden;
+/* ---------- HASH (#) tuning ----------
+   Use textual hash but force upright, non-italic, consistent weight and spacing.
+   Adjust line-height and letter-spacing so # appears straight and balanced.
+-----------------------------------------*/
+.key[data-value="#"] .digit{
+  /* keep textual # in DOM for accessibility but style it for perfect straight rendering */
+  text-indent: 0;
+  white-space: normal;
+  overflow: visible;
 
-  width: 30px;
-  height: 30px;
-  display: block;
-  align-self: center;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
+  /* slightly reduced size compared to the main digit to match screenshot proportion */
+  font-size: calc(var(--digit-size) * 0.95);
+  font-weight: 500;           /* slightly bolder so lines look crisp */
+  font-style: normal !important; /* ensure not italic */
+  font-variant-ligatures: normal;
+  letter-spacing: -0.2px;     /* tighten horizontal spacing so the glyph looks straight */
+  line-height: 1;
+  text-align: center;
+  color: var(--letters-color);
+  display:block;
+  align-self:center;
+  margin:0;
+  padding:0;
+  pointer-events:none;
 
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:geometricPrecision;
 
-  /* straight hash SVG (light stroke) as default (uses hex escaped #) */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='none' stroke='%23F7F7F7' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><line x1='9' y1='2' x2='9' y2='22'/><line x1='15' y1='2' x2='15' y2='22'/><line x1='2' y1='9' x2='22' y2='9'/><line x1='2' y1='15' x2='22' y2='15'/></g></svg>");
-  transition: background-color var(--press-fade-ms) linear;
-}
-
-/* pressed state: swap the SVG to white strokes for peak color */
-.key[data-value="#"].pressed .digit,
-.key[data-value="#"]:active .digit {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='none' stroke='%23FFFFFF' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><line x1='9' y1='2' x2='9' y2='22'/><line x1='15' y1='2' x2='15' y2='22'/><line x1='2' y1='9' x2='22' y2='9'/><line x1='2' y1='15' x2='22' y2='15'/></g></svg>");
-}
-
-/* ensure there's no residual transform or italic style on # */
-.key[data-value="#"] .digit {
+  /* no transform; rely on font and spacing to render straight */
   transform: none !important;
-  font-style: normal !important;
 }
 
-/* ensure # has accessible fallback if background-image blocked */
-@supports (-webkit-mask: none) {
-  /* no-op; background svg is primary. */
-}
+/* ensure pressed state for # becomes white */
+.key[data-value="#"].pressed .digit,
+.key[data-value="#"]:active .digit { color:#FFFFFF; }
 
-/* hide call UI completely */
-.call-row, .call-button {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
+/* As a fallback for any platform where the # glyph still looks slanted,
+   you can replace with the SVG background approach — but textual first attempt
+   is kept for font fidelity and accessibility. */
 
-/* bottom nav */
+/* ---------- remove call UI completely ---------- */
+.call-row, .call-button { display:none !important; visibility:hidden !important; pointer-events:none !important; }
+
+/* bottom nav (visual-only) */
 .bottom-nav{
   position: fixed;
-  left:0; right:0;
-  bottom: 0;
+  left:0; right:0; bottom: 0;
   height: calc(var(--nav-height) + var(--nav-extra-space) + var(--nav-bottom-normal) + env(safe-area-inset-bottom));
   display:flex;
   justify-content: space-around;
@@ -277,33 +275,20 @@ html,body{
   box-shadow: 0 -6px 18px rgba(0,0,0,0.25) inset;
   transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 900px));
 }
-
-.nav-item{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
-  font-size:12px;
-  color:#9b9b9b;
-  pointer-events:auto;
-  position: relative;
-  top: var(--nav-item-offset);
-  transition: top 180ms ease;
-  z-index: 30;
-}
+.nav-item{ display:flex; flex-direction:column; align-items:center; gap:5px; font-size:12px; color:#9b9b9b; pointer-events:auto; position: relative; top: var(--nav-item-offset); transition: top 180ms ease; z-index: 30; }
 .nav-item svg{ width:26px; height:26px; fill: currentColor; display:block; }
 .nav-item span{ font-size:11px; color:inherit; margin-top:2px; }
 .nav-item.active{ color:#0a84ff; }
 
-/* focus outlines */
+/* accessibility outlines */
 .key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
-/* reduced motion */
+/* reduced motion users */
 @media (prefers-reduced-motion: reduce){
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens */
+/* smaller screens adjustments */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
@@ -317,6 +302,6 @@ html,body{
     --letters-spacing: 1.2px;
   }
   .key { gap: 0px; }
-  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.96); transform: translateY(-1px); }
-  .key[data-value="#"] .digit { width: 26px; height: 26px; background-size: contain; }
+  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 1.00); transform: translateY(-1px); }
+  .key[data-value="#"] .digit { font-size: calc(var(--digit-size) * 0.95); }
 }
