@@ -1,18 +1,19 @@
 :root{
   --bg: #000000;
 
-  /* updated circle size per your request */
+  /* updated circle size and positions */
   --circle-size: 80px;
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
-  --overlay-offset-y: 280px;
+  /* moved keypad slightly upwards (was 280px) */
+  --overlay-offset-y: 260px;
 
   /* derived sizes */
   --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
   --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
 
-  /* call button values (call button removed visually but keep variables) */
+  /* call button variables (call UI removed visually) */
   --call-size: 76px;
   --call-color: #2fd55b;
   --call-lift: -14px;
@@ -88,7 +89,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 }
 
 /* ===========================================
-   KEYS — updated size (80px) and fill color #343434
+   KEYS — size 80px and fill color #343434
    - flat solid fill, no gradients, no borders, no outer shadows
    - centered content: digit above, letters below
    - do NOT change positions (only internal visuals)
@@ -163,7 +164,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 /* Ensure empty letters still reserve vertical space so digit centering is consistent */
 .key .letters:empty{ height: 10px; display:block; }
 
-/* 0 key plus sign style */
+/* 0 key plus sign */
 .key[data-value="0"] .letters {
   color: var(--letters-color);
   font-size: var(--letters-size);
@@ -172,9 +173,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   margin-top: 6px;
 }
 
-/* ============================
-   CALL BUTTON — removed completely (still kept variables)
-   ============================ */
+/* CALL BUTTON — removed completely */
 .call-row,
 .call-button {
   display: none !important;
@@ -224,13 +223,14 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .key, .nav-item{ transition:none; transform:none; top:0; }
 }
 
-/* small screens fallback - scaled proportionally */
+/* small screens fallback - moved slightly up as well */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
     --gap-x:14px;
     --gap-y:12px;
-    --overlay-offset-y: 260px;
+    /* moved small-screen keypad slightly up (was 260px) */
+    --overlay-offset-y: 240px;
     --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
     --digit-size:24px;
     --call-size:64px;
