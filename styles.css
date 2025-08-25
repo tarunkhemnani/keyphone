@@ -8,16 +8,20 @@
   --overlay-offset-x: 0px;
   --overlay-offset-y: 260px;
 
-  /* press fade duration */
+  /* timing */
   --press-fade-ms: 300ms;
 
   /* typography */
-  --digit-size: 36px;
-  --digit-weight: 400;
+  --digit-size: 36px;        /* main digit size (used for keys AND top typed display) */
+  --digit-weight: 400;      /* thin-but-legible */
   --letters-size: 11px;
-  --letters-color: #F7F7F7;
+  --letters-color: #F7F7F7; /* requested text color */
   --letters-weight: 600;
   --letters-spacing: 1.6px;
+
+  /* key colors */
+  --key-fill: #343434;      /* matte grey fill */
+  --key-pressed: #7c7c7c;   /* peak press color */
 
   --nav-height: 78px;
   --nav-item-offset: 70px;
@@ -26,13 +30,13 @@
 }
 
 /* reset */
-* { box-sizing: border-box; }
+*{ box-sizing: border-box; }
 html,body{
   height:100%;
   margin:0;
   background:var(--bg);
   color:#fff;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text","SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   -webkit-text-size-adjust:100%;
@@ -52,29 +56,49 @@ html,body{
   touch-action: manipulation;
 }
 
-/* typed-digit display */
+/* -------------------------
+   TOP TYPED-DIGIT DISPLAY
+   Uses the exact same --digit-size & --digit-weight so typed numbers match keys
+   ------------------------- */
 .display{
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
+
+  /* EXACT same size / weight as key digits */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text","SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: var(--digit-size);      /* exactly 36px when --digit-size = 36px */
+  font-weight: var(--digit-weight);
+  line-height: 1;
+  letter-spacing: 0.2px;
+  color: var(--letters-color);
+  text-align: center;
+
   transform: translateY(calc(var(--overlay-offset-y) - 96px));
-  width:100%;
-  height:48px;
+  width: 100%;
+  height: 48px;
   display:flex;
   align-items:center;
   justify-content:center;
-  color:var(--letters-color);
-  font-size:20px;
-  letter-spacing:2px;
-  font-weight:600;
-  pointer-events:none;
-  opacity:0;
+
+  pointer-events: none;
+  opacity: 0;
   transition: opacity 140ms ease, transform 120ms ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* wrapper */
-.keypad-wrap{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; pointer-events:none; }
+.keypad-wrap{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  pointer-events:none;
+}
 
 /* grid */
 .keys-grid{
@@ -93,44 +117,49 @@ html,body{
   will-change: transform;
 }
 
-/* KEY BASE */
+/* ============================
+   KEY BASE: matte circular buttons
+   - exact fill, no heavy shadows/gradients
+   - no transform or size change on press to avoid visual shift
+   ============================ */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
-  background-color: #343434;   /* matte fill */
+  background-color: var(--key-fill);
   box-shadow: none;
   border: none !important;
   background-clip: padding-box;
 
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap: 0px;
+  justify-content:center;  /* group (digit+letters) centered vertically */
+  align-items:center;      /* centered horizontally */
+  gap: 0px;                /* digits and letters very close */
 
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
 
+  /* fade back on release only */
   transition:
     background-color var(--press-fade-ms) linear,
     color var(--press-fade-ms) linear;
   will-change: background-color, color;
 }
 
-/* pressed (peak) */
+/* pressed peak color (JS makes this instant-on by temporarily removing transition) */
 .key.pressed,
-.key:active {
-  background-color: #7c7c7c;
-}
+.key:active { background-color: var(--key-pressed); }
 
-/* main digits */
+/* ----------------------------
+   Main digit (1..9, 0, #, *)
+   ---------------------------- */
 .digit{
   display:block;
   text-align:center;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text","SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
   font-style: normal;
@@ -148,11 +177,13 @@ html,body{
   transition: color var(--press-fade-ms) linear;
 }
 
-/* color on press */
+/* color at pressed peak */
 .key.pressed .digit,
 .key:active .digit { color: #FFFFFF; }
 
-/* letters */
+/* ----------------------------
+   Letters (ABC, DEF, etc.)
+   ---------------------------- */
 .letters{
   display:block;
   text-align:center;
@@ -168,15 +199,17 @@ html,body{
   text-shadow: none;
   transition: color var(--press-fade-ms) linear;
 }
-.key .letters:empty{ display:none; }
-.key.pressed .letters, .key:active .letters { color: #FFFFFF; }
+.key .letters:empty{ display:none; } /* hide empties so symbols center perfectly */
+.key.pressed .letters,
+.key:active .letters { color: #FFFFFF; }
 
-/* ---------- ASTERISK rendered as inline SVG (thick stroked, rounded caps)
-   - keeps textual '*' hidden (for a11y) while visually showing the exact star
-   - stroke and size tuned to match your photo
-------------------------------------------------------------------*/
+/* ----------------------------
+   ASTERISK (*) — SVG-rendered to exactly match the photo
+   - textual '*' kept for accessibility but hidden visually
+   - SVG uses rounded thick strokes; tuned width/height/translate to center visually
+   ---------------------------- */
 .key[data-value="*"] .digit {
-  /* keep text for screen readers but hide it visually */
+  /* keep the character for screen readers but hide it visually */
   text-indent: -9999px;
   white-space: nowrap;
   overflow: hidden;
@@ -193,7 +226,7 @@ html,body{
   background-position: center;
   background-size: contain;
 
-  /* default (unpressed) asterisk — rounded thick strokes */
+  /* default (unpressed) asterisk graphic — rounded, thick strokes */
   background-image: url("data:image/svg+xml;utf8,\
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
       <g fill='none' stroke='%23F7F7F7' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'>\
@@ -203,13 +236,14 @@ html,body{
       </g>\
     </svg>");
 
-  /* small visual vertical nudge to center inside the ring */
+  /* tiny nudge so the star visually sits centered inside the ring */
   transform: translateY(-1px);
 
+  /* smooth swap when releasing/pressing */
   transition: background-image var(--press-fade-ms) linear, transform 120ms ease;
 }
 
-/* pressed - white strokes */
+/* pressed (peak) — white asterisk */
 .key[data-value="*"].pressed .digit,
 .key[data-value="*"]:active .digit {
   background-image: url("data:image/svg+xml;utf8,\
@@ -223,18 +257,22 @@ html,body{
   transform: translateY(-1px);
 }
 
-/* HASH remains textual (keeps accessibility) but is tuned to appear straight */
+/* ----------------------------
+   HASH (#) tuning — textual glyph kept but forced upright & crisp
+   - uses font smoothing and small spacing tweaks to avoid appearing slanted
+   ---------------------------- */
 .key[data-value="#"] .digit {
-  /* textual # kept visible for fidelity and a11y */
   text-indent: 0;
   white-space: normal;
   overflow: visible;
 
   font-size: calc(var(--digit-size) * 0.95);
   font-weight: 500;
-  font-style: normal;
+  font-style: normal !important;
+  font-variant-ligatures: normal;
   letter-spacing: -0.2px;
   line-height: 1;
+  text-align: center;
   color: var(--letters-color);
   display: block;
   align-self: center;
@@ -244,13 +282,16 @@ html,body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
+  transform: none !important;
 }
 
-/* pressed # */
+/* pressed # color */
 .key[data-value="#"].pressed .digit,
 .key[data-value="#"]:active .digit { color: #FFFFFF; }
 
-/* call button styling (keeps the green call circle as in screenshot) */
+/* ----------------------------
+   Call button (kept visible like screenshot)
+   ---------------------------- */
 .call-row{
   width: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
   margin: 0 auto;
@@ -299,7 +340,7 @@ html,body{
 .nav-item span{ font-size:11px; color:inherit; margin-top:2px; }
 .nav-item.active{ color:#0a84ff; }
 
-/* accessibility */
+/* accessibility outlines */
 .key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
 /* reduced motion fallback */
@@ -307,7 +348,7 @@ html,body{
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens */
+/* small screens adjustments */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
@@ -322,4 +363,5 @@ html,body{
   }
   .key { gap: 0px; }
   .key[data-value="*"] .digit { width: 32px; height: 32px; transform: translateY(-1px); background-size: contain; }
+  .key[data-value="#"] .digit { font-size: calc(var(--digit-size) * 0.95); }
 }
