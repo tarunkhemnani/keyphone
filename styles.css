@@ -59,7 +59,7 @@ html,body{
 /* -------------------------
    TOP TYPED-DIGIT DISPLAY
    Uses the exact same --digit-size & --digit-weight so typed numbers match keys
-   Color forced to #FFFFFF and nudged slightly upwards
+   Color forced to #FFFFFF and nudged slightly upwards (moved 8px up)
    ------------------------- */
 .display{
   position: absolute;
@@ -78,8 +78,8 @@ html,body{
   color: #FFFFFF;
   text-align: center;
 
-  /* moved slightly upwards compared to previous version */
-  transform: translateY(calc(var(--overlay-offset-y) - 110px));
+  /* moved 8px further upwards (was -110px, now -118px) */
+  transform: translateY(calc(var(--overlay-offset-y) - 118px));
   width: 100%;
   height: 48px;
   display:flex;
@@ -348,8 +348,8 @@ html,body{
     --letters-spacing: 1.2px;
   }
   .key { gap: 0px; }
-  /* nudge small-screen typed display up similarly */
-  .display { transform: translateY(calc(var(--overlay-offset-y) - 94px)); font-size: var(--digit-size); }
+  /* nudge small-screen typed display up 8px as well (was -94px, now -102px) */
+  .display { transform: translateY(calc(var(--overlay-offset-y) - 102px)); font-size: var(--digit-size); }
   .key[data-value="*"] .digit { font-size: var(--digit-size); transform: translateY(-1px); }
   .key[data-value="#"] .digit { font-size: calc(var(--digit-size) * 0.95); }
 }
