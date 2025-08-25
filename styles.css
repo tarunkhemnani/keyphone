@@ -1,28 +1,27 @@
 :root{
   --bg: #000000;
 
-  /* updated circle size and positions */
+  /* keypad sizing & placement */
   --circle-size: 80px;
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
-  /* moved keypad slightly upwards (was 280px) */
   --overlay-offset-y: 260px;
 
   /* derived sizes */
   --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
   --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
 
-  /* call button variables (call UI removed visually) */
+  /* call button vars (UI removed visually) */
   --call-size: 76px;
   --call-color: #2fd55b;
   --call-lift: -14px;
 
+  /* typography */
   --digit-size: 30px;
   --digit-weight: 500;
   --letters-size: 11px;
-  /* updated letters color to exact requested shade */
-  --letters-color: #F7F7F7;
+  --letters-color: #F7F7F7; /* default text color */
   --letters-weight: 700;
   --letters-spacing: 2.6px;
 
@@ -60,7 +59,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#F7F7F7; /* match keypad text color */
+  color:var(--letters-color);
   font-size:20px;
   letter-spacing:2px;
   font-weight:600;
@@ -90,10 +89,10 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 }
 
 /* ===========================================
-   KEYS — size 80px and fill color #343434
+   KEYS — size 80px and fill color #343434 (flat)
    - flat solid fill, no gradients, no borders, no outer shadows
    - centered content: digit above, letters below
-   - do NOT change positions (only internal visuals)
+   - realistic iPhone-like press interaction
    =========================================== */
 
 /* Base key: solid flat fill #343434 */
@@ -102,70 +101,105 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   height: var(--circle-size);
   border-radius: 999px;
 
-  /* Solid flat fill exactly as requested */
-  background-color: #343434;
+  background-color: #343434;   /* base fill color */
 
-  /* no halo/shadow */
+  /* no outer shadow (flat) */
   box-shadow: none;
 
   border: none !important;
   background-clip: padding-box;
+
+  /* center contents */
   display:flex;
-  flex-direction:column;    /* digit above, letters below */
-  align-items:center;       /* horizontal center */
-  justify-content:center;   /* vertical centering */
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
 
-  transition: transform 110ms cubic-bezier(.2,.8,.2,1), background-color 110ms ease;
+  /* subtle transition for transform and color changes */
+  transition: transform 120ms cubic-bezier(.2,.8,.2,1),
+              background-color 120ms linear,
+              color 120ms linear;
+  /* prepare for hardware-accelerated transforms */
+  will-change: transform, background-color;
 }
 
-/* Pressed state: slightly darker flat surface (no halo) */
-.key.pressed{
-  transform: scale(0.98);
-  background-color: #2f2f2f; /* a touch darker */
-  box-shadow: none;
+/* Pressed state — realistic tactile feedback:
+   - darker fill (#7c7c7c)
+   - text -> pure white
+   - slight scale down + tiny translate to feel pressed
+   - inset shadow so the key reads pressed into the surface
+*/
+.key.pressed,
+.key:active {
+  background-color: #7c7c7c; /* requested pressed color */
+  transform: scale(0.96) translateY(1px);
+  /* inset shadow to suggest the key is pressed in */
+  box-shadow: inset 0 6px 14px rgba(0,0,0,0.28);
 }
 
-/* MAIN DIGIT — centered and sized to match scale */
+/* Also support keyboard activation and focus-visible pressed visual */
+.key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+}
+
+/* Text color behavior:
+   default digits/letters use the requested --letters-color (#F7F7F7)
+   when pressed, text becomes pure white (#FFFFFF) for maximum contrast */
 .digit{
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  color: #F7F7F7; /* exact requested color */
+  color: var(--letters-color); /* default text color */
   line-height: 1;
   margin: 0;
-  /* upward nudge so digit sits visually a bit higher than center */
-  transform: translateY(-4px);
+  transform: translateY(-4px); /* slight visual nudge upward */
   pointer-events:none;
   text-shadow: 0 1px 0 rgba(0,0,0,0.12);
   letter-spacing: 0.2px;
+  transition: color 120ms linear, text-shadow 120ms linear;
 }
 
-/* '*' and '#' centering adjustments */
-.key[data-value="*"] .digit,
-.key[data-value="#"] .digit {
-  font-weight: 600;
-  transform: translateY(-2px);
+.key.pressed .digit,
+.key:active .digit {
+  color: #FFFFFF;
+  text-shadow: none;
 }
 
-/* Letters / subtext — small, spaced and now using requested color */
+/* letters/subtext */
 .letters{
   font-size: var(--letters-size);
-  color: var(--letters-color); /* now #F7F7F7 via root var */
+  color: var(--letters-color);
   letter-spacing: var(--letters-spacing);
   margin-top: 6px;
   text-transform: uppercase;
   font-weight: var(--letters-weight);
   pointer-events:none;
   text-shadow: none;
+  transition: color 120ms linear;
+}
+
+.key.pressed .letters,
+.key:active .letters {
+  color: #FFFFFF;
+}
+
+/* '*' and '#' vertical adjustments to keep visual centering consistent */
+.key[data-value="*"] .digit,
+.key[data-value="#"] .digit {
+  font-weight: 600;
+  transform: translateY(-2px);
 }
 
 /* Ensure empty letters still reserve vertical space so digit centering is consistent */
 .key .letters:empty{ height: 10px; display:block; }
 
-/* 0 key plus sign */
+/* 0 key plus sign style */
 .key[data-value="0"] .letters {
   color: var(--letters-color);
   font-size: var(--letters-size);
@@ -219,9 +253,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 /* focus outlines (keep for a11y) */
 .key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
-/* reduced motion fallback */
+/* reduced motion fallback: disable transform transitions for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .key, .nav-item{ transition:none; transform:none; top:0; }
+  .key, .key.pressed, .key:active, .nav-item{ transition:none; transform:none; box-shadow:none; }
 }
 
 /* small screens fallback - moved slightly up as well */
@@ -230,7 +264,6 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --circle-size:68px;
     --gap-x:14px;
     --gap-y:12px;
-    /* moved small-screen keypad slightly up (was 260px) */
     --overlay-offset-y: 240px;
     --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
     --digit-size:24px;
@@ -238,8 +271,6 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
-    /* keep letters color consistent on small screens too */
-    --letters-color: #F7F7F7;
   }
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
