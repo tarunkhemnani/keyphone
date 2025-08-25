@@ -92,7 +92,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
    KEYS — size 80px and fill color #343434 (flat)
    - flat solid fill, no gradients, no borders, no outer shadows
    - centered content: digit above, letters below
-   - realistic iPhone-like press interaction
+   - realistic press interaction without scaling
    =========================================== */
 
 /* Base key: solid flat fill #343434 */
@@ -121,29 +121,24 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   pointer-events:auto;
   user-select:none;
 
-  /* subtle transition for transform and color changes */
-  transition: transform 120ms cubic-bezier(.2,.8,.2,1),
-              background-color 120ms linear,
-              color 120ms linear;
-  /* prepare for hardware-accelerated transforms */
-  will-change: transform, background-color;
+  /* subtle transition for color changes only (no transform) */
+  transition: background-color 120ms linear, color 120ms linear;
+  will-change: background-color, color;
 }
 
-/* Pressed state — realistic tactile feedback:
+/* Pressed state — NO scale/transform so buttons don't shrink:
    - darker fill (#7c7c7c)
    - text -> pure white
-   - slight scale down + tiny translate to feel pressed
-   - inset shadow so the key reads pressed into the surface
+   - subtle inset shadow to suggest press, but no size change
 */
 .key.pressed,
 .key:active {
   background-color: #7c7c7c; /* requested pressed color */
-  transform: scale(0.96) translateY(1px);
-  /* inset shadow to suggest the key is pressed in */
   box-shadow: inset 0 6px 14px rgba(0,0,0,0.28);
+  /* intentionally no transform/scale here */
 }
 
-/* Also support keyboard activation and focus-visible pressed visual */
+/* focus-visible: keyboard users still get a visible ring */
 .key:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
@@ -255,7 +250,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 
 /* reduced motion fallback: disable transform transitions for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .key, .key.pressed, .key:active, .nav-item{ transition:none; transform:none; box-shadow:none; }
+  .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
 /* small screens fallback - moved slightly up as well */
