@@ -12,6 +12,7 @@
   let longPressTimer = null;
   let longPressActive = false;
   const LONG_PRESS_MS = 600;
+  const RELEASE_FADE_MS = 600; // ms: how long the release fade should be
   const STORAGE_KEY = 'overlay-calibration-screenshot-v3';
   let calibration = { x: 0, y: 0 };
 
@@ -25,13 +26,9 @@
 
   function preloadReplacementImage() {
     try {
-      // also supported by the <link rel="preload"> hint in index.html, but do JS caching as well
       _numpadImage = new Image();
-      // optional: set crossOrigin if you serve it with CORS and want to reuse canvas/etc.
-      // _numpadImage.crossOrigin = 'anonymous';
       _numpadImage.onload = () => {
         _numpadPreloaded = true;
-        // keep the image object referenced so it stays in memory
         console.log('numpad.png preloaded');
       };
       _numpadImage.onerror = (err) => {
@@ -39,10 +36,7 @@
         console.warn('numpad.png preload failed', err);
         _numpadImage = null;
       };
-      // start the load
       _numpadImage.src = 'numpad.png';
-      // also kick off a slightly-robust fetch (for browsers that may defer image load):
-      // we intentionally do not await — just start it early.
     } catch (e) {
       console.warn('preload replacement image failed', e);
       _numpadPreloaded = false;
@@ -130,8 +124,6 @@
   // Called when the very first character is appended — flips the background
   function onFirstCharTyped() {
     try {
-      // If preloaded flag is true we know the image is cached and swap is immediate.
-      // If not preloaded, still attempt to set it — browser will fetch it (may show slight delay).
       appEl.style.backgroundImage = FIRST_TYPED_BG;
     } catch (e) { console.warn(e); }
   }
@@ -150,12 +142,45 @@
     digits = '';
     updateDisplay();
     try {
-      // restore original background
       appEl.style.backgroundImage = ORIGINAL_BG;
     } catch(e){}
   }
 
   function doVibrate() { if (navigator.vibrate) try { navigator.vibrate(8); } catch(e){} }
+
+  /* ---------- Press visual helpers (immediate press, slow release) ---------- */
+  function applyImmediatePressVisual(keyEl) {
+    // make the pressed appearance immediate by disabling transition before adding class
+    try {
+      keyEl.style.transition = 'none';
+      // force reflow to ensure the transition:none is applied immediately
+      void keyEl.offsetWidth;
+      keyEl.classList.add('pressed');
+      // also ensure digit/letters color is instant — handled by CSS because transition is none
+    } catch (e) { /* ignore */ }
+  }
+
+  function applyReleaseFadeAndRemovePress(keyEl) {
+    try {
+      // set release transition so removing 'pressed' will animate back slowly
+      const release = `background-color ${RELEASE_FADE_MS}ms linear, color ${RELEASE_FADE_MS}ms linear`;
+      // apply the transition inline
+      keyEl.style.transition = release;
+
+      // remove the pressed class (this triggers the fade back)
+      keyEl.classList.remove('pressed');
+
+      // after the release transition finishes, clean up the inline transition style
+      const onTransitionEnd = (ev) => {
+        // wait for either background-color or color to end (some browsers report 'background-color', some 'color')
+        if (ev.propertyName === 'background-color' || ev.propertyName === 'color' || ev.propertyName === 'backgroundColor') {
+          keyEl.style.transition = '';
+          keyEl.removeEventListener('transitionend', onTransitionEnd);
+        }
+      };
+      keyEl.addEventListener('transitionend', onTransitionEnd);
+    } catch (e) { /* ignore */ }
+  }
 
   /* ---------- Attach events to all keys (1..9,0,*,#) ---------- */
   function setupKeys() {
@@ -163,10 +188,12 @@
     keysGrid.querySelectorAll('.key').forEach(key => {
       const value = key.dataset.value;
 
+      // Pointer interactions
       key.addEventListener('pointerdown', (ev) => {
         ev.preventDefault();
         try { key.setPointerCapture(ev.pointerId); } catch(e){ }
-        key.classList.add('pressed');
+        // immediate visual press (no transition)
+        applyImmediatePressVisual(key);
         doVibrate();
         longPressActive = false;
 
@@ -182,23 +209,43 @@
       key.addEventListener('pointerup', (ev) => {
         ev.preventDefault();
         try { key.releasePointerCapture(ev.pointerId); } catch(e){}
-        key.classList.remove('pressed');
+        // fade back slowly and then append char (if not long-press)
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-        if (!longPressActive) appendChar(value);
+
+        // If long-press already appended +, don't append the base value again
+        if (!longPressActive) {
+          // fade back and then append (append immediately so display updates with the press)
+          applyReleaseFadeAndRemovePress(key);
+          appendChar(value);
+        } else {
+          // long-press handled: just fade back
+          applyReleaseFadeAndRemovePress(key);
+        }
         longPressActive = false;
       });
 
       key.addEventListener('pointerleave', (ev) => {
+        // if pointer leaves, cancel long press and fade back
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-        key.classList.remove('pressed');
+        applyReleaseFadeAndRemovePress(key);
         longPressActive = false;
       });
 
+      // Keyboard accessibility: keydown should show immediate press (no transition)
       key.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.add('pressed'); }
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          applyImmediatePressVisual(key);
+        }
       });
+
+      // keyup triggers release fade and action
       key.addEventListener('keyup', (ev) => {
-        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); key.classList.remove('pressed'); appendChar(value); }
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          applyReleaseFadeAndRemovePress(key);
+          appendChar(value);
+        }
       });
     });
   }
@@ -258,7 +305,7 @@
       return;
     }
 
-    // general keypad typing
+    // general keypad typing (global keyboard, not the focused button)
     if (ev.key >= '0' && ev.key <= '9') appendChar(ev.key);
     else if (ev.key === '+' || ev.key === '*' || ev.key === '#') appendChar(ev.key);
     else if (ev.key === 'Backspace') { digits = digits.slice(0, -1); updateDisplay(); if (digits.length === 0) { try { appEl.style.backgroundImage = ORIGINAL_BG; } catch(e){} } }
