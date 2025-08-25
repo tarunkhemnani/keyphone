@@ -8,8 +8,8 @@
   --overlay-offset-x: 0px;
   --overlay-offset-y: 260px;
 
-  /* press fade duration in ms (matches long-press length) */
-  --press-fade-ms: 600ms;
+  /* press fade duration */
+  --press-fade-ms: 300ms;
 
   /* derived sizes */
   --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
@@ -21,10 +21,10 @@
   --call-lift: -14px;
 
   /* typography */
-  --digit-size: 30px;
+  --digit-size: 32px;      /* <- increased from 30px */
   --digit-weight: 500;
   --letters-size: 11px;
-  --letters-color: #F7F7F7; /* default text color */
+  --letters-color: #F7F7F7; /* default text color for letters */
   --letters-weight: 700;
   --letters-spacing: 2.6px;
 
@@ -96,7 +96,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
    - flat solid fill, no gradients, no borders, no outer shadows
    - centered content: digit above, letters below
    - NO visual shift on press
-   - press state fades over --press-fade-ms (600ms)
+   - press state reaches peak instantly and fades back over --press-fade-ms
    =========================================== */
 
 /* Base key: solid flat fill #343434 */
@@ -107,7 +107,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 
   background-color: #343434;   /* base fill color */
 
-  /* remove any outer/inner shadows for pure flat look */
+  /* remove outer/inner shadows for pure flat look */
   box-shadow: none;
 
   border: none !important;
@@ -125,21 +125,20 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   pointer-events:auto;
   user-select:none;
 
-  /* transition ONLY for background-color and text color */
+  /* transition ONLY for background-color and text color (fade back on release) */
   transition:
     background-color var(--press-fade-ms) linear,
     color var(--press-fade-ms) linear;
   will-change: background-color, color;
 }
 
-/* Pressed state — NO transform/scale, NO shadow:
-   - darker fill (#7c7c7c)
-   - text -> pure white
-   The fade is handled by the transition above so a slow press will gradually reach the pressed appearance. */
+/* Pressed state: peak colors (instant by JS removing transition before adding .pressed)
+   - background: #7c7c7c
+   - text: #FFFFFF (handled by CSS selectors)
+   - NO transform, NO shadow, NO size change */
 .key.pressed,
 .key:active {
-  background-color: #7c7c7c; /* pressed fill */
-  /* deliberately no box-shadow and no transform so there's no visual shift */
+  background-color: #7c7c7c;
 }
 
 /* focus-visible: keyboard users still get a visible ring (no shift) */
@@ -148,31 +147,30 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
 }
 
-/* Text color behavior:
-   default digits/letters use --letters-color (#F7F7F7)
-   when pressed, text becomes pure white (#FFFFFF); fade is driven by the transition */
+/* MAIN DIGIT — increased size only (letters unchanged) */
 .digit{
-  font-size: var(--digit-size);
+  font-size: var(--digit-size);  /* now 32px on desktop */
   font-weight: var(--digit-weight);
-  color: var(--letters-color); /* default text color */
+  color: var(--letters-color); /* default digit color (matches letters) */
   line-height: 1;
   margin: 0;
-  transform: translateY(-4px); /* slight visual nudge upward only — no press shift */
+  transform: translateY(-4px); /* static visual nudge */
   pointer-events:none;
   text-shadow: 0 1px 0 rgba(0,0,0,0.12);
   letter-spacing: 0.2px;
   transition: color var(--press-fade-ms) linear;
 }
 
+/* digits become pure white at peak press */
 .key.pressed .digit,
 .key:active .digit {
   color: #FFFFFF;
 }
 
-/* letters/subtext */
+/* letters/subtext remain the same size and color (unchanged) */
 .letters{
   font-size: var(--letters-size);
-  color: var(--letters-color);
+  color: var(--letters-color); /* stays 11px / F7F7F7 */
   letter-spacing: var(--letters-spacing);
   margin-top: 6px;
   text-transform: uppercase;
@@ -182,22 +180,23 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: color var(--press-fade-ms) linear;
 }
 
+/* letters also go to white while pressed */
 .key.pressed .letters,
 .key:active .letters {
   color: #FFFFFF;
 }
 
-/* '*' and '#' vertical adjustments to keep visual centering consistent (unchanged) */
+/* '*' and '#' vertical adjustments to keep visual centering consistent */
 .key[data-value="*"] .digit,
 .key[data-value="#"] .digit {
   font-weight: 600;
-  transform: translateY(-2px); /* just a static nudge */
+  transform: translateY(-2px); /* static nudge */
 }
 
 /* Ensure empty letters still reserve vertical space so digit centering is consistent */
 .key .letters:empty{ height: 10px; display:block; }
 
-/* 0 key plus sign style */
+/* 0 key plus sign style (unchanged) */
 .key[data-value="0"] .letters {
   color: var(--letters-color);
   font-size: var(--letters-size);
@@ -256,7 +255,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens fallback - moved slightly up as well */
+/* small screens fallback - slightly larger digit for readability */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
@@ -264,11 +263,13 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
     --gap-y:12px;
     --overlay-offset-y: 240px;
     --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
-    --digit-size:24px;
+    --digit-size: 26px;  /* <- increased from 24px to 26px for small screens */
+    --letters-size: 11px;
     --call-size:64px;
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
+    --letters-color: #F7F7F7;
   }
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
