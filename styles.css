@@ -82,24 +82,22 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 
 /* ===========================================
    KEYS — pixel-accurate visual match (inside the circle only)
-   - flat slightly translucent grey fill (no gradients)
-   - no border, no outer drop shadow
+   - flat solid grey fill (#3F3F3F) matching your screenshot
+   - no gradients, no borders, no outer shadows
    - perfectly centered content: main digit above, letters below
-   - adjust glyph offsets so '*' and '#' appear visually centered
    - do NOT change size or position of the buttons (only internal visuals)
    =========================================== */
 
-/* Base key: use a slightly translucent fill (appears as dark grey over black).
-   This is a flat fill (no gradient) and no border. */
+/* Base key: solid flat fill sampled from your screenshot (#3F3F3F) */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 999px;
 
-  /* Slight translucency so the background shows through — matches screenshot */
-  background-color: rgba(255,255,255,0.06);
+  /* Solid flat fill matching screenshot (sampled color) */
+  background-color: #3F3F3F;
 
-  /* remove outer shadows / halos completely for a perfectly flat circle */
+  /* remove any shadows/halo for a pure filled circle */
   box-shadow: none;
 
   border: none !important;
@@ -107,7 +105,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   display:flex;
   flex-direction:column;    /* digit above, letters below */
   align-items:center;       /* horizontal center */
-  justify-content:center;   /* vertical centering of the column */
+  justify-content:center;   /* vertical centering */
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
@@ -117,10 +115,10 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: transform 110ms cubic-bezier(.2,.8,.2,1), background-color 110ms ease;
 }
 
-/* Pressed state: slightly darker flat surface (no halo). */
+/* Pressed state: slightly darker flat surface (no halo) */
 .key.pressed{
   transform: scale(0.98);
-  background-color: rgba(255,255,255,0.04); /* a touch darker over black */
+  background-color: #353535; /* a touch darker */
   box-shadow: none;
 }
 
@@ -134,19 +132,16 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   /* small upward nudge so the digit sits visually higher than exact center (like iOS) */
   transform: translateY(-4px);
   pointer-events:none;
-  /* slight text darkening to match pixel rendering in screenshot */
-  text-shadow: 0 1px 0 rgba(0,0,0,0.14);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
   letter-spacing: 0.2px;
 }
 
 /* STARS/HASH/0 glyph alignment:
-   ensure '*' and '#' are visually identical in size and centered vertically/horizontally.
-   same for '0' digit — the '+' sublabel sits below like iOS. */
+   '*' and '#' need to read visually identical to digits and be centered.
+   apply a tiny adjustment for perfect visual centering. */
 .key[data-value="*"] .digit,
 .key[data-value="#"] .digit {
-  /* slightly bolder so they read crisp against the flat circle */
   font-weight: 600;
-  /* nudge upwards a hair less than numbers so they appear visually centered */
   transform: translateY(-2px);
 }
 
