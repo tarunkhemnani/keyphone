@@ -24,7 +24,7 @@
   --digit-size: 34px;
   --digit-weight: 500;
   --letters-size: 11px;
-  --letters-color: #F7F7F7; /* default text color for letters */
+  --letters-color: #F7F7F7; /* default text color for letters and digits */
   --letters-weight: 700;
   --letters-spacing: 2.6px;
 
@@ -93,7 +93,9 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 
 /* ===========================================
    KEYS — size 80px and fill color #343434 (flat)
-   - digits and symbols centered; letters kept at same visual position below
+   - digit+letters treated as one centered block
+   - smaller gap between number and letters (2px)
+   - no per-glyph vertical nudges; everything centered exactly
    - NO visual shift on press; press reaches peak instantly and fades back on release
    =========================================== */
 
@@ -111,9 +113,13 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   border: none !important;
   background-clip: padding-box;
 
-  /* center contents using absolute positioning for perfect control */
-  display:block;
-  position: relative; /* necessary for absolute children (.digit and .letters) */
+  /* center contents as a single column block */
+  display:flex;
+  flex-direction:column;
+  justify-content:center; /* center the group vertically */
+  align-items:center;     /* center horizontally */
+  gap: 2px;               /* slightly closer: digit and letters 2px apart */
+
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
@@ -135,12 +141,8 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   background-color: #7c7c7c;
 }
 
-/* center the main digit/symbol exactly in the middle of the circle */
+/* MAIN DIGIT — centered inside the flex column */
 .digit{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%); /* exact center */
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
   color: var(--letters-color);
@@ -158,18 +160,8 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   color: #FFFFFF;
 }
 
-/* KEEP letters visually in the same place as before:
-   - absolute positioned below center so they appear where they used to
-   - centered horizontally
-   - unchanged size (var(--letters-size))
-*/
+/* letters/subtext — kept directly under the digits, closer spacing via gap:2px */
 .letters{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  /* tuned so letters sit below the center where they appeared previously.
-     This value keeps their position visually consistent with the earlier layout. */
-  top: calc(50% + 20px);
   font-size: var(--letters-size);
   color: var(--letters-color);
   letter-spacing: var(--letters-spacing);
@@ -180,7 +172,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   transition: color var(--press-fade-ms) linear;
 }
 
-/* hide empty labels to keep * and # perfectly centered */
+/* hide empty labels to keep symbols perfectly centered vertically */
 .key .letters:empty{ display:none; }
 
 /* letters go to white while pressed */
@@ -189,21 +181,15 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   color: #FFFFFF;
 }
 
-/* '*' and '#' adjustments removed — centering handled by absolute layout now */
+/* '*' and '#' — no manual vertical nudges; they sit centered with the same flex rules */
 .key[data-value="*"] .digit,
 .key[data-value="#"] .digit {
   font-weight: 600;
-  /* no manual transform offsets here; absolute center is used */
 }
 
-/* 0 key plus sign style (keeps small plus below digit) */
+/* 0 key plus sign: keep the small plus under the big digit as part of the centered block */
 .key[data-value="0"] .letters {
   display: block;
-  top: calc(50% + 20px);
-  color: var(--letters-color);
-  font-size: var(--letters-size);
-  font-weight: var(--letters-weight);
-  letter-spacing: var(--letters-spacing);
 }
 
 /* CALL BUTTON — removed completely */
@@ -256,7 +242,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens fallback - adjust positions a bit for smaller circle */
+/* small screens fallback - slightly larger digit for readability but keep tighter spacing */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
@@ -273,7 +259,5 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   }
   .nav-item svg{ width:22px; height:22px; }
   .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
-
-  /* smaller-key letter placement tuned for compact circle */
-  .letters { top: calc(50% + 16px); }
+  .key { gap: 1px; } /* make the spacing even closer on small screens */
 }
