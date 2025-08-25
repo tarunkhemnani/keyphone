@@ -11,22 +11,13 @@
   /* press fade duration */
   --press-fade-ms: 300ms;
 
-  /* derived sizes */
-  --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
-  --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
-
-  /* call button vars (hidden) */
-  --call-size: 76px;
-  --call-color: #2fd55b;
-  --call-lift: -14px;
-
   /* typography */
   --digit-size: 36px;        /* main digit size */
-  --digit-weight: 400;       /* reduced thickness for a thin look */
+  --digit-weight: 400;       /* thin look */
   --letters-size: 11px;
   --letters-color: #F7F7F7;  /* exact requested text color */
-  --letters-weight: 600;     /* slightly lighter */
-  --letters-spacing: 1.6px;  /* tightened spacing between letters */
+  --letters-weight: 600;
+  --letters-spacing: 1.6px;
 
   --nav-height: 78px;
   --nav-item-offset: 70px;
@@ -47,12 +38,10 @@ html,body{
   -webkit-text-size-adjust:100%;
 }
 
-/* app background (screenshot by default) */
+/* app background */
 .app{
   position:fixed;
-  left:0;
-  right:0;
-  top:0;
+  left:0; right:0; top:0;
   height: var(--app-viewport-height, 100svh);
   min-height: var(--app-viewport-height, 100svh);
   background-image: url('screenshot.png');
@@ -63,7 +52,7 @@ html,body{
   touch-action: manipulation;
 }
 
-/* typed-digit display (small top display when typing) */
+/* typed-digit display */
 .display{
   position: absolute;
   left: 0;
@@ -85,19 +74,11 @@ html,body{
 }
 
 /* wrapper */
-.keypad-wrap{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  pointer-events:none;
-}
+.keypad-wrap{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; pointer-events:none; }
 
 /* grid */
 .keys-grid{
-  width: var(--grid-w);
+  width: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
   margin: 0 auto;
   margin-top: 6px;
   display:grid;
@@ -112,9 +93,7 @@ html,body{
   will-change: transform;
 }
 
-/* ============================
-   KEY BASE (flat matte buttons)
-   ============================ */
+/* KEY BASE */
 .key{
   width: var(--circle-size);
   height: var(--circle-size);
@@ -126,41 +105,36 @@ html,body{
 
   display:flex;
   flex-direction:column;
-  justify-content:center; /* vertical center of group */
-  align-items:center;     /* horizontal center */
-  gap: 0px;               /* digit and letters very close */
+  justify-content:center;
+  align-items:center;
+  gap: 0px;
 
   cursor:pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events:auto;
   user-select:none;
 
-  /* transition only affects color/background-color (fade back on release) */
+  /* fade back on release */
   transition:
     background-color var(--press-fade-ms) linear,
     color var(--press-fade-ms) linear;
   will-change: background-color, color;
 }
 
-/* pressed state (peak) */
+/* pressed/peak */
 .key.pressed,
 .key:active {
   background-color: #7c7c7c;
 }
 
-/* ----------------------------
-   MAIN DIGIT (1..9, 0, #, *) as text
-   ---------------------------- */
+/* main digits */
 .digit{
   display:block;
   text-align:center;
-
-  /* ensure digits use the intended system font stack for consistent glyph shapes */
   font-family: -apple-system, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-
   font-size: var(--digit-size);
   font-weight: var(--digit-weight);
-  font-style: normal;       /* ensure not italic */
+  font-style: normal;
   color: var(--letters-color);
   line-height: 1;
   margin: 0;
@@ -175,15 +149,11 @@ html,body{
   transition: color var(--press-fade-ms) linear;
 }
 
-/* digit color at pressed peak */
+/* digit color at peak */
 .key.pressed .digit,
-.key:active .digit {
-  color: #FFFFFF;
-}
+.key:active .digit { color: #FFFFFF; }
 
-/* ----------------------------
-   LETTERS (ABC, DEF, etc.)
-   ---------------------------- */
+/* letters */
 .letters{
   display:block;
   text-align:center;
@@ -199,47 +169,19 @@ html,body{
   text-shadow: none;
   transition: color var(--press-fade-ms) linear;
 }
-
-/* hide empty labels to keep symbols vertically centered */
 .key .letters:empty{ display:none; }
+.key.pressed .letters, .key:active .letters { color:#FFFFFF; }
 
-.key.pressed .letters,
-.key:active .letters {
-  color: #FFFFFF;
-}
-
-/* ----------------------------
-   HASH (#) — make perfectly straight (no italics/tilt)
-   - set normal font-style, remove transforms, tighten spacing
-   ---------------------------- */
-.key[data-value="#"] .digit {
-  font-style: normal !important;
-  font-weight: 500; /* slightly bolder for clarity, but straight */
-  letter-spacing: 0 !important;
-  transform: none !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
-}
-
-/* Ensure pressed # becomes white like others */
-.key[data-value="#"].pressed .digit,
-.key[data-value="#"]:active .digit {
-  color: #FFFFFF;
-}
-
-/* ----------------------------
-   ASTERISK (*) — slightly larger than before
-   - use textual asterisk; increase to 94% -> now 96% for a slightly larger look
-   ---------------------------- */
+/* ---------- ASTERISK: larger & centered ----------
+   textual asterisk kept; increased size & small nudge for visual centering
+--------------------------------------------------*/
 .key[data-value="*"] .digit {
-  /* keep the glyph as text for exact match */
   text-indent: 0;
   white-space: normal;
   overflow: visible;
 
-  /* increased to 96% so it's clearly larger than previously */
-  font-size: calc(var(--digit-size) * 0.96);
+  /* larger than digits so it reads prominent */
+  font-size: calc(var(--digit-size) * 0.98); /* 98% of digit size */
   font-weight: 500;
   font-style: normal;
   line-height: 1;
@@ -257,34 +199,69 @@ html,body{
   -webkit-mask: none !important;
   mask: none !important;
 
+  /* slightly nudge up by 1px to visually center in some devices */
+  transform: translateY(-1px);
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
   transition: color var(--press-fade-ms) linear;
 }
-
-/* pressed asterisk color */
 .key[data-value="*"].pressed .digit,
-.key[data-value="*"]:active .digit {
-  color: #FFFFFF;
+.key[data-value="*"]:active .digit { color: #FFFFFF; }
+
+/* ---------- HASH: replace with precise SVG background ----------
+   keep textual # for a11y but hide visually and show a straight SVG hash
+   so it is perfectly upright and consistent across devices.
+--------------------------------------------------*/
+.key[data-value="#"] .digit {
+  /* keep the char for screen readers but hide visually */
+  text-indent: -9999px;
+  white-space: nowrap;
+  overflow: hidden;
+
+  width: 30px;
+  height: 30px;
+  display: block;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  /* straight hash SVG (light stroke) as default (uses hex escaped #) */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='none' stroke='%23F7F7F7' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><line x1='9' y1='2' x2='9' y2='22'/><line x1='15' y1='2' x2='15' y2='22'/><line x1='2' y1='9' x2='22' y2='9'/><line x1='2' y1='15' x2='22' y2='15'/></g></svg>");
+  transition: background-color var(--press-fade-ms) linear;
 }
 
-/* small weight bump for # for legibility if still needed (kept above) */
-.key[data-value="#"] .digit { /* duplicate just in case */
-  font-weight: 500;
+/* pressed state: swap the SVG to white strokes for peak color */
+.key[data-value="#"].pressed .digit,
+.key[data-value="#"]:active .digit {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='none' stroke='%23FFFFFF' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><line x1='9' y1='2' x2='9' y2='22'/><line x1='15' y1='2' x2='15' y2='22'/><line x1='2' y1='9' x2='22' y2='9'/><line x1='2' y1='15' x2='22' y2='15'/></g></svg>");
 }
 
-/* ----------------------------
-   remove call UI completely (hidden)
-   ---------------------------- */
-.call-row,
-.call-button {
+/* ensure there's no residual transform or italic style on # */
+.key[data-value="#"] .digit {
+  transform: none !important;
+  font-style: normal !important;
+}
+
+/* ensure # has accessible fallback if background-image blocked */
+@supports (-webkit-mask: none) {
+  /* no-op; background svg is primary. */
+}
+
+/* hide call UI completely */
+.call-row, .call-button {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-/* bottom nav (visual-only) */
+/* bottom nav */
 .bottom-nav{
   position: fixed;
   left:0; right:0;
@@ -318,32 +295,28 @@ html,body{
 .nav-item span{ font-size:11px; color:inherit; margin-top:2px; }
 .nav-item.active{ color:#0a84ff; }
 
-/* focus outlines (accessibility) */
+/* focus outlines */
 .key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
-/* reduced motion: disable transitions for users who prefer less motion */
+/* reduced motion */
 @media (prefers-reduced-motion: reduce){
   .key, .key.pressed, .key:active, .nav-item{ transition:none; box-shadow:none; }
 }
 
-/* small screens adjustments */
+/* small screens */
 @media (max-width:360px){
   :root{
     --circle-size:68px;
     --gap-x:14px;
     --gap-y:12px;
     --overlay-offset-y: 240px;
-    --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
     --digit-size: 28px;
     --letters-size: 11px;
-    --call-size:64px;
     --nav-item-offset: 26px;
-    --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
     --letters-spacing: 1.2px;
   }
-  .nav-item svg{ width:22px; height:22px; }
-  .display{ transform: translateY(calc(var(--overlay-offset-y) - 80px)); font-size:18px; }
   .key { gap: 0px; }
-  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.96); }
+  .key[data-value="*"] .digit { font-size: calc(var(--digit-size) * 0.96); transform: translateY(-1px); }
+  .key[data-value="#"] .digit { width: 26px; height: 26px; background-size: contain; }
 }
