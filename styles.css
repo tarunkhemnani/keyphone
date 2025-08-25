@@ -1,16 +1,20 @@
 :root{
   --bg: #000000;
 
-  /* keep sizes & positions unchanged per your request */
-  --circle-size: 78px;
+  /* slightly increased circle size */
+  --circle-size: 84px;      /* was 78px */
   --gap-x: 20px;
   --gap-y: 16px;
   --overlay-offset-x: 0px;
   --overlay-offset-y: 280px; /* moved keypad slightly up already */
-  --call-size: 74px;
+
+  /* derived sizes */
+  --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y))); /* total height of 4 rows + 3 gaps */
+
+  --call-size: 80px;
   --call-color: #2fd55b;
   --call-lift: -14px;
-  --digit-size: 28px;
+  --digit-size: 30px;
   --digit-weight: 500;
   --letters-size: 11px;
   --letters-color: #d6d6d6;
@@ -85,7 +89,7 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
    - flat solid grey fill (#3F3F3F) matching your screenshot
    - no gradients, no borders, no outer shadows
    - perfectly centered content: main digit above, letters below
-   - do NOT change size or position of the buttons (only internal visuals)
+   - do NOT change positions (only increased key size)
    =========================================== */
 
 /* Base key: solid flat fill sampled from your screenshot (#3F3F3F) */
@@ -169,34 +173,17 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
   margin-top: 6px;
 }
 
-/* Call button (unchanged sizes/position; slight visual soften to match overall look) */
-.call-row{
-  width: var(--grid-w);
-  margin: 0 auto;
-  margin-top: 10px;
-  display:flex;
-  justify-content:center;
-  pointer-events:none;
-  position: relative;
-  transform: translate(var(--overlay-offset-x), calc(var(--overlay-offset-y) + 360px));
+/* ============================
+   CALL BUTTON — removed completely
+   ============================ */
+
+/* hide the call-row and call-button so the call control is gone visually and not interactive */
+.call-row,
+.call-button {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
-.call-button{
-  width:var(--call-size);
-  height:var(--call-size);
-  border-radius:999px;
-  background:var(--call-color);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.22);
-  border:none;
-  cursor:pointer;
-  transition: transform 120ms ease;
-  pointer-events:auto;
-  transform: translateY(var(--call-lift));
-  z-index: 40;
-}
-.call-button svg{ width:36px; height:36px; fill:#fff; }
 
 /* bottom nav and nav items (unchanged) */
 .bottom-nav{
@@ -233,22 +220,23 @@ html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family:
 .nav-item.active{ color:#0a84ff; }
 
 /* focus outlines (keep for a11y) */
-.key:focus, .nav-item:focus, #callBtn:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
+.key:focus, .nav-item:focus { outline: 2px solid rgba(255,255,255,0.06); outline-offset:4px; }
 
 /* reduced motion fallback */
 @media (prefers-reduced-motion: reduce){
-  .key, .call-button, .nav-item{ transition:none; transform:none; top:0; }
+  .key, .nav-item{ transition:none; transform:none; top:0; }
 }
 
-/* small screens fallback - keep same visuals but slightly larger than before */
+/* small screens fallback - scaled proportionally */
 @media (max-width:360px){
   :root{
-    --circle-size:64px;
+    --circle-size:68px;
     --gap-x:14px;
     --gap-y:12px;
     --overlay-offset-y: 260px;
-    --digit-size:22px;
-    --call-size:60px;
+    --grid-h: calc((4 * var(--circle-size)) + (3 * var(--gap-y)));
+    --digit-size:24px;
+    --call-size:64px;
     --nav-item-offset: 26px;
     --nav-extra-space: max(0px, calc(var(--nav-item-offset) - 22px));
     --grid-w: calc((3 * var(--circle-size)) + (2 * var(--gap-x)));
